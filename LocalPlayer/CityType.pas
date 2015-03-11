@@ -58,7 +58,7 @@ procedure TCityTypeDlg.FormCreate(Sender:TObject);
 begin
 inherited;
 CaptionRight:=CloseBtn.Left;
-InitButtons(self);
+InitButtons();
 HelpContext:='MACRO';
 Caption:=Phrases.Lookup('TITLE_CITYTYPES');
 DeleteBtn.Hint:=Phrases.Lookup('BTN_DELETE');

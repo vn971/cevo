@@ -23,7 +23,7 @@ var
 implementation
 
 uses
-Directories,ScreenTools,DePNG;
+Directories,ScreenTools,Start;
 
 {$R *.DFM}
 
@@ -34,13 +34,24 @@ end;
 
 procedure TBackground.FormShow(Sender: TObject);
 begin
-if FileExists(HomeDir+'Graphics\Background.bmp')
-  or FileExists(HomeDir+'Graphics\Background.png') then
+img:=nil;
+if FullScreen then
   begin
-  img:=TBitmap.Create;
-  LoadGraphicFile(img, 'Graphics\Background');
+  if FileExists(HomeDir+'Graphics\Background.bmp')
+    or FileExists(HomeDir+'Graphics\Background.png') then
+    begin
+    img:=TBitmap.Create;
+    LoadGraphicFile(img, HomeDir+'Graphics\Background');
+    end
   end
-else img:=nil;
+else
+  begin
+  WindowState:=wsNormal;
+  Width:=StartDlg.Width+16;
+  Height:=StartDlg.Height+16;
+  Left:=StartDlg.Left-8;
+  Top:=StartDlg.Top-8;
+  end
 end;
 
 procedure TBackground.FormPaint(Sender: TObject);

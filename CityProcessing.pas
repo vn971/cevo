@@ -189,7 +189,7 @@ with RW[p].City[cix],TradeProcessing do
     if Built[imResLab]=1 then
       inc(FutResBonus,ResLabFutureBonus*RW[p].Tech[futResearchTechnology]);
     end;
-  if RW[p].NatBuilt[imPalace]>0 then
+  if (RW[p].NatBuilt[imPalace]>0) or (ServerVersion[p]<$010000) then
     begin // calculate corruption
     Dist:=MaxDist;
     for i:=0 to RW[p].nCity-1 do
@@ -829,6 +829,7 @@ with RW[p],City[cix] do
     begin
     if Flags and chUnitLost=0 then
       begin {one unit lost}
+      uix:=-1;
       Det:=MaxInt;
       for i:=0 to nUn-1 do if (Un[i].Loc>=0) and (Un[i].Home=cix) then
         with Model[Un[i].mix] do
@@ -844,8 +845,11 @@ with RW[p],City[cix] do
           if TestDet<Det then
             begin uix:=i; Det:=TestDet end;
           end;
-      RemoveUnit_UpdateMap(p,uix);
-      inc(Flags,chUnitLost);
+      if uix>=0 then
+        begin
+        RemoveUnit_UpdateMap(p,uix);
+        inc(Flags,chUnitLost);
+        end
       end
     end;
 
@@ -1069,7 +1073,7 @@ TTileData=record
   Food,Prod,Trade,SubValue,V21: integer;
   end;
 var
-i,V21,Loc1,nHierarchy,iH,iT,iH_Switch,MinWorking,MaxWorking,WantedFood,
+i,V21,Loc1,nHierarchy,iH,iT,iH_Switch,MinWorking,MaxWorking,
   WantedProd,MinFood,MinProd,count,Take,MaxTake,AreaSize,FormulaCode,
   NeedRare, RareTiles,cix1,dx,dy,BestTiles,ProdBeforeBoost,TestTiles,
   SubPlus,SuperPlus: integer;
@@ -1174,13 +1178,12 @@ with RW[p].City[cix] do
     if MinWorking>AreaSize then
       MinWorking:=AreaSize;
     end;
-  WantedFood:=TestReport.Eaten;
   if TestReport.Support=0 then
     WantedProd:=0
   else WantedProd:=1+(TestReport.Support*100-1)
     div (100+CityReportEx.ProdProcessing.ProdBonus*50+CityReportEx.ProdProcessing.FutProdBonus);
 
-  // consider resouces for ship parts
+  // consider resources for ship parts
   NeedRare:=0;
   if (GTestFlags and tfNoRareNeed=0) and (Project and cpImp<>0) then
     case Project and cpIndex of
@@ -1312,7 +1315,7 @@ with RW[p].City[cix] do
     // ensure minima
     iH:=0;
     while (TestReport.Working<MaxWorking) and (iH<iH_Switch)
-      and ((TestReport.Working<MinWorking) or (TestReport.FoodRep<WantedFood)
+      and ((TestReport.Working<MinWorking) or (TestReport.FoodRep<TestReport.Eaten)
         or (ProdBeforeBoost<WantedProd)) do
       begin
       assert(nSelection[iH]=0);
@@ -1360,11 +1363,11 @@ with RW[p].City[cix] do
             MinProd:=WantedProd
           end;
         if MinProd=WantedProd then // do not care for food before prod is ensured
-          if (MinFood<WantedFood) and (TestReport.FoodRep>MinFood) then
+          if (MinFood<TestReport.Eaten) and (TestReport.FoodRep>MinFood) then
             begin // no combination reached wanted food yet
             MinFood:=TestReport.FoodRep;
-            if MinFood>WantedFood then
-              MinFood:=WantedFood
+            if MinFood>TestReport.Eaten then
+              MinFood:=TestReport.Eaten
             end;
         BoostProd(ProdBeforeBoost, CityReportEx.ProdProcessing,
           TestReport.ProdRep, TestReport.PollRep);
@@ -1375,30 +1378,37 @@ with RW[p].City[cix] do
           SuperValue:=SuperValue or 1 shl 30;
 
         // super-criterion B: food demand granted?
-        if MinFood>WantedFood-63 then
-          SuperValue:=SuperValue or (63-(WantedFood-MinFood)) shl 24;
+        if TestReport.FoodRep>=TestReport.Eaten then
+          SuperValue:=SuperValue or 63 shl 24
+        else if TestReport.FoodRep>TestReport.Eaten-63 then
+          SuperValue:=SuperValue or (63-(TestReport.Eaten-TestReport.FoodRep)) shl 24;
 
         SuperPlus:=SuperValue-BestSuperValue;
         if SuperPlus>=0 then
           begin
-          if (TestReport.FoodRep<TestReport.Eaten) or (TestReport.ProdRep<TestReport.Support) then
-            Value:=TestReport.Tax+TestReport.Science
+          Output[oTax]:=TestReport.Tax;
+          Output[oScience]:=TestReport.Science;
+
+          if TestReport.FoodRep<TestReport.Eaten then
+            Output[oFood]:=TestReport.FoodRep
+            // appreciate what we have, combination will have bad supervalue anyway
+          else if FoodWasted then
+            Output[oFood]:=0
           else
             begin
-            Output[oTax]:=TestReport.Tax;
-            Output[oScience]:=TestReport.Science;
-            if FoodWasted then
-              Output[oFood]:=0
-            else
+            Output[oFood]:=TestReport.FoodRep-TestReport.Eaten;
+            if FoodToTax or (Size>=NeedAqueductSize) and (Output[oFood]=1) then
               begin
-              Output[oFood]:=TestReport.FoodRep-TestReport.Eaten;
-              if FoodToTax or (Size>=NeedAqueductSize) and (Output[oFood]=1) then
-                begin
-                inc(Output[oTax],Output[oFood]);
-                Output[oFood]:=0;
-                end;
+              inc(Output[oTax],Output[oFood]);
+              Output[oFood]:=0;
               end;
+            end;
 
+          if TestReport.ProdRep<TestReport.Support then
+            Output[oProd]:=TestReport.ProdRep
+            // appreciate what we have, combination will have bad supervalue anyway
+          else
+            begin
             if NeedRare>0 then
               begin
               RareOk:=false;
@@ -1414,21 +1424,21 @@ with RW[p].City[cix] do
               inc(Output[oTax],Output[oProd]);
               Output[oProd]:=0;
               end;
+            end;
 
-            NeedStep2:=false;
-            Value:=0;
+          NeedStep2:=false;
+          Value:=0;
+          for i:=oFood to oScience do
+            if ValueFormula_Multiply[i] then
+              NeedStep2:=true
+            else Value:=Value+ValueFormula_Weight[i]*Output[i];
+          if NeedStep2 then
+            begin
+            if Value>0 then
+              Value:=ln(Value)+123;
             for i:=oFood to oScience do
-              if ValueFormula_Multiply[i] then
-                NeedStep2:=true
-              else Value:=Value+ValueFormula_Weight[i]*Output[i];
-            if NeedStep2 then
-              begin
-              if Value>0 then
-                Value:=ln(Value)+123;
-              for i:=oFood to oScience do
-                if ValueFormula_Multiply[i] and (Output[i]>0) then
-                  Value:=Value+ValueFormula_Weight[i]*(ln(Output[i])+123);
-              end
+              if ValueFormula_Multiply[i] and (Output[i]>0) then
+                Value:=Value+ValueFormula_Weight[i]*(ln(Output[i])+123);
             end;
 
           ValuePlus:=Value-BestValue;

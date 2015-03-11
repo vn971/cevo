@@ -56,7 +56,7 @@ begin
 inherited;
 CaptionRight:=CloseBtn.Left;
 CaptionLeft:=ToggleBtn.Left+ToggleBtn.Width;
-InitButtons(self);
+InitButtons();
 HelpContext:='MACRO';
 Caption:=Phrases.Lookup('TITLE_ENHANCE');
 ToggleBtn.Hint:=Phrases.Lookup('BTN_SELECT');
@@ -117,7 +117,7 @@ FillOffscreen(0,0,InnerWidth,InnerHeight);
 EndStage:=0;
 while (EndStage<5) and (MyData.EnhancementJobs[Page,EndStage]<>jNone) do
   inc(EndStage);
-x:=InnerWidth div 2-32-37*EndStage;
+x:=InnerWidth div 2-xxt-(xxt+3)*EndStage;
 
 TerrType:=Page;
 TileImp:=0;
@@ -127,7 +127,7 @@ for stage:=0 to EndStage do
   begin
   if stage>0 then
     begin
-    Sprite(offscreen,HGrSystem,x-13,40+15,14,14,80,1);
+    Sprite(offscreen,HGrSystem,x-10,66,14,14,80,1);
     case MyData.EnhancementJobs[Page,stage-1] of
       jRoad:
         begin
@@ -174,29 +174,29 @@ for stage:=0 to EndStage do
     end;
 
   if TerrType<fForest then
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+TerrType*(xxt*2+1),1+yyt)
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+TerrType*(xxt*2+1),1+yyt)
   else
     begin
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+2*(yyt*3+1));
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+7*(xxt*2+1),1+yyt+2*(2+TerrType-fForest)*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+2*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+7*(xxt*2+1),1+yyt+2*(2+TerrType-fForest)*(yyt*3+1));
     end;
   if TileImp and fTerImp=tiFarm then
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+(xxt*2+1),1+yyt+12*(yyt*3+1))
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+(xxt*2+1),1+yyt+12*(yyt*3+1))
   else if TileImp and fTerImp=tiIrrigation then
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1,1+yyt+12*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1,1+yyt+12*(yyt*3+1));
   if TileImp and fRR<>0 then
     begin
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+6*(xxt*2+1),1+yyt+10*(yyt*3+1));
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+10*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+6*(xxt*2+1),1+yyt+10*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+10*(yyt*3+1));
     end
   else if TileImp and fRoad<>0 then
     begin
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+6*(xxt*2+1),1+yyt+9*(yyt*3+1));
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+9*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+6*(xxt*2+1),1+yyt+9*(yyt*3+1));
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+9*(yyt*3+1));
     end;
   if TileImp and fTerImp=tiMine then
-    Sprite(offscreen,HGrTerrain,x,40,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+12*(yyt*3+1));
-  inc(x,74)
+    Sprite(offscreen,HGrTerrain,x,64-yyt,xxt*2,yyt*2,1+2*(xxt*2+1),1+yyt+12*(yyt*3+1));
+  inc(x,xxt*2+6)
   end;
 
 for i:=0 to Popup.Items.Count-1 do

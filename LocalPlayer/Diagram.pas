@@ -23,7 +23,7 @@ type
     procedure PlayerClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: word;
       Shift: TShiftState);
-      
+
   public
     procedure OffscreenPaint; override;
     procedure ShowNewContent_Charts(NewMode: integer);
@@ -36,6 +36,9 @@ type
 
 var
   DiaDlg: TDiaDlg;
+
+procedure PaintColonyShip(canvas: TCanvas; Player,Left,Width,Top: integer);
+
 
 implementation
 
@@ -56,6 +59,73 @@ yPow: array[0..3] of integer=(-28,0,-44,16);
 xHab: array[0..1] of integer=(23,23);
 yHab: array[0..1] of integer=(-81,1);
 
+procedure PaintColonyShip(canvas: TCanvas; Player,Left,Width,Top: integer);
+var
+i,x,r,nComp,nPow,nHab: integer;
+begin
+with canvas do
+  begin
+  Brush.Color:=$000000;
+  FillRect(Rect(Left,Top,Left+Width,Top+200));
+  Brush.Style:=bsClear;
+  Frame(Canvas,Left-1,Top-1,Left+Width,Top+200,MainTexture.clBevelShade,MainTexture.clBevelLight);
+  RFrame(Canvas,Left-2,Top-2,Left+Width+1,Top+200+1,MainTexture.clBevelShade,MainTexture.clBevelLight);
+
+  // stars
+  RandSeed:=Player*11111;
+  for i:=1 to Width-16 do
+    begin
+    x:=Random((Width-16)*200);
+    r:=Random(13)+28;
+    Pixels[x div 200+8,x mod 200+Top]:=(r*r*r*r div 10001)*$10101;
+    end;
+
+  nComp:=MyRO.Ship[Player].Parts[spComp];
+  nPow:=MyRO.Ship[Player].Parts[spPow];
+  nHab:=MyRO.Ship[Player].Parts[spHab];
+  if nComp>6 then nComp:=6;
+  if nPow>4 then nPow:=4;
+  if nHab>2 then nHab:=2;
+  for i:=0 to nHab-1 do
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xHab[i],Top+100+yHab[i],
+      80,80,34,1);
+  for i:=0 to nComp-1 do
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[i],Top+100+yComp[i],
+      32,80,1,1);
+  if nComp>0 then
+    for i:=3 downto nPow do
+      Sprite(canvas,HGrSystem2,Left+Width div 2+xPow[i]+40,Top+100+yPow[i],
+        16,27,1,82);
+  for i:=nPow-1 downto 0 do
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xPow[i],Top+100+yPow[i],
+      56,28,58,82);
+  if (nComp<3) and (nHab>=1) then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[2]+32-16,Top+100+7+yComp[2],
+      16,27,1,82);
+  if (nComp>=3) and (nHab<1) then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[2]+32,Top+100+7+yComp[2],
+      16,27,18,82);
+  if (nComp<4) and (nHab>=2) then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[3]+32-16,Top+100+46+yComp[3],
+      16,27,1,82);
+  if (nComp>=4) and (nHab<2) then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[3]+32,Top+100+46+yComp[3],
+      16,27,18,82);
+  if (nComp<>6) and (nComp<>2) and not ((nComp=0) and (nPow<1)) then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[nComp],Top+100+7+yComp[nComp],
+      16,27,18,82);
+  if (nComp<>6) and (nComp<>3) and not ((nComp=0) and (nPow<2)) then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[nComp],Top+100+46+yComp[nComp],
+      16,27,18,82);
+  if nComp=2 then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[3],Top+100+7+yComp[3],
+      16,27,18,82);
+  if nComp=3 then
+    Sprite(canvas,HGrSystem2,Left+Width div 2+xComp[4],Top+100+7+yComp[4],
+      16,27,18,82);
+  end
+end;
+
 procedure TDiaDlg.FormCreate(Sender: TObject);
 begin
 inherited;
@@ -63,7 +133,7 @@ TitleHeight:=WideFrame+20;
 InnerHeight:=ClientHeight-TitleHeight-NarrowFrame;
 CaptionRight:=CloseBtn.Left;
 CaptionLeft:=ToggleBtn.Left+ToggleBtn.Width;
-InitButtons(self);
+InitButtons();
 end;
 
 procedure TDiaDlg.CloseBtnClick(Sender: TObject);
@@ -75,7 +145,7 @@ procedure TDiaDlg.OffscreenPaint;
 type
 TLine=array[0..99999,0..2] of Byte;
 var
-i,p,T,max,x,y,y0,Stop,r,RoundRange,LineStep,nComp,nPow,nHab: integer;
+p,T,max,x,y,y0,Stop,r,RoundRange,LineStep: integer;
 s: string;
 List: ^TChart;
 
@@ -108,7 +178,7 @@ if Kind=dkChart then with offscreen.Canvas do
 
   RoundRange:=RoundPixels[Mode]*(MyRO.Turn-1) div (InnerWidth-2*Border);
 
-  GetMem(List,4*(MyRO.Turn+1));
+  GetMem(List,4*(MyRO.Turn+2));
   if Mode=stExplore then max:=G.lx*G.ly
   else
     begin
@@ -170,67 +240,15 @@ else with offscreen.Canvas do
   begin
   Font.Assign(UniFont[ftSmall]);
   FillOffscreen(0,0,InnerWidth,InnerHeight);
-  Brush.Color:=$000000;
-  FillRect(Rect(8,yArea,InnerWidth-8,yArea+200));
-  Brush.Style:=bsClear;
-  Frame(offscreen.Canvas,8-1,yArea-1,InnerWidth-8,yArea+200,MainTexture.clBevelShade,MainTexture.clBevelLight);
-  RFrame(offscreen.Canvas,8-2,yArea-2,InnerWidth-8+1,yArea+200+1,MainTexture.clBevelShade,MainTexture.clBevelLight);
 
-  // stars
-  RandSeed:=Player*11111;
-  for i:=1 to InnerWidth-16 do
-    begin
-    x:=Random((InnerWidth-16)*200);
-    r:=Random(13)+28;
-    Pixels[x div 200+8,x mod 200+yArea]:=(r*r*r*r div 10001)*$10101;
-    end;
+  PaintColonyShip(offscreen.Canvas,Player,8,InnerWidth-16,yArea);
 
-  nComp:=MyRO.Ship[Player].Parts[spComp];
-  nPow:=MyRO.Ship[Player].Parts[spPow];
-  nHab:=MyRO.Ship[Player].Parts[spHab];
-  ShareBar(InnerWidth div 2-85,InnerHeight-62,Phrases.Lookup('SHIPHAB'),nHab,2);
-  ShareBar(InnerWidth div 2-85,InnerHeight-43,Phrases.Lookup('SHIPPOW'),nPow,4);
-  ShareBar(InnerWidth div 2-85,InnerHeight-24,Phrases.Lookup('SHIPCOMP'),nComp,6);
-  if nComp>6 then nComp:=6;
-  if nPow>4 then nPow:=4;
-  if nHab>2 then nHab:=2;
-  for i:=0 to nHab-1 do
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xHab[i],yArea+100+yHab[i],
-      80,80,34,1);
-  for i:=0 to nComp-1 do
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[i],yArea+100+yComp[i],
-      32,80,1,1);
-  if nComp>0 then
-    for i:=3 downto nPow do
-      Sprite(offscreen,HGrSystem2,InnerWidth div 2+xPow[i]+40,yArea+100+yPow[i],
-        16,27,1,82);
-  for i:=nPow-1 downto 0 do
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xPow[i],yArea+100+yPow[i],
-      56,28,58,82);
-  if (nComp<3) and (nHab>=1) then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[2]+32-16,yArea+100+7+yComp[2],
-      16,27,1,82);
-  if (nComp>=3) and (nHab<1) then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[2]+32,yArea+100+7+yComp[2],
-      16,27,18,82);
-  if (nComp<4) and (nHab>=2) then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[3]+32-16,yArea+100+46+yComp[3],
-      16,27,1,82);
-  if (nComp>=4) and (nHab<2) then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[3]+32,yArea+100+46+yComp[3],
-      16,27,18,82);
-  if (nComp<>6) and (nComp<>2) and not ((nComp=0) and (nPow<1)) then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[nComp],yArea+100+7+yComp[nComp],
-      16,27,18,82);
-  if (nComp<>6) and (nComp<>3) and not ((nComp=0) and (nPow<2)) then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[nComp],yArea+100+46+yComp[nComp],
-      16,27,18,82);
-  if nComp=2 then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[3],yArea+100+7+yComp[3],
-      16,27,18,82);
-  if nComp=3 then
-    Sprite(offscreen,HGrSystem2,InnerWidth div 2+xComp[4],yArea+100+7+yComp[4],
-      16,27,18,82);
+  ShareBar(InnerWidth div 2-85,InnerHeight-62,Phrases.Lookup('SHIPHAB'),
+    MyRO.Ship[Player].Parts[spHab],2);
+  ShareBar(InnerWidth div 2-85,InnerHeight-43,Phrases.Lookup('SHIPPOW'),
+    MyRO.Ship[Player].Parts[spPow],4);
+  ShareBar(InnerWidth div 2-85,InnerHeight-24,Phrases.Lookup('SHIPCOMP'),
+    MyRO.Ship[Player].Parts[spComp],6);
   end;
 MarkUsedOffscreen(InnerWidth,InnerHeight);
 end; // OffscreenPaint
@@ -297,7 +315,7 @@ if Kind=dkChart then
   end
 else
   begin
-  while Popup.Items.Count>0 do Popup.Items.Delete(0);
+  EmptyMenu(Popup.Items);
   for p1:=0 to nPl-1 do
     if MyRO.Ship[p1].Parts[spComp]+MyRO.Ship[p1].Parts[spPow]
       +MyRO.Ship[p1].Parts[spHab]>0 then

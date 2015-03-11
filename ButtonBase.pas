@@ -9,10 +9,11 @@ type
   TButtonBase = class(TGraphicControl)
     constructor Create(aOwner: TComponent); override;
   protected
-    FDown,FPermanent,Active: boolean;
+    FDown,FPermanent: boolean;
     FGraphic: TBitmap;
 //    FDownSound, FUpSound: string;
-    ChangeProc: TNotifyEvent;
+    ClickProc: TNotifyEvent;
+    DownChangedProc: TNotifyEvent;
     procedure SetDown(x: boolean);
 //    procedure PlayDownSound;
 //    procedure PlayUpSound;
@@ -21,6 +22,8 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState;
       x, y: integer); override;
     procedure MouseMove(Shift: TShiftState; x, y: integer); override;
+  private
+    Active: boolean;
   public
     property Graphic: TBitmap read FGraphic write FGraphic;
 //    property DownSound: string read FDownSound write FDownSound;
@@ -29,7 +32,8 @@ type
     property Visible;
     property Down: boolean read FDown write SetDown;
     property Permanent: boolean read FPermanent write FPermanent;
-    property OnClick: TNotifyEvent read ChangeProc write ChangeProc;
+    property OnClick: TNotifyEvent read ClickProc write ClickProc;
+    property OnDownChanged: TNotifyEvent read DownChangedProc write DownChangedProc;
   end;
 
 implementation
@@ -43,7 +47,7 @@ inherited Create(aOwner);
 //FDownSound:='';
 //FUpSound:='';
 FGraphic:=nil; Active:=false; FDown:=false; FPermanent:=false;
-ChangeProc:=nil;
+ClickProc:=nil;
 end;
 
 procedure TButtonBase.MouseDown;
@@ -60,16 +64,24 @@ if Active and FDown then
   begin
 //  PlayUpSound;
   Active:=false;
-  FDown:=FPermanent;
-  Invalidate;
-  if (Button=mbLeft) and (@ChangeProc<>nil) then ChangeProc(self)
+  if FDown<>FPermanent then
+    begin
+    FDown:=FPermanent;
+    Invalidate;
+    if @DownChangedProc<>nil then DownChangedProc(self);
+    end;
+  if (Button=mbLeft) and (@ClickProc<>nil) then ClickProc(self)
   end
 else
   begin
 //  if FDown then PlayUpSound;
   Active:=false;
-  FDown:=false;
-  Invalidate;
+  if FDown then
+    begin
+    FDown:=false;
+    Invalidate;
+    if @DownChangedProc<>nil then DownChangedProc(self);
+    end;
   end
 end;
 
@@ -78,9 +90,19 @@ begin
 if Active then
    if (x>=0) and (x<Width) and (y>=0) and (y<Height) then
      if (ssLeft in Shift) and not FDown then
-       begin {PlayDownSound;} FDown:=true; Paint end
+       begin
+       {PlayDownSound;}
+       FDown:=true;
+       Paint;
+       if @DownChangedProc<>nil then DownChangedProc(self);
+       end
    else else if FDown and not FPermanent then
-     begin {PlayUpSound;} FDown:=false; Paint end
+     begin
+     {PlayUpSound;}
+     FDown:=false;
+     Paint;
+     if @DownChangedProc<>nil then DownChangedProc(self);
+     end
 end;
 
 procedure TButtonBase.SetDown(x: boolean);

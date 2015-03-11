@@ -8,17 +8,19 @@ uses
   StringTables,
 
 
-  Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms;
+  Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms,Menus;
 
 type
 TTexture=record
-  HGr,xGr,yGr,Width,Height: integer; // obsolete !!!
   Image: TBitmap;
   clBevelLight,clBevelShade,clTextLight,clTextShade,clLitText,clMark,clPage,clCover: TColor
   end;
 
+function ChangeResolution(x,y,bpp,freq: integer): boolean;
+procedure RestoreResolution;
 function Play(Item: string; Index: integer =-1): boolean;
 procedure PreparePlay(Item: string; Index: integer =-1);
+procedure EmptyMenu(MenuItems: TMenuItem; Keep: integer = 0);
 function turntoyear(Turn: integer): integer;
 function TurnToString(Turn: integer): string;
 function MovementToString(Movement: integer): string;
@@ -26,9 +28,12 @@ procedure BtnFrame(ca:TCanvas;p:TRect;const T: TTexture);
 procedure EditFrame(ca:TCanvas;p:TRect;const T: TTexture);
 function HexStringToColor(s: string): integer;
 function LoadGraphicFile(bmp: TBitmap; Path: string; Options: integer= 0): boolean;
+function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string; Options: integer= 0): boolean;
 function LoadGraphicSet(Name: string): integer;
 procedure Dump(dst:TBitmap; HGr,xDst,yDst,Width,Height,xGr,yGr:integer);
-procedure Sprite(dst:TBitmap; HGr,xDst,yDst,Width,Height,xGr,yGr:integer);
+procedure Sprite(Canvas: TCanvas; HGr,xDst,yDst,Width,Height,xGr,yGr: integer); overload;
+procedure Sprite(dst:TBitmap; HGr,xDst,yDst,Width,Height,xGr,yGr:integer); overload;
+procedure MakeBlue(Dst: TBitmap; x,y,w,h: integer);
 procedure ImageOp_B(Dst,Src: TBitmap; xDst,yDst,xSrc,ySrc,w,h: integer);
 procedure ImageOp_BCC(Dst,Src: TBitmap; xDst,yDst,xSrc,ySrc,w,h,Color1,Color2: integer);
 procedure ImageOp_CCC(Bmp: TBitmap; x,y,w,h,Color0,Color1,Color2: integer);
@@ -40,13 +45,16 @@ procedure CFrame(ca: TCanvas; x0,y0,x1,y1,Corner: integer; cl: TColor);
 procedure FrameImage(ca: TCanvas; src:TBitmap; x,y,width,height,xSrc,ySrc: integer; IsControl: boolean = false);
 procedure GlowFrame(dst: TBitmap; x0,y0,width,height: integer; cl: TColor);
 procedure InitOrnament;
-procedure InitTexture(var T: TTexture; GrName: string; pix: integer);
 procedure InitCityMark(const T: TTexture);
 procedure Fill(ca: TCanvas;Left,Top,Width,Height,xOffset,yOffset: integer);
 procedure FillLarge(ca: TCanvas; x0,y0,x1,y1,xm: integer);
-procedure FillSeamless(ca: TCanvas;Left,Top,Width,Height,xOffset,yOffset: integer;const T: TTexture);
+procedure FillSeamless(ca: TCanvas;Left,Top,Width,Height,xOffset,yOffset: integer;const Texture: TBitmap);
+procedure FillRectSeamless(ca: TCanvas;x0,y0,x1,y1,xOffset,yOffset: integer;
+  const Texture: TBitmap);
 procedure PaintBackground(Form: TForm; Left,Top,Width,Height: integer);
 procedure Corner(ca: TCanvas; x,y,Kind:integer; const T: TTexture);
+procedure BiColorTextOut(ca: TCanvas; clMain, clBack: TColor;
+  x,y:integer; s:string);
 procedure LoweredTextOut(ca: TCanvas; cl: TColor; const T: TTexture;
   x,y:integer; s:string);
 function BiColorTextWidth(ca: TCanvas; s: string): integer;
@@ -61,9 +69,10 @@ procedure CountBar(dst:TBitmap; x,y,w:integer; Kind:integer; Cap:string;
   val: integer; const T: TTexture);
 procedure PaintProgressBar(ca: TCanvas; Kind,x,y,pos,Growth,max: integer;
   const T: TTexture);
+procedure PaintRelativeProgressBar(ca: TCanvas; Kind,x,y,size,pos,Growth,
+  max: integer; IndicateComplete: boolean; const T: TTexture);
 procedure PaintLogo(ca: TCanvas; x,y,clLight,clShade: integer);
-procedure InitButtons(const F: TForm);
-procedure SetMainTextureByAge(Age: integer);
+function SetMainTextureByAge(Age: integer): boolean;
 
 const
 nGrExtmax=64;
@@ -76,7 +85,12 @@ xSBook=72; ySBook=37; wSBook=72; hSBook=36; // small book
 xNation=1; yNation=25;
 xCoal=1; yCoal=148;
 
+// Icons.bmp structure
+xSizeBig=56; ySizeBig=40;
+
 GlowRange=8;
+
+EmptySpaceColor=$101010;
 
 // template positions in System2.bmp
 xOrna=156; yOrna=1; wOrna=27; hOrna=26; // ornament
@@ -87,9 +101,10 @@ smOff=0; smOn=1; smOnAlt=2;
 // color matrix
 clkAge0=1; cliTexture=0; cliBevelLight=cliTexture+1; cliBevelShade=cliTexture+2;
 cliTextLight=cliTexture+3; cliTextShade=cliTexture+4; cliLitText=cliTexture+5;
-cliMark=cliTexture+6;
+cliMark=cliTexture+6; cliDimmedText=cliTexture+7;
 cliRoad=8; cliHouse=cliRoad+1; cliImp=cliRoad+2; cliImpProject=cliRoad+3;
 cliPage=13; cliCover=cliPage+1;
+clkMisc=5; cliPaper=0; cliPaperText=1; cliPaperCaption=2;
 clkCity=6; cliPlains=0; cliPrairie=1; cliHills=2; cliTundra=3; cliWater=4;
 
 // LoadGraphicFile options
@@ -110,28 +125,53 @@ TGrExtDescrSize=record {for size calculation only - must be the same as
 TFontType=(ftNormal, ftSmall, ftTiny, ftCaption, ftButton);
 
 var
-Phrases, Sounds: TStringTable;
+Phrases, Phrases2, Sounds: TStringTable;
 nGrExt: integer;
 GrExt:array[0..nGrExtmax-1] of ^TGrExtDescr;
-TrueColor, {1 = convert images to 24 bit -> multiplies memory usage but often much faster}
-HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
+HGrSystem, HGrSystem2, ClickFrameColor,SoundMode, MainTextureAge: integer;
 MainTexture: TTexture;
-Templates,Colors,LogoBuffer: TBitmap;
-GenerateNames,InitOrnamentDone: boolean;
+Templates,Colors,Paper,BigImp,LogoBuffer: TBitmap;
+FullScreen,GenerateNames,InitOrnamentDone,Phrases2FallenBackToEnglish: boolean;
 
 UniFont: array[TFontType] of TFont;
 
 implementation
 
 uses
-  Directories, Sound, DePNG, ButtonBase, ButtonA, ButtonB,
+  Directories, Sound, ButtonBase, ButtonA, ButtonB,
 
   Registry,JPEG;
 
 var
+StartResolution: TDeviceMode;
+ResolutionChanged: boolean;
+
 Gamma: integer; // global gamma correction (cent)
 GammaLUT: array[0..255] of byte;
 
+
+function ChangeResolution(x,y,bpp,freq: integer): boolean;
+var
+DevMode: TDeviceMode;
+begin
+EnumDisplaySettings(nil, 0, DevMode);
+DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL
+  or DM_DISPLAYFREQUENCY;
+DevMode.dmPelsWidth:=x;
+DevMode.dmPelsHeight:=y;
+DevMode.dmBitsPerPel:=bpp;
+DevMode.dmDisplayFrequency:=freq;
+result:= ChangeDisplaySettings(DevMode,0)=DISP_CHANGE_SUCCESSFUL;
+if result then
+  ResolutionChanged:=true;
+end;
+
+procedure RestoreResolution;
+begin
+if ResolutionChanged then
+  ChangeDisplaySettings(StartResolution,0);
+ResolutionChanged:=false;
+end;
 
 function Play(Item: string; Index: integer =-1): boolean;
 {$IFNDEF DEBUG}
@@ -164,6 +204,18 @@ assert(WAVFileName[1]<>'[');
 if (WAVFileName<>'') and (WAVFileName[1]<>'[') and (WAVFileName<>'*') then
   PrepareSound(HomeDir+'Sounds\'+WAVFileName)
 {$ENDIF}
+end;
+
+procedure EmptyMenu(MenuItems: TMenuItem; Keep: integer = 0);
+var
+m: TMenuItem;
+begin
+while MenuItems.Count>Keep do
+  begin
+  m:=MenuItems[MenuItems.Count-1];
+  MenuItems.Delete(MenuItems.Count-1);
+  m.Free;
+  end;
 end;
 
 function turntoyear(Turn: integer): integer;
@@ -257,7 +309,7 @@ end;
 
 function LoadGraphicFile(bmp: TBitmap; Path: string; Options: integer): boolean;
 type
-TLine=array[0..1023,0..2] of Byte;
+TLine=array[0..9999,0..2] of Byte;
 var
 FirstLine, LastLine: ^TLine;
 jtex: tjpegimage;
@@ -267,13 +319,13 @@ if Options and gfJPG<>0 then
   begin
   jtex:=tjpegimage.create;
   try
-    jtex.loadfromfile(HomeDir+Path+'.jpg');
+    jtex.loadfromfile(Path+'.jpg');
   except
     result:=false;
     end;
   if result then
     begin
-    if (TrueColor=1) and (Options and gfNoGamma=0) then
+    if Options and gfNoGamma=0 then
       bmp.PixelFormat:=pf24bit;
     bmp.width:=jtex.width; bmp.height:=jtex.height;
     bmp.canvas.draw(0,0,jtex);
@@ -282,15 +334,14 @@ if Options and gfJPG<>0 then
   end
 else
   begin
-  if not LoadBitmapFromPNG(bmp,HomeDir+Path+'.png') then
-    try
-      bmp.LoadFromFile(HomeDir+Path+'.bmp');
-    except
-      result:=false;
-      end;
+  try
+    bmp.LoadFromFile(Path+'.bmp');
+  except
+    result:=false;
+    end;
   if result then
     begin
-    if (TrueColor=1) and (Options and gfNoGamma=0) then
+    if Options and gfNoGamma=0 then
       bmp.PixelFormat:=pf24bit;
     end
   end;
@@ -300,17 +351,68 @@ if not result then
     Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'),[Path])), 'C-evo', 0);
   exit;
   end;
-if TrueColor=1 then
+if (Options and gfNoGamma=0) and (Gamma<>100) then
   begin
-  if (Options and gfNoGamma=0) and (Gamma<>100) then
+  FirstLine:=bmp.ScanLine[0];
+  LastLine:=bmp.ScanLine[bmp.Height-1];
+  if integer(FirstLine)<integer(LastLine) then
+    ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
+  else ApplyGamma(pointer(LastLine), @FirstLine[bmp.Width])
+  end
+end;
+
+function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string; Options: integer): boolean;
+type
+TLine=array[0..9999,0..2] of Byte;
+var
+FirstLine, LastLine: ^TLine;
+jtex: tjpegimage;
+begin
+result:=true;
+if Options and gfJPG<>0 then
+  begin
+  jtex:=tjpegimage.create;
+  try
+    jtex.loadfromfile(LocalizedFilePath(Path+'.jpg'));
+  except
+    result:=false;
+    end;
+  if result then
     begin
-    FirstLine:=bmp.ScanLine[0];
-    LastLine:=bmp.ScanLine[bmp.Height-1];
-    if integer(FirstLine)<integer(LastLine) then
-      ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
-    else ApplyGamma(pointer(LastLine), @FirstLine[bmp.Width])
+    if Options and gfNoGamma=0 then
+      bmp.PixelFormat:=pf24bit;
+    bmp.width:=jtex.width; bmp.height:=jtex.height;
+    bmp.canvas.draw(0,0,jtex);
+    end;
+  jtex.free;
+  end
+else
+  begin
+  try
+    bmp.LoadFromFile(LocalizedFilePath(Path+'.bmp'));
+  except
+    result:=false;
+    end;
+  if result then
+    begin
+    if Options and gfNoGamma=0 then
+      bmp.PixelFormat:=pf24bit;
     end
   end;
+if not result then
+  begin
+  if Options and gfNoError=0 then
+    Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'),[Path])), 'C-evo', 0);
+  exit;
+  end;
+if (Options and gfNoGamma=0) and (Gamma<>100) then
+  begin
+  FirstLine:=bmp.ScanLine[0];
+  LastLine:=bmp.ScanLine[bmp.Height-1];
+  if integer(FirstLine)<integer(LastLine) then
+    ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
+  else ApplyGamma(pointer(LastLine), @FirstLine[bmp.Width])
+  end
 end;
 
 function LoadGraphicSet(Name: string): integer;
@@ -319,7 +421,7 @@ TLine=array[0..999,0..2] of Byte;
 var
 i,x,y,xmax,OriginalColor: integer;
 FileName: string;
-Source,Mask1: TBitmap;
+Source: TBitmap;
 DataLine, MaskLine: ^TLine;
 begin
 i:=0;
@@ -329,75 +431,50 @@ if i=nGrExt then
   begin
   FileName:=HomeDir+'Graphics\'+Name;
   Source:=TBitmap.Create;
-  if not LoadBitmapFromPNG(Source,FileName+'.png') then
-    try
-      Source.LoadFromFile(FileName+'.bmp')
-    except
-      result:=-1;
-      Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'),['Graphics\'+Name])), 'C-evo', 0);
-      exit;
-      end;
+  try
+    Source.LoadFromFile(FileName+'.bmp')
+  except
+    result:=-1;
+    Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'),['Graphics\'+Name])), 'C-evo', 0);
+    exit;
+    end;
 
   GetMem(GrExt[nGrExt],SizeOf(TGrExtDescrSize)+Source.Height div 49 *10);
   GrExt[nGrExt].Name:=Name;
-  if TrueColor=1 then
+
+  xmax:=Source.Width-1; // allows 4-byte access even for last pixel
+  if xmax>970 then xmax:=970;
+
+  GrExt[nGrExt].Data:=Source;
+  GrExt[nGrExt].Data.PixelFormat:=pf24bit;
+  GrExt[nGrExt].Mask:=TBitmap.Create;
+  GrExt[nGrExt].Mask.PixelFormat:=pf24bit;
+  GrExt[nGrExt].Mask.Width:=Source.Width;
+  GrExt[nGrExt].Mask.Height:=Source.Height;
+
+  for y:=0 to Source.Height-1 do
     begin
-    xmax:=Source.Width-1; // allows 4-byte access even for last pixel
-    if xmax>970 then xmax:=970;
-
-    GrExt[nGrExt].Data:=Source;
-    GrExt[nGrExt].Data.PixelFormat:=pf24bit;
-    GrExt[nGrExt].Mask:=TBitmap.Create;
-    GrExt[nGrExt].Mask.PixelFormat:=pf24bit;
-    GrExt[nGrExt].Mask.Width:=Source.Width;
-    GrExt[nGrExt].Mask.Height:=Source.Height;
-
-    for y:=0 to Source.Height-1 do
+    DataLine:=GrExt[nGrExt].Data.ScanLine[y];
+    MaskLine:=GrExt[nGrExt].Mask.ScanLine[y];
+    for x:=0 to xmax-1 do
       begin
-      DataLine:=GrExt[nGrExt].Data.ScanLine[y];
-      MaskLine:=GrExt[nGrExt].Mask.ScanLine[y];
-      for x:=0 to xmax-1 do
+      OriginalColor:=Cardinal((@DataLine[x])^) and $FFFFFF;
+      if (OriginalColor=$FF00FF) or (OriginalColor=$7F007F) then
+        begin // transparent
+        Cardinal((@MaskLine[x])^):=$FFFFFF;
+        Cardinal((@DataLine[x])^):=Cardinal((@DataLine[x])^) and $FF000000
+        end
+      else
         begin
-        OriginalColor:=Cardinal((@DataLine[x])^) and $FFFFFF;
-        if (OriginalColor=$FF00FF) or (OriginalColor=$7F007F) then
-          begin // transparent
-          Cardinal((@MaskLine[x])^):=$FFFFFF;
-          Cardinal((@DataLine[x])^):=Cardinal((@DataLine[x])^) and $FF000000
-          end
-        else
+        Cardinal((@MaskLine[x])^):=$000000; // non-transparent
+        if Gamma<>100 then
           begin
-          Cardinal((@MaskLine[x])^):=$000000; // non-transparent
-          if Gamma<>100 then
-            begin
-            DataLine[x,0]:=GammaLUT[DataLine[x,0]];
-            DataLine[x,1]:=GammaLUT[DataLine[x,1]];
-            DataLine[x,2]:=GammaLUT[DataLine[x,2]];
-            end
+          DataLine[x,0]:=GammaLUT[DataLine[x,0]];
+          DataLine[x,1]:=GammaLUT[DataLine[x,1]];
+          DataLine[x,2]:=GammaLUT[DataLine[x,2]];
           end
         end
-      end;
-    end
-  else
-    begin
-    GrExt[nGrExt].Mask:=TBitmap.Create;
-    GrExt[nGrExt].Mask.Width:=Source.Width;
-    GrExt[nGrExt].Mask.Height:=Source.Height;
-    Mask1:=TBitmap.Create;
-    Mask1.Assign(Source);
-    Mask1.Mask($7F007F); {mask dark purple}
-    BitBlt(GrExt[nGrExt].Mask.Canvas.Handle,0,0,Source.Width,Source.Height,
-      Mask1.Canvas.Handle,0,0,SRCCOPY);
-    Mask1.Assign(Source);
-    Mask1.Mask($FF00FF); {mask light purple}
-    BitBlt(GrExt[nGrExt].Mask.Canvas.Handle,0,0,Source.Width,Source.Height,
-      Mask1.Canvas.Handle,0,0,SRCPAINT);
-    Mask1.Free;
-
-    GrExt[nGrExt].Data:=TBitmap.Create;
-    GrExt[nGrExt].Data.Assign(GrExt[nGrExt].Mask);
-    BitBlt(GrExt[nGrExt].Data.Canvas.Handle,0,0,Source.Width,Source.Height,
-      Source.Canvas.Handle,0,0,SRCERASE);
-    Source.Free;
+      end
     end;
 
   FillChar(GrExt[nGrExt].pixUsed,GrExt[nGrExt].Data.Height div 49 *10,0);
@@ -409,6 +486,30 @@ procedure Dump(dst:TBitmap; HGr,xDst,yDst,Width,Height,xGr,yGr: integer);
 begin
 BitBlt(dst.Canvas.Handle,xDst,yDst,Width,Height,
   GrExt[HGr].Data.Canvas.Handle,xGr,yGr,SRCCOPY);
+end;
+
+procedure MakeBlue(Dst: TBitmap; x,y,w,h: integer);
+type
+TLine=array[0..99999,0..2] of Byte;
+PLine=^TLine;
+
+  procedure BlueLine(line: PLine; length: integer);
+  var
+  i: integer;
+  begin
+  for i:=0 to length-1 do
+    begin
+    line[i,0]:=line[i,0] div 2;
+    line[i,1]:=line[i,1] div 2;
+    line[i,2]:=line[i,2] div 2;
+    end
+  end;
+
+var
+i: integer;
+begin
+for i:=0 to h-1 do
+  BlueLine(@(PLine(Dst.ScanLine[y+i])[x]),w)
 end;
 
 procedure ImageOp_B(Dst,Src: TBitmap; xDst,yDst,xSrc,ySrc,w,h: integer);
@@ -544,6 +645,14 @@ while y<h do
   end
 end;
 
+procedure Sprite(Canvas: TCanvas; HGr,xDst,yDst,Width,Height,xGr,yGr: integer);
+begin
+BitBlt(Canvas.Handle,xDst,yDst,Width,Height,
+  GrExt[HGr].Mask.Canvas.Handle,xGr,yGr,SRCAND);
+BitBlt(Canvas.Handle,xDst,yDst,Width,Height,
+  GrExt[HGr].Data.Canvas.Handle,xGr,yGr,SRCPAINT);
+end;
+
 procedure Sprite(dst:TBitmap; HGr,xDst,yDst,Width,Height,xGr,yGr: integer);
 begin
 BitBlt(dst.Canvas.Handle,xDst,yDst,Width,Height,
@@ -667,30 +776,6 @@ for x:=0 to wOrna-1 do for y:=0 to hOrna-1 do
 InitOrnamentDone:=true
 end;
 
-procedure InitTexture(var T: TTexture; GrName: string; pix: integer);
-begin
-with T do
-  begin
-  HGr:=LoadGraphicSet(GrName);
-  xGr:=1+pix mod 10 *65;
-  yGr:=1+pix div 10 *49;
-  Width:=1;
-  while (Width<64) and (GrExt[HGr].Mask.Canvas.Pixels[xGr+Width,yGr]=0) do
-    inc(Width);
-  Height:=1;
-  while (Height<88) and (GrExt[HGr].Mask.Canvas.Pixels[xGr,yGr+Height]=0) do
-    inc(Height);
-  clBevelLight:=GrExt[HGr].Data.Canvas.Pixels[xGr,yGr+95];
-  clBevelShade:=GrExt[HGr].Data.Canvas.Pixels[xGr+3,yGr+95];
-  clTextLight:=GrExt[HGr].Data.Canvas.Pixels[xGr+6,yGr+95];
-  clTextShade:=GrExt[HGr].Data.Canvas.Pixels[xGr+9,yGr+95];
-  clLitText:=GrExt[HGr].Data.Canvas.Pixels[xGr,yGr+92];
-  clMark:=GrExt[HGr].Data.Canvas.Pixels[xGr+3,yGr+92];
-  clPage:=GrExt[HGr].Data.Canvas.Pixels[xGr+6,yGr+92];
-  clCover:=GrExt[HGr].Data.Canvas.Pixels[xGr+9,yGr+92];
-  end;
-end;
-
 procedure InitCityMark(const T: TTexture);
 var
 x,y,intensity: integer;
@@ -716,48 +801,67 @@ bitblt(ca.handle,left,top,width,height,MainTexture.Image.Canvas.Handle,left+xOff
 end;
 
 procedure FillLarge(ca: TCanvas; x0,y0,x1,y1,xm: integer);
+
+  function band(i: integer): integer;
+  var
+  n: integer;
+  begin
+  n:=((hMainTexture div 2) div (y1-y0))*2;
+  while hMainTexture div 2+(i+1)*(y1-y0)>hMainTexture do
+    dec(i,n);
+  while hMainTexture div 2+i*(y1-y0)<0 do
+    inc(i,n);
+  result:=i;
+  end;
+
 var
 i: integer;
 begin
 for i:=0 to (x1-xm) div wMainTexture-1 do
   bitblt(ca.handle,xm+i*wMainTexture,y0,wMainTexture,y1-y0,
-    MainTexture.Image.canvas.handle,0,hMainTexture div 2+i*(y1-y0),SRCCOPY);
+    MainTexture.Image.canvas.handle,0,hMainTexture div 2+band(i)*(y1-y0),SRCCOPY);
 bitblt(ca.handle,xm+((x1-xm) div wMainTexture)*wMainTexture,y0,
   x1-(xm+((x1-xm) div wMainTexture)*wMainTexture),y1-y0,
   MainTexture.Image.canvas.handle,0,
-  hMainTexture div 2+((x1-xm) div wMainTexture)*(y1-y0),SRCCOPY);
+  hMainTexture div 2+band((x1-xm) div wMainTexture)*(y1-y0),SRCCOPY);
 for i:=0 to (xm-x0) div wMainTexture-1 do
   bitblt(ca.handle,xm-(i+1)*wMainTexture,y0,wMainTexture,y1-y0,
-  MainTexture.Image.canvas.handle,0,hMainTexture div 2-(i+1)*(y1-y0),SRCCOPY);
+  MainTexture.Image.canvas.handle,0,hMainTexture div 2+band(-i-1)*(y1-y0),SRCCOPY);
 bitblt(ca.handle,x0,y0,xm-((xm-x0) div wMainTexture)*wMainTexture-x0,y1-y0,
   MainTexture.Image.canvas.handle,((xm-x0) div wMainTexture+1)*wMainTexture-(xm-x0),
-  hMainTexture div 2-((xm-x0) div wMainTexture+1)*(y1-y0),SRCCOPY);
+  hMainTexture div 2+band(-(xm-x0) div wMainTexture-1)*(y1-y0),SRCCOPY);
 end;
 
 procedure FillSeamless(ca: TCanvas;Left,Top,Width,Height,xOffset,yOffset: integer;
-  const T: TTexture);
+  const Texture: TBitmap);
 var
 x,y,x0cut,y0cut,x1cut,y1cut: integer;
 begin
-while xOffset<0 do inc(xOffset,T.Width);
-while yOffset<0 do inc(yOffset,T.Height);
-for y:=(Top+yOffset) div T.Height to (Top+yOffset+Height-1) div T.Height do
+while xOffset<0 do inc(xOffset,Texture.Width);
+while yOffset<0 do inc(yOffset,Texture.Height);
+for y:=(Top+yOffset) div Texture.Height to (Top+yOffset+Height-1) div Texture.Height do
   begin
-  y0cut:=Top+yOffset-y*T.Height;
+  y0cut:=Top+yOffset-y*Texture.Height;
   if y0cut<0 then y0cut:=0;
-  y1cut:=(y+1)*T.Height-(Top+yOffset+Height);
+  y1cut:=(y+1)*Texture.Height-(Top+yOffset+Height);
   if y1cut<0 then y1cut:=0;
-  for x:=(Left+xOffset) div T.Width to (Left+xOffset+Width-1) div T.Width do
+  for x:=(Left+xOffset) div Texture.Width to (Left+xOffset+Width-1) div Texture.Width do
     begin
-    x0cut:=Left+xOffset-x*T.Width;
+    x0cut:=Left+xOffset-x*Texture.Width;
     if x0cut<0 then x0cut:=0;
-    x1cut:=(x+1)*T.Width-(Left+xOffset+Width);
+    x1cut:=(x+1)*Texture.Width-(Left+xOffset+Width);
     if x1cut<0 then x1cut:=0;
-    BitBlt(ca.Handle,x*T.Width+x0cut-xOffset,y*T.Height+y0cut-yOffset,
-      T.Width-x0cut-x1cut,T.Height-y0cut-y1cut,
-      GrExt[T.HGr].Data.Canvas.Handle,T.xGr+x0cut,T.yGr+y0cut,SRCCOPY);
+    BitBlt(ca.Handle,x*Texture.Width+x0cut-xOffset,y*Texture.Height+y0cut-yOffset,
+      Texture.Width-x0cut-x1cut,Texture.Height-y0cut-y1cut,
+      Texture.Canvas.Handle,x0cut,y0cut,SRCCOPY);
     end
   end;
+end;
+
+procedure FillRectSeamless(ca: TCanvas;x0,y0,x1,y1,xOffset,yOffset: integer;
+  const Texture: TBitmap);
+begin
+FillSeamless(ca,x0,y0,x1-x0,y1-y0,xOffset,yOffset,Texture);
 end;
 
 procedure PaintBackground(Form: TForm; Left,Top,Width,Height: integer);
@@ -850,7 +954,10 @@ end;
 procedure LoweredTextOut(ca: TCanvas; cl: TColor; const T: TTexture;
   x,y:integer; s:string);
 begin
-if cl<0 then BiColorTextOut(ca, T.clTextShade, T.clTextLight, x, y, s)
+if cl=-2 then
+  BiColorTextOut(ca, (T.clBevelShade and $FEFEFE) shr 1, T.clBevelLight, x, y, s)
+else if cl<0 then
+  BiColorTextOut(ca, T.clTextShade, T.clTextLight, x, y, s)
 else BiColorTextOut(ca, cl, T.clTextLight, x, y, s)
 end;
 
@@ -1055,6 +1162,19 @@ with ca do
   end
 end;
 
+// pos and growth are relative to max, set size independent
+procedure PaintRelativeProgressBar(ca: TCanvas; Kind,x,y,size,pos,Growth,
+  max: integer; IndicateComplete: boolean; const T: TTexture);
+begin
+if Growth>0 then
+  PaintProgressBar(ca,Kind,x,y,pos*size div max,
+    (Growth*size+max div 2) div max,size,T)
+else PaintProgressBar(ca,Kind,x,y,pos*size div max,
+  (Growth*size-max div 2) div max,size,T);
+if IndicateComplete and (pos+Growth>=max) then
+  Sprite(ca, HGrSystem, x+size-10, y-7, 23, 16, 1, 129);
+end;
+
 procedure PaintLogo(ca: TCanvas; x,y,clLight,clShade: integer);
 begin
 BitBlt(LogoBuffer.Canvas.Handle,0,0,wLogo,hLogo,ca.handle,x,y,SRCCOPY);
@@ -1062,35 +1182,12 @@ ImageOp_BCC(LogoBuffer,Templates,0,0,1,1,wLogo,hLogo,clLight,clShade);
 BitBlt(ca.handle,x,y,wLogo,hLogo,LogoBuffer.Canvas.Handle,0,0,SRCCOPY);
 end;
 
-procedure InitButtons(const F: TForm);
-var
-cix: integer;
-//ButtonDownSound, ButtonUpSound: string;
-begin
-//ButtonDownSound:=Sounds.Lookup('BUTTON_DOWN');
-//ButtonUpSound:=Sounds.Lookup('BUTTON_UP');
-for cix:=0 to F.ComponentCount-1 do
-  if F.Components[cix] is TButtonBase then
-    with TButtonBase(F.Components[cix]) do
-      begin
-      Graphic:=GrExt[HGrSystem].Data;
-//      if ButtonDownSound<>'*' then
-//        DownSound:=HomeDir+'Sounds\'+ButtonDownSound+'.wav';
-//      if ButtonUpSound<>'*' then
-//        UpSound:=HomeDir+'Sounds\'+ButtonUpSound+'.wav';
-      if F.Components[cix] is TButtonA then
-        TButtonA(F.Components[cix]).Font:=UniFont[ftButton];
-      if F.Components[cix] is TButtonB then
-        TButtonB(F.Components[cix]).Mask:=GrExt[HGrSystem].Mask;
-      end;
-end;
-
-procedure SetMainTextureByAge(Age: integer);
+function SetMainTextureByAge(Age: integer): boolean;
 begin
 if Age<>MainTextureAge then with MainTexture do
   begin
   MainTextureAge:=Age;
-  LoadGraphicFile(Image,'Graphics\Texture'+inttostr(Age+1), gfJPG);
+  LoadGraphicFile(Image,HomeDir+'Graphics\Texture'+inttostr(Age+1), gfJPG);
   clBevelLight:=Colors.Canvas.Pixels[clkAge0+Age,cliBevelLight];
   clBevelShade:=Colors.Canvas.Pixels[clkAge0+Age,cliBevelShade];
   clTextLight:=Colors.Canvas.Pixels[clkAge0+Age,cliTextLight];
@@ -1099,7 +1196,9 @@ if Age<>MainTextureAge then with MainTexture do
   clMark:=Colors.Canvas.Pixels[clkAge0+Age,cliMark];
   clPage:=Colors.Canvas.Pixels[clkAge0+Age,cliPage];
   clCover:=Colors.Canvas.Pixels[clkAge0+Age,cliCover];
+  result:=true
   end
+else result:=false
 end;
 
 
@@ -1111,15 +1210,8 @@ section: TFontType;
 Reg: TRegistry;
 
 initialization
-TrueColor:=-1;
 Reg:=TRegistry.Create;
-Reg.OpenKey('SOFTWARE\cevo\RegVer8',true);
-try
-  TrueColor:=Reg.ReadInteger('TrueColor');
-except
-  TrueColor:=1;
-  Reg.WriteInteger('TrueColor',TrueColor);
-  end;
+Reg.OpenKey('SOFTWARE\cevo\RegVer9',true);
 try
   Gamma:=Reg.ReadInteger('Gamma');
 except
@@ -1140,8 +1232,28 @@ if Gamma<>100 then
     end;
   end;
 
+EnumDisplaySettings(nil, $FFFFFFFF, StartResolution);
+ResolutionChanged:=false;
+
 Phrases:=TStringTable.Create;
-Phrases.LoadFromFile(HomeDir+'Language.txt');
+Phrases2:=TStringTable.Create;
+Phrases2FallenBackToEnglish:=false;
+if FileExists(DataDir+'Localization\Language.txt') then
+  begin
+  Phrases.LoadFromFile(DataDir+'Localization\Language.txt');
+  if FileExists(DataDir+'Localization\Language2.txt') then
+    Phrases2.LoadFromFile(DataDir+'Localization\Language2.txt')
+  else
+    begin
+    Phrases2.LoadFromFile(HomeDir+'Language2.txt');
+    Phrases2FallenBackToEnglish:=true;
+    end
+  end
+else
+  begin
+  Phrases.LoadFromFile(HomeDir+'Language.txt');
+  Phrases2.LoadFromFile(HomeDir+'Language2.txt');
+  end;
 Sounds:=TStringTable.Create;
 if not Sounds.LoadFromFile(HomeDir+'Sounds\sound.txt') then
   begin Sounds.Free; Sounds:=nil end;
@@ -1155,7 +1267,7 @@ LogoBuffer.Width:=wBBook;
 LogoBuffer.Height:=hBBook;
 
 section:=ftNormal;
-AssignFile(fontscript,HomeDir+'Fonts.txt');
+AssignFile(fontscript,LocalizedFilePath('Fonts.txt'));
 try
   Reset(fontscript);
   while not eof(fontscript) do
@@ -1196,16 +1308,22 @@ nGrExt:=0;
 HGrSystem:=LoadGraphicSet('System');
 HGrSystem2:=LoadGraphicSet('System2');
 Templates:=TBitmap.Create;
-LoadGraphicFile(Templates, 'Graphics\Templates', gfNoGamma);
+LoadGraphicFile(Templates, HomeDir+'Graphics\Templates', gfNoGamma);
 Templates.PixelFormat:=pf24bit;
 Colors:=TBitmap.Create;
-LoadGraphicFile(Colors,'Graphics\Colors');
+LoadGraphicFile(Colors,HomeDir+'Graphics\Colors');
+Paper:=TBitmap.Create;
+LoadGraphicFile(Paper,HomeDir+'Graphics\Paper',gfJPG);
+BigImp:=TBitmap.Create;
+LoadGraphicFile(BigImp, HomeDir+'Graphics\Icons');
 MainTexture.Image:=TBitmap.Create;
 MainTextureAge:=-2;
 ClickFrameColor:=GrExt[HGrSystem].Data.Canvas.Pixels[187,175];
 InitOrnamentDone:=false;
+GenerateNames:=true;
 
 finalization
+RestoreResolution;
 for i:=0 to nGrExt-1 do
   begin
   GrExt[i].Data.Free; GrExt[i].Mask.Free;
@@ -1216,8 +1334,11 @@ for section:=Low(TFontType) to High(TFontType) do
 Phrases.Free;
 if Sounds<>nil then Sounds.Free;
 LogoBuffer.Free;
+BigImp.Free;
+Paper.Free;
 Templates.Free;
 Colors.Free;
 MainTexture.Image.Free;
+
 end.
 

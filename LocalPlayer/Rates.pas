@@ -10,7 +10,7 @@ uses
   ButtonBase, ButtonB, ButtonC;
 
 type
-  TRatesDlg = class(TBaseDlg)
+  TRatesDlg = class(TBufferedDrawDlg)
     CloseBtn: TButtonB;
     LuxBtn: TButtonC;
     ScienceBtn: TButtonC;
@@ -23,8 +23,6 @@ type
   public
     procedure OffscreenPaint; override;
     procedure ShowNewContent(NewMode: integer);
-  private
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
   end;
 
 var
@@ -43,14 +41,8 @@ MessageLineSpacing=20;
 
 procedure TRatesDlg.FormCreate(Sender: TObject);
 begin
-InitButtons(self);
-end;
-
-procedure TRatesDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+WideFrame) or (Msg.LParamLo>=Left+CloseBtn.Left) then
-  Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
+TitleHeight:=Screen.Height;
+InitButtons();
 end;
 
 procedure TRatesDlg.OffscreenPaint;

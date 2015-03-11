@@ -50,7 +50,7 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=D:\c-evo\dev\CevoWin32.exe
+HostApplication=D:\c-evo\dev\CevoDotNet.exe
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -96,10 +96,10 @@ Item0=d:\c-evo\dev
 Item1=..
 [HistoryLists\hlHostApplication]
 Count=6
-Item0=D:\c-evo\dev\CevoWin32.exe
-Item1=D:\c-evo\dev\Project\CevoWin32.exe
-Item2=D:\c-evo\CevoWin32.exe
-Item3=D:\c-evo\dev\CevoDotNet.exe
+Item0=D:\c-evo\dev\CevoDotNet.exe
+Item1=D:\c-evo\dev\CevoWin32.exe
+Item2=D:\c-evo\dev\Project\CevoWin32.exe
+Item3=D:\c-evo\CevoWin32.exe
 Item4=D:\c-evo\dev\Loader.exe
 Item5=D:\c-evo\dev\Win32Loader.bat
 [HistoryLists\hlRunParameters]

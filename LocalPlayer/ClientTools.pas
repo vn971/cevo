@@ -8,9 +8,6 @@ uses
   Protocol;
 
 const
-FutureTech=[futResearchTechnology,futProductionTechnology,futArmorTechnology,
-  futMissileTechnology];
-
 nOfferedResourceWeights=6;
 OfferedResourceWeights: array[0..nOfferedResourceWeights-1] of cardinal=
 (rwOff, rwMaxScience, rwForceScience, rwMaxGrowth, rwForceProd, rwMaxProd);
@@ -44,7 +41,9 @@ procedure ItsMeAgain(p: integer);
 function GetAge(p: integer): integer;
 function IsCivilReportNew(Enemy: integer): boolean;
 function IsMilReportNew(Enemy: integer): boolean;
-function CityTaxBalance(cix: integer; const CityReport: TCityReport): integer;
+function CutCityFoodSurplus(FoodSurplus: integer; IsCityAlive: boolean;
+  gov,size: integer): integer;
+function CityTaxBalance(cix: integer; const CityReport: TCityReportNew): integer;
 procedure SumCities(var TaxSum, ScienceSum: integer);
 function JobTest(uix,Job: integer; IgnoreResults: JobResultSet = []): boolean;
 procedure GetUnitInfo(Loc: integer; var uix: integer; var UnitInfo: TUnitInfo);
@@ -52,7 +51,7 @@ procedure GetCityInfo(Loc: integer; var cix: integer; var CityInfo: TCityInfo);
 function UnitExhausted(uix: integer): boolean;
 function ModelHash(const ModelInfo: TModelInfo): integer;
 function ProcessEnhancement(uix: integer; const Jobs: TEnhancementJobs): integer;
-procedure AutoBuild(cix: integer; const ImpOrder: TImpOrder);
+function AutoBuild(cix: integer; const ImpOrder: TImpOrder): boolean;
 procedure DebugMessage(Level: integer; Text: string);
 procedure CityOptimizer_BeginOfTurn;
 procedure CityOptimizer_CityChange(cix: integer);
@@ -154,8 +153,12 @@ end;
 
 procedure ItsMeAgain(p: integer);
 begin
+if G.RO[p]<>nil then
+  MyRO:=pointer(G.RO[p])
+else if G.SuperVisorRO[p]<>nil then
+  MyRO:=pointer(G.SuperVisorRO[p])
+else exit;
 me:=p;
-MyRO:=pointer(G.RO[me]);
 MyMap:=pointer(MyRO.Map);
 MyUn:=pointer(MyRO.Un);
 MyCity:=pointer(MyRO.City);
@@ -198,23 +201,34 @@ i:=MyRO.EnemyReport[Enemy].TurnOfMilReport;
 result:= (i=MyRO.Turn) or (i=MyRO.Turn-1) and (Enemy>me);
 end;
 
-function CityTaxBalance(cix: integer; const CityReport: TCityReport): integer;
+function CutCityFoodSurplus(FoodSurplus: integer; IsCityAlive: boolean;
+  gov,size: integer): integer;
+begin
+result:=FoodSurplus;
+if not IsCityAlive
+  or (result>0)
+     and ((gov=gFuture)
+       or (size>=NeedAqueductSize) and (result<2)) then
+  result:=0; {no growth}
+end;
+
+function CityTaxBalance(cix: integer; const CityReport: TCityReportNew): integer;
 var
 i: integer;
 begin
 result:=0;
-if (CityReport.Working-CityReport.Happy<=MyCity[cix].Size shr 1) {no disorder}
+if (CityReport.HappinessBalance>=0) {no disorder}
   and (MyCity[cix].Flags and chCaptured=0) then // not captured
   begin
   inc(result, CityReport.Tax);
   if (MyCity[cix].Project and (cpImp+cpIndex)=cpImp+imTrGoods)
-    and (CityReport.ProdRep>CityReport.Support) then
-    inc(result, CityReport.ProdRep-CityReport.Support);
+    and (CityReport.Production>0) then
+    inc(result, CityReport.Production);
   if ((MyRO.Government=gFuture)
       or (MyCity[cix].Size>=NeedAqueductSize)
-      and (CityReport.FoodRep<CityReport.Eaten+2))
-    and (CityReport.FoodRep>CityReport.Eaten) then
-    inc(result, CityReport.FoodRep-CityReport.Eaten);
+      and (CityReport.FoodSurplus<2))
+    and (CityReport.FoodSurplus>0) then
+    inc(result, CityReport.FoodSurplus);
   end;
 for i:=28 to nImp-1 do if MyCity[cix].Built[i]>0 then
   dec(result, Imp[i].Maint);
@@ -223,7 +237,7 @@ end;
 procedure SumCities(var TaxSum, ScienceSum: integer);
 var
 cix: integer;
-CityReport: TCityReport;
+CityReport: TCityReportNew;
 begin
 TaxSum:=MyRO.OracleIncome;
 ScienceSum:=0;
@@ -231,10 +245,10 @@ if MyRO.Government=gAnarchy then exit;
 for cix:=0 to MyRO.nCity-1 do if MyCity[cix].Loc>=0 then
   begin
   CityReport.HypoTiles:=-1;
-  CityReport.HypoTax:=-1;
-  CityReport.HypoLux:=-1;
-  Server(sGetCityReport,me,cix,CityReport);
-  if (CityReport.Working-CityReport.Happy<=MyCity[cix].Size shr 1) {no disorder}
+  CityReport.HypoTaxRate:=-1;
+  CityReport.HypoLuxuryRate:=-1;
+  Server(sGetCityReportNew,me,cix,CityReport);
+  if (CityReport.HappinessBalance>=0) {no disorder}
     and (MyCity[cix].Flags and chCaptured=0) then // not captured
     ScienceSum:=ScienceSum+CityReport.Science;
   TaxSum:=TaxSum+CityTaxBalance(cix, CityReport);
@@ -412,10 +426,11 @@ while (result<>eOK) and (result<>eDied) do
   end;
 end;
 
-procedure AutoBuild(cix: integer; const ImpOrder: TImpOrder);
+function AutoBuild(cix: integer; const ImpOrder: TImpOrder): boolean;
 var
 i,NewProject: integer;
 begin
+result:=false;
 if (MyCity[cix].Project and (cpImp+cpIndex)=cpImp+imTrGoods)
   or (MyCity[cix].Flags and chProduction<>0) then
   begin
@@ -427,6 +442,7 @@ if (MyCity[cix].Project and (cpImp+cpIndex)=cpImp+imTrGoods)
     NewProject:=cpImp+ImpOrder[i];
     if Server(sSetCityProject,me,cix,NewProject)>=rExecuted then
       begin
+      result:=true;
       CityOptimizer_CityChange(cix);
       Break;
       end;

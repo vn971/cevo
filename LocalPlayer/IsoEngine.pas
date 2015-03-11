@@ -20,6 +20,7 @@ TIsoMap = class
   procedure Paint(x,y,Loc,nx,ny,CityLoc,CityOwner:integer; UseBlink: boolean = false; CityAllowClick: boolean = false);
   procedure PaintUnit(x,y:integer;const UnitInfo:TUnitInfo;Status:integer);
   procedure PaintCity(x,y:integer;const CityInfo:TCityInfo; accessory: boolean = true);
+  procedure BitBlt(Src: TBitmap; x,y,Width,Height,xSrc,ySrc,Rop: integer);
 
   procedure AttackBegin(const ShowMove: TShowMove);
   procedure AttackEffect(const ShowMove: TShowMove);
@@ -27,7 +28,7 @@ TIsoMap = class
 
 protected
   FOutput: TBitmap;
-  FLeft, FTop, FRight, FBottom, AttLoc, DefLoc, DefHealth, FAdviceLoc: integer;
+  FLeft, FTop, FRight, FBottom, RealTop, RealBottom, AttLoc, DefLoc, DefHealth, FAdviceLoc: integer;
   OutDC, DataDC, MaskDC: Cardinal;
   function Connection4(Loc,Mask,Value:integer):integer;
   function Connection8(Loc,Mask:integer):integer;
@@ -38,9 +39,8 @@ protected
   procedure PaintGrid(x,y,nx,ny: integer);
   procedure FillRect(x,y,Width,Height,Color: integer);
   procedure Textout(x,y,Color: integer; const s: string);
-  procedure BitBlt(Src: TBitmap; x,y,Width,Height,xSrc,ySrc,Rop: integer);
   procedure Sprite(HGr,xDst,yDst,Width,Height,xGr,yGr: integer);
-  procedure TSprite(xDst,yDst,grix: integer);
+  procedure TSprite(xDst,yDst,grix: integer; PureBlack: boolean = false);
 
 public
   property AdviceLoc: integer read FAdviceLoc write FAdviceLoc;
@@ -49,20 +49,21 @@ public
 
 const
 // options switched by buttons
-moPolitical=0; moCityNames=1; moBorders=2; moFoW=3; moGreatWall=4;
-moGrid=5; moBareTerrain=6;
+moPolitical=0; moCityNames=1; moGreatWall=4; moGrid=5; moBareTerrain=6;
 
 // other options
-moEditMode=16; moLocCodes=17; moDebugMap=18;
+moEditMode=16; moLocCodes=17;
 
 
 var
 NoMap: TIsoMap;
 Options: integer;
+pDebugMap: integer; //-1 for off
 
 
 function IsJungle(y: integer): boolean;
 procedure Init(InitEnemyModelHandler: TInitEnemyModelEvent);
+function ApplyTileSize(xxtNew, yytNew: integer): boolean;
 procedure Done;
 procedure Reset;
 
@@ -70,9 +71,8 @@ procedure Reset;
 implementation
 
 const
-FBounds=true;
 ShoreDither=fGrass;
-TerrainIconLines=20; //16
+TerrainIconLines=21;
 
 var
 BordersOK: integer;
@@ -80,6 +80,7 @@ OnInitEnemyModel: TInitEnemyModelEvent;
 LandPatch,OceanPatch, Borders: TBitmap;
 TSpriteSize: array[0..TerrainIconLines*9-1] of TRect;
 DebugMap: ^TTileList;
+CitiesPictures: array[2..3,0..3] of TCityPicture;
 FoW, ShowLoc, ShowCityNames, ShowObjects, ShowBorder, ShowMyBorder,
   ShowGrWall, ShowDebug: boolean;
 
@@ -89,40 +90,63 @@ result:= (y>(G.ly-2) div 4) and (G.ly-1-y>(G.ly-2) div 4)
 end;
 
 procedure Init(InitEnemyModelHandler: TInitEnemyModelEvent);
+begin
+OnInitEnemyModel:=InitEnemyModelHandler;
+if NoMap<>nil then
+  NoMap.Free;
+NoMap:=TIsoMap.Create;
+end;
+
+function ApplyTileSize(xxtNew, yytNew: integer): boolean;
 type
 TLine=array[0..INFIN,0..2] of Byte;
 var
-i,x,y,xSrc,ySrc:integer;
+i,x,y,xSrc,ySrc,HGrTerrainNew,HGrCitiesNew,age,size:integer;
 LandMore,OceanMore,DitherMask,Mask24: TBitmap;
 MaskLine: array[0..32*3-1] of ^TLine; // 32 = assumed maximum for yyt
 Border: boolean;
 begin
-OnInitEnemyModel:=InitEnemyModelHandler;
+result:=false;
+HGrTerrainNew:=LoadGraphicSet(Format('Terrain%dx%d',[xxtNew*2,yytNew*2]));
+if HGrTerrainNew<0 then
+  exit;
+HGrCitiesNew:=LoadGraphicSet(Format('Cities%dx%d',[xxtNew*2,yytNew*2]));
+if HGrCitiesNew<0 then
+  exit;
+xxt:=xxtNew; yyt:=yytNew;
+HGrTerrain:=HGrTerrainNew;
+HGrCities:=HGrCitiesNew;
+result:=true;
 
-{now prepare dithered ground tiles}
+// prepare age 2+3 cities
+for age:=2 to 3 do
+  for size:=0 to 3 do with CitiesPictures[age,size] do
+    FindPosition(HGrCities,size*(xxt*2+1),(age-2)*(yyt*3+1),xxt*2-1,yyt*3-1,
+      $00FFFF,xShield,yShield);
+
+{prepare dithered ground tiles}
+if LandPatch<>nil then
+  LandPatch.Free;
 LandPatch:=TBitmap.Create;
-if TrueColor=1 then
-  LandPatch.PixelFormat:=pf24bit;
+LandPatch.PixelFormat:=pf24bit;
 LandPatch.Canvas.Brush.Color:=0;
 LandPatch.Width:=xxt*18; LandPatch.Height:=yyt*9;
+if OceanPatch<>nil then
+  OceanPatch.Free;
 OceanPatch:=TBitmap.Create;
-if TrueColor=1 then
-  OceanPatch.PixelFormat:=pf24bit;
+OceanPatch.PixelFormat:=pf24bit;
 OceanPatch.Canvas.Brush.Color:=0;
 OceanPatch.Width:=xxt*8; OceanPatch.Height:=yyt*4;
 LandMore:=TBitmap.Create;
-if TrueColor=1 then
-  LandMore.PixelFormat:=pf24bit;
+LandMore.PixelFormat:=pf24bit;
 LandMore.Canvas.Brush.Color:=0;
 LandMore.Width:=xxt*18; LandMore.Height:=yyt*9;
 OceanMore:=TBitmap.Create;
-if TrueColor=1 then
-  OceanMore.PixelFormat:=pf24bit;
+OceanMore.PixelFormat:=pf24bit;
 OceanMore.Canvas.Brush.Color:=0;
 OceanMore.Width:=xxt*8; OceanMore.Height:=yyt*4;
 DitherMask:=TBitmap.Create;
-if TrueColor=1 then
-  DitherMask.PixelFormat:=pf24bit;
+DitherMask.PixelFormat:=pf24bit;
 DitherMask.Width:=xxt*2; DitherMask.Height:=yyt*2;
 BitBlt(DitherMask.Canvas.Handle,0,0,xxt*2,yyt*2,
   GrExt[HGrTerrain].Mask.Canvas.Handle,1+7*(xxt*2+1),1+yyt+15*(yyt*3+1),SRCAND);
@@ -307,19 +331,24 @@ for ySrc:=0 to TerrainIconLines-1 do
   end;
 Mask24.Free;
 
+if Borders<>nil then
+  Borders.Free;
 Borders:=TBitmap.Create;
 Borders.PixelFormat:=pf24bit;
 Borders.Width:=xxt*2; Borders.Height:=(yyt*2)*nPl;
 BordersOK:=0;
-
-NoMap:=TIsoMap.Create;
 end;
 
 procedure Done;
 begin
 NoMap.Free;
-LandPatch.Free; OceanPatch.Free;
-Borders.Free
+NoMap:=nil;
+LandPatch.Free;
+LandPatch:=nil;
+OceanPatch.Free;
+OceanPatch:=nil;
+Borders.Free;
+Borders:=nil;
 end;
 
 procedure Reset;
@@ -355,16 +384,15 @@ end;
 
 procedure TIsoMap.FillRect(x,y,Width,Height,Color: integer);
 begin
-if FBounds then
-  begin
-  if x<FLeft then
-    begin Width:=Width-(FLeft-x); x:=FLeft end;
-  if y<FTop then
-    begin Height:=Height-(FTop-y); y:=FTop end;
-  if x+Width>=FRight then Width:=FRight-x;
-  if y+Height>=FBottom then Height:=FBottom-y;
-  if (Width<=0) or (Height<=0) then exit
-  end;
+if x<FLeft then
+  begin Width:=Width-(FLeft-x); x:=FLeft end;
+if y<FTop then
+  begin Height:=Height-(FTop-y); y:=FTop end;
+if x+Width>=FRight then Width:=FRight-x;
+if y+Height>=FBottom then Height:=FBottom-y;
+if (Width<=0) or (Height<=0) then
+  exit;
+  
 with FOutput.Canvas do
   begin
   Brush.Color:=Color;
@@ -376,23 +404,20 @@ end;
 procedure TIsoMap.Textout(x,y,Color: integer; const s: string);
 begin
 FOutput.Canvas.Font.Color:=Color;
-if FBounds then
-  FOutput.Canvas.TextRect(Rect(FLeft,FTop,FRight,FBottom), x, y, s)
-else FOutput.Canvas.Textout(x,y,s);
+FOutput.Canvas.TextRect(Rect(FLeft,FTop,FRight,FBottom), x, y, s)
 end;
 
 procedure TIsoMap.BitBlt(Src: TBitmap; x,y,Width,Height,xSrc,ySrc,Rop: integer);
 begin
-if FBounds then
-  begin
-  if x<FLeft then
-    begin Width:=Width-(FLeft-x); xSrc:=xSrc+(FLeft-x); x:=FLeft end;
-  if y<FTop then
-    begin Height:=Height-(FTop-y); ySrc:=ySrc+(FTop-y); y:=FTop end;
-  if x+Width>=FRight then Width:=FRight-x;
-  if y+Height>=FBottom then Height:=FBottom-y;
-  if (Width<=0) or (Height<=0) then exit
-  end;
+if x<FLeft then
+  begin Width:=Width-(FLeft-x); xSrc:=xSrc+(FLeft-x); x:=FLeft end;
+if y<FTop then
+  begin Height:=Height-(FTop-y); ySrc:=ySrc+(FTop-y); y:=FTop end;
+if x+Width>=FRight then Width:=FRight-x;
+if y+Height>=FBottom then Height:=FBottom-y;
+if (Width<=0) or (Height<=0) then
+  exit;
+
 Windows.BitBlt(FOutput.Canvas.Handle,x,y,Width,Height,Src.Canvas.Handle,xSrc,
   ySrc,Rop);
 end;
@@ -403,7 +428,7 @@ BitBlt(GrExt[HGr].Mask,xDst,yDst,Width,Height,xGr,yGr,SRCAND);
 BitBlt(GrExt[HGr].Data,xDst,yDst,Width,Height,xGr,yGr,SRCPAINT);
 end;
 
-procedure TIsoMap.TSprite(xDst,yDst,grix: integer);
+procedure TIsoMap.TSprite(xDst,yDst,grix: integer; PureBlack: boolean = false);
 var
 Width, Height, xSrc, ySrc: integer;
 begin
@@ -413,18 +438,18 @@ xSrc:=1+grix mod 9 *(xxt*2+1)+TSpriteSize[grix].Left;
 ySrc:=1+grix div 9 *(yyt*3+1)+TSpriteSize[grix].Top;
 xDst:=xDst+TSpriteSize[grix].Left;
 yDst:=yDst-yyt+TSpriteSize[grix].Top;
-if FBounds then
-  begin
-  if xDst<FLeft then
-    begin Width:=Width-(FLeft-xDst); xSrc:=xSrc+(FLeft-xDst); xDst:=FLeft end;
-  if yDst<FTop then
-    begin Height:=Height-(FTop-yDst); ySrc:=ySrc+(FTop-yDst); yDst:=FTop end;
-  if xDst+Width>=FRight then Width:=FRight-xDst;
-  if yDst+Height>=FBottom then Height:=FBottom-yDst;
-  if (Width<=0) or (Height<=0) then exit
-  end;
+if xDst<FLeft then
+  begin Width:=Width-(FLeft-xDst); xSrc:=xSrc+(FLeft-xDst); xDst:=FLeft end;
+if yDst<FTop then
+  begin Height:=Height-(FTop-yDst); ySrc:=ySrc+(FTop-yDst); yDst:=FTop end;
+if xDst+Width>=FRight then Width:=FRight-xDst;
+if yDst+Height>=FBottom then Height:=FBottom-yDst;
+if (Width<=0) or (Height<=0) then
+  exit;
+  
 Windows.BitBlt(OutDC,xDst,yDst,Width,Height,MaskDC,xSrc,ySrc,SRCAND);
-Windows.BitBlt(OutDC,xDst,yDst,Width,Height,DataDC,xSrc,ySrc,SRCPAINT);
+if not PureBlack then
+  Windows.BitBlt(OutDC,xDst,yDst,Width,Height,DataDC,xSrc,ySrc,SRCPAINT);
 end;
 
 procedure TIsoMap.PaintUnit(x,y:integer;const UnitInfo:TUnitInfo;Status:integer);
@@ -475,46 +500,66 @@ end;{PaintUnit}
 procedure TIsoMap.PaintCity(x,y:integer; const CityInfo:TCityInfo;
   accessory: boolean);
 var
-cHGr,cpix,xGr,LabelTextColor: integer;
+age,cHGr,cpix,xGr,xShield,yShield,LabelTextColor,LabelLength: integer;
 cpic:TCityPicture;
 s:string;
 begin
+age:=GetAge(CityInfo.Owner);
 if CityInfo.Size<5 then xGr:=0
 else if CityInfo.Size<9 then xGr:=1
 else if CityInfo.Size<13 then xGr:=2
 else xGr:=3;
+Tribe[CityInfo.Owner].InitAge(age);
+if age<2 then
+  begin
+  cHGr:=Tribe[CityInfo.Owner].cHGr;
+  cpix:=Tribe[CityInfo.Owner].cpix;
+  if (ciWalled and CityInfo.Flags=0)
+    or (GrExt[cHGr].Data.Canvas.Pixels[(xGr+4)*65,cpix*49+48]=$00FFFF) then
+    Sprite(cHGr,x-xxc,y-2*yyc,xxc*2,yyc*3,xGr*(xxc*2+1)+1,1+cpix*(yyc*3+1));
+  if ciWalled and CityInfo.Flags<>0 then
+    Sprite(cHGr,x-xxc,y-2*yyc,xxc*2,yyc*3,(xGr+4)*(xxc*2+1)+1,1+cpix*(yyc*3+1));
+  end
+else
+  begin
+  if ciWalled and CityInfo.Flags<>0 then
+    Sprite(HGrCities,x-xxt,y-2*yyt,2*xxt,3*yyt,(xGr+4)*(2*xxt+1)+1,1+(age-2)*(3*yyt+1))
+  else Sprite(HGrCities,x-xxt,y-2*yyt,2*xxt,3*yyt,xGr*(2*xxt+1)+1,1+(age-2)*(3*yyt+1));
+  end;
 
-Tribe[CityInfo.Owner].InitAge(GetAge(CityInfo.Owner));
-cHGr:=Tribe[CityInfo.Owner].cHGr;
-cpix:=Tribe[CityInfo.Owner].cpix;
-cpic:=Tribe[CityInfo.Owner].CityPicture[xGr];
-if (ciWalled and CityInfo.Flags=0)
-  or (GrExt[cHGr].Data.Canvas.Pixels[(xGr+4)*65,cpix*49+48]=$00FFFF) then
-  Sprite(cHGr,x,y,64,48,xGr*65+1,1+cpix*49);
-if ciWalled and CityInfo.Flags<>0 then
-  Sprite(cHGr,x,y,64,48,(xGr+4)*65+1,1+cpix*49);
 if not Accessory then exit;
 
-if ciCapital and CityInfo.Flags<>0 then
+{if ciCapital and CityInfo.Flags<>0 then
   Sprite(Tribe[CityInfo.Owner].symHGr,x+cpic.xf,y-13+cpic.yf,13,14,
     1+Tribe[CityInfo.Owner].sympix mod 10 *65,
     1+Tribe[CityInfo.Owner].sympix div 10 *49); {capital -- paint flag}
 
 if MyMap[CityInfo.Loc] and fObserved<>0 then
   begin
+  if age<2 then
+    begin
+    cpic:=Tribe[CityInfo.Owner].CityPicture[xGr];
+    xShield:=x-xxc+cpic.xShield;
+    yShield:=y-2*yyc+cpic.yShield;
+    end
+  else
+    begin
+    cpic:=CitiesPictures[age,xGr];
+    xShield:=x-xxt+cpic.xShield;
+    yShield:=y-2*yyt+cpic.yShield;
+    end;
   s:=IntToStr(CityInfo.Size);
-  FillRect(x+cpic.xShield,y+cpic.yShield,FOutput.Canvas.TextWidth(s)+3,16,
-    $000000);
+  LabelLength:=FOutput.Canvas.TextWidth(s);
+  FillRect(xShield,yShield,LabelLength+4,16,$000000);
   if MyMap[CityInfo.Loc] and (fUnit or fObserved)=fObserved then
     // empty city
     LabelTextColor:=Tribe[CityInfo.Owner].Color
   else
     begin
-    FillRect(x+cpic.xShield+1,y+1+cpic.yShield,FOutput.Canvas.TextWidth(s)+1,
-      14,Tribe[CityInfo.Owner].Color);
+    FillRect(xShield+1,yShield+1,LabelLength+2,14,Tribe[CityInfo.Owner].Color);
     LabelTextColor:=$000000;
     end;
-  Textout(x+2+cpic.xShield,y-1+cpic.yShield,LabelTextColor,s);
+  Textout(xShield+2,yShield-1,LabelTextColor,s);
   end
 end;{PaintCity}
 
@@ -693,8 +738,8 @@ if Tile and fTerrain<fGrass then
     begin
     Conn:=Connection8(Loc,fCanal);
     for Dir:=0 to 7 do if Conn and (1 shl Dir)<>0 then {canal mouths}
-      TSprite(x,y,11*9+1+Dir);
-    end  
+      TSprite(x,y,20*9+1+Dir);
+    end
   end;
 
 if ShowObjects then
@@ -726,22 +771,23 @@ if ShowObjects then
   end;
 end;
 
+// (x,y) is top left pixel of (2*xxt,3*yyt) rectangle
 procedure TIsoMap.PaintTileObjects(x,y,Loc,CityLoc,CityOwner:integer;
   UseBlink: boolean);
 type
 TLine=array[0..9*65,0..2] of Byte;
 var
-p1,p2,uix,cix,dx,dy,Loc1,Tile,Multi,Destination: integer;
+p1,p2,uix,cix,dy,Loc1,Tile,Multi,Destination: integer;
 CityInfo:TCityInfo;
 UnitInfo:TUnitInfo;
-Line: ^TLine;
-fog,Border: boolean;
+fog: boolean;
 
   procedure NameCity;
   var
-  cix,xs: integer;
+  cix,xs,w: integer;
   BehindCityInfo:TCityInfo;
   s: string;
+  IsCapital: boolean;
   begin
   BehindCityInfo.Loc:=Loc-2*G.lx;
   if ShowCityNames and (Options and (1 shl moEditMode)=0)
@@ -749,11 +795,17 @@ fog,Border: boolean;
     and (MyMap[BehindCityInfo.Loc] and fCity<>0) then
     begin
     GetCityInfo(BehindCityInfo.Loc,cix,BehindCityInfo);
+    IsCapital:= BehindCityInfo.Flags and ciCapital<>0;
     {if Showuix and (cix>=0) then s:=IntToStr(cix)
     else} s:=CityName(BehindCityInfo.ID);
-    xs:=x+xxt-(FOutput.Canvas.TextWidth(s)+1) div 2;
-    Textout(xs+1,y+(yyc*2-yyc_anchor-yyt)-9,$000000,s);
-    Textout(xs,y+(yyc*2-yyc_anchor-yyt)-10,$FFFFFF,s);
+    w:=FOutput.Canvas.TextWidth(s);
+    xs:=x+xxt-(w+1) div 2;
+    if IsCapital then
+      FOutput.Canvas.Font.Style:=FOutput.Canvas.Font.Style+[fsUnderline];
+    Textout(xs+1,y-9,$000000,s);
+    Textout(xs,y-10,$FFFFFF,s);
+    if IsCapital then
+      FOutput.Canvas.Font.Style:=FOutput.Canvas.Font.Style-[fsUnderline];
     end;
   end;
 
@@ -761,7 +813,54 @@ fog,Border: boolean;
   begin
   if ShowObjects and (Options and (1 shl moEditMode)=0) and (Tile and fCity<>0)
     and (CityInfo.Flags and ciSpacePort<>0) then
-    TSprite(x+30,y-6,12*9+5);
+    TSprite(x+xxt,y-6,12*9+5);
+  end;
+
+  procedure PaintBorder;
+  var
+  dx,dy: integer;
+  Line: ^TLine;
+  begin
+  if ShowBorder and (Loc>=0) and (Loc<G.lx*G.ly)
+    and (Tile and fTerrain<>fUNKNOWN) then
+    begin
+    p1:=MyRO.Territory[Loc];
+    if (p1>=0) and (ShowMyBorder or (p1<>me)) then
+      begin
+      if BordersOK and (1 shl p1)=0 then
+        begin
+        Windows.BitBlt(Borders.Canvas.Handle,0,p1*(yyt*2),xxt*2,yyt*2,
+          GrExt[HGrTerrain].Data.Canvas.Handle,1+8*(xxt*2+1),1+yyt+16*(yyt*3+1),SRCCOPY);
+        for dy:=0 to yyt*2-1 do
+          begin
+          Line:=Borders.ScanLine[p1*(yyt*2)+dy];
+          for dx:=0 to xxt*2-1 do if Line[dx,0]=99 then
+            begin
+            Line[dx,0]:=Tribe[p1].Color shr 16 and $FF;
+            Line[dx,1]:=Tribe[p1].Color shr 8 and $FF;
+            Line[dx,2]:=Tribe[p1].Color and $FF;
+            end
+          end;
+        BordersOK:=BordersOK or 1 shl p1;
+        end;
+      for dy:=0 to 1 do for dx:=0 to 1 do
+        begin
+        Loc1:=dLoc(Loc,dx*2-1,dy*2-1);
+          begin
+          if (Loc1<0) or (Loc1>=G.lx*G.ly) then p2:=-1
+          else if MyMap[Loc1] and fTerrain=fUNKNOWN then
+            p2:=p1
+          else p2:=MyRO.Territory[Loc1];
+          if p2<>p1 then
+            begin
+            BitBlt(GrExt[HGrTerrain].Mask,x+dx*xxt,y+dy*yyt,xxt,yyt,
+              1+8*(xxt*2+1)+dx*xxt,1+yyt+16*(yyt*3+1)+dy*yyt,SRCAND);
+            BitBlt(Borders,x+dx*xxt,y+dy*yyt,xxt,yyt,dx*xxt,p1*(yyt*2)+dy*yyt,SRCPAINT);
+            end
+          end;
+        end
+      end
+    end;
   end;
 
 begin
@@ -774,73 +873,8 @@ if (y<=FTop-yyt*2) or (y>FBottom) or (x<=FLeft-xxt*2) or (x>FRight) then
 if Tile and fTerrain=fUNKNOWN then
   begin NameCity; ShowSpacePort; exit end;{square not discovered}
 
-{$IFNDEF SCR}
-// normal border
-if (Loc>=0) and (Loc<G.lx*G.ly) and (Loc>=2*G.lx) then
-  begin
-  Border:=false;
-  p1:=-1;
-  for dy:=-2 to 0 do for dx:=-1 to 1 do if (dx+dy) and 1=0 then
-    begin
-    Loc1:=dLoc(Loc,dx,dy);
-    if (Loc1>=0) and (Loc1<G.lx*G.ly) and (MyMap[Loc1] and fTerrain<>fUNKNOWN)
-      and (MyMap[Loc1] and fTerrain>=fGrass)
-      and (MyMap[Loc1] and MyMap[Loc] and fObserved<>0) then
-      begin
-      p2:=MyRO.Territory[Loc1];
-//      if p2=me then p2:=15;
-      if p1<0 then p1:=p2
-      else if p1<>p2 then Border:=true
-      end;
-    end;
-  if Border then Sprite(HGrSystem,x+xxt-4,y-6,8,8,66,58);
-  end;
-{$ENDIF}
-
-// prominent border
-if ShowBorder and (Loc>=0) and (Loc<G.lx*G.ly)
-  and (Tile and fTerrain<>fUNKNOWN) then
-  begin
-  p1:=MyRO.Territory[Loc];
-  if (p1>=0) and (ShowMyBorder or (p1<>me)) then
-    begin
-    if BordersOK and (1 shl p1)=0 then
-      begin
-      Windows.BitBlt(Borders.Canvas.Handle,0,p1*(yyt*2),xxt*2,yyt*2,
-        GrExt[HGrTerrain].Data.Canvas.Handle,1+8*(xxt*2+1),1+yyt+16*(yyt*3+1),SRCCOPY);
-      for dy:=0 to yyt*2-1 do
-        begin
-        Line:=Borders.ScanLine[p1*(yyt*2)+dy];
-        for dx:=0 to xxt*2-1 do if Line[dx,0]<>0 then
-          begin
-          Line[dx,0]:=Tribe[p1].Color shr 16 and $FF;
-          Line[dx,1]:=Tribe[p1].Color shr 8 and $FF;
-          Line[dx,2]:=Tribe[p1].Color and $FF;
-          end
-        end;
-      BordersOK:=BordersOK or 1 shl p1;
-      end;
-    for dy:=0 to 1 do for dx:=0 to 1 do
-      begin
-      Loc1:=dLoc(Loc,dx*2-1,dy*2-1);
-        begin
-        if (Loc1<0) or (Loc1>=G.lx*G.ly) then p2:=-1
-        else if (MyMap[Loc1] and fTerrain=fUNKNOWN)
-          or (MyRO.BorderHelper<>nil)
-          and (MyRO.BorderHelper[Loc] and (1 shl (dy*2+dx))=0)
-          and (MyRO.MapObservedLast[Loc1]<>MyRO.MapObservedLast[Loc]) then
-          p2:=p1
-        else p2:=MyRO.Territory[Loc1];
-        if p2<>p1 then
-          begin
-          BitBlt(GrExt[HGrTerrain].Mask,x+dx*xxt,y+dy*yyt,xxt,yyt,
-            1+8*(xxt*2+1)+dx*xxt,1+yyt+16*(yyt*3+1)+dy*yyt,SRCAND);
-          BitBlt(Borders,x+dx*xxt,y+dy*yyt,xxt,yyt,dx*xxt,p1*(yyt*2)+dy*yyt,SRCPAINT);
-          end
-        end;
-      end
-    end
-  end;
+if not (FoW and (Tile and fObserved=0)) then
+  PaintBorder;
 
 if (Loc>=0) and (Loc<G.lx*G.ly) and (Loc=FAdviceLoc) then
   TSprite(x,y,7+9*2);
@@ -883,7 +917,10 @@ if fog and ShowObjects then
     Sprite(HGrTerrain,x,y+yyt,xxt*2,yyt,1+6*(xxt*2+1),1+yyt*2+15*(yyt*3+1))
   else if Loc>=G.lx*(G.ly+1) then
     Sprite(HGrTerrain,x,y,xxt*2,yyt,1+6*(xxt*2+1),1+yyt+15*(yyt*3+1))
-  else TSprite(x,y,6+9*15);
+  else TSprite(x,y,6+9*15,xxt<>33);
+
+if FoW and (Tile and fObserved=0) then
+  PaintBorder;
 
 {$IFNDEF SCR}
 // paint goto destination mark
@@ -911,7 +948,7 @@ else if ShowObjects then
   NameCity;
   ShowSpacePort;
   if Tile and fCity<>0 then
-    PaintCity(x+xxt-xxc,y+yyt-yyc_anchor,CityInfo,CityOwner<0);
+    PaintCity(x+xxt,y+yyt,CityInfo,CityOwner<0);
 
   if (Tile and fUnit<>0) and (Loc<>AttLoc)
     and ((Loc<>DefLoc) or (DefHealth<>0))
@@ -935,7 +972,10 @@ else if ShowObjects then
         end
       else if UnitInfo.Owner=me then
         begin
-        PaintUnit(x+(xxt-xxu),y+(yyt-yyu_anchor),UnitInfo,MyUn[uix].Status);
+        if ClientMode=cMovieTurn then
+          PaintUnit(x+(xxt-xxu),y+(yyt-yyu_anchor),UnitInfo,0)
+          // status is not set with precise timing during loading 
+        else PaintUnit(x+(xxt-xxu),y+(yyt-yyu_anchor),UnitInfo,MyUn[uix].Status);
   //      if Showuix then Textout(x+16,y+5,$80FF00,IntToStr(uix));
         end
       else{$ENDIF} PaintUnit(x+(xxt-xxu),y+(yyt-yyu_anchor),UnitInfo,0);
@@ -952,11 +992,10 @@ if ShowObjects and (Tile and fTerImp=tiFort) and (Tile and fObserved<>0) then
   TSprite(x,y,3+9*12);
 
 if (Loc>=0) and (Loc<G.lx*G.ly) then
-  if ShowLoc then Textout(x+16,y+8,$FFFF00,IntToStr(Loc))
+  if ShowLoc then Textout(x+xxt-16,y+yyt-9,$FFFF00,IntToStr(Loc))
   else if ShowDebug and (DebugMap<>nil)
     and (Loc>=0) and (Loc<G.lx*G.ly) and (DebugMap[Loc]<>0) then
-    Textout(x+16,y+8,$FFFF00,IntToStr(integer(DebugMap[Loc])))
-  //  else Textout(x+16,y+8,$FFFF00,IntToStr(DebugMap[Loc] div $1000)+'/'+IntToStr($800-DebugMap[Loc] and $FFF)) //!!!
+    Textout(x+xxt-16,y+yyt-9,$00E0FF,IntToStr(integer(DebugMap[Loc])))
 end;{PaintTileObjects}
 
 procedure TIsoMap.PaintGrid(x,y,nx,ny: integer);
@@ -967,14 +1006,10 @@ procedure TIsoMap.PaintGrid(x,y,nx,ny: integer);
   begin
   with FOutput.Canvas do
     begin
-    if FBounds then // clip!
-      begin
-      dxmin:=(FLeft-x) div xxt;
-      dymin:=(FTop-y) div yyt;
-      dxmax:=(FRight-x-1) div xxt+1;
-      dymax:=(FBottom-y-1) div yyt+1;
-      end
-    else begin dxmin:=0; dymin:=0; dxmax:=nx+1; dymax:=ny+2; end;
+    dxmin:=(FLeft-x) div xxt;
+    dymin:=(RealTop-y) div yyt;
+    dxmax:=(FRight-x-1) div xxt+1;
+    dymax:=(RealBottom-y-1) div yyt+1;
     n:=dymax-dy0;
     if mirror then
       begin
@@ -1082,7 +1117,7 @@ procedure TIsoMap.Paint(x,y,Loc,nx,ny,CityLoc,CityOwner:integer;
   with FOutput.Canvas do
     begin
     if CityAllowClick then pen.Color:=$FFFFFF
-    else pen.color:=$0000FF;
+    else pen.color:=$000000;
     pen.width:=1;
     for i:=0 to 3 do
       begin
@@ -1100,20 +1135,30 @@ procedure TIsoMap.Paint(x,y,Loc,nx,ny,CityLoc,CityOwner:integer;
 var
 dx,dy,xm,ym,ALoc,BLoc,ATer,BTer,Aix,bix:integer;
 begin
-Server(sGetDebugMap,me,0,DebugMap);
-FoW:= Options and (1 shl moFoW + 1 shl moGreatWall)=1 shl moFoW;
+FoW:=true;
 ShowLoc:=Options and (1 shl moLocCodes)<>0;
-ShowDebug:=Options and (1 shl moDebugMap)<>0;
+ShowDebug:= pDebugMap>=0;
 ShowObjects:= (CityOwner>=0) or (Options and (1 shl moBareTerrain)=0);
 ShowCityNames:= ShowObjects and (CityOwner<0) and (Options and (1 shl moCityNames)<>0);
-ShowBorder:= (CityOwner>=0) or (Options and (1 shl moBorders)<>0);
-ShowMyBorder:= (CityOwner<0) and (Options and (1 shl moBorders)<>0);
+ShowBorder:=true;
+ShowMyBorder:= CityOwner<0;
 ShowGrWall:= (CityOwner<0) and (Options and (1 shl moGreatWall)<>0);
+if ShowDebug then
+  Server(sGetDebugMap,me,pDebugMap,DebugMap)
+else DebugMap:=nil;
 with FOutput.Canvas do
   begin
+  RealTop:=y-((Loc+12345*G.lx) div G.lx-12345)*yyt;
+  RealBottom:=y+(G.ly-((Loc+12345*G.lx) div G.lx-12345)+3)*yyt;
+  Brush.Color:=EmptySpaceColor;
+  if RealTop>FTop then
+    FillRect(Rect(FLeft,FTop,FRight,RealTop))
+  else RealTop:=FTop;
+  if RealBottom<FBottom then
+    FillRect(Rect(FLeft,RealBottom,FRight,FBottom))
+  else RealBottom:=FBottom;
   Brush.Color:=$000000;
-  if FBounds then FillRect(Rect(FLeft,FTop,FRight,FBottom))
-  else FillRect(Rect(x,y,x+nx*xxt+xxt,y+ny*yyt+yyt*2));
+  FillRect(Rect(FLeft,RealTop,FRight,RealBottom));
   Brush.Style:=bsClear;
   end;
 
@@ -1243,5 +1288,12 @@ AttLoc:=-1;
 DefLoc:=-1;
 end;
 
+
+initialization
+
+NoMap:=nil;
+LandPatch:=nil;
+OceanPatch:=nil;
+Borders:=nil;
 end.
 

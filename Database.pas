@@ -18,9 +18,6 @@ nemmax=1024;
 
 lNoObserve=0; lObserveUnhidden=1; lObserveAll=2; lObserveSuper=3; //observe levels
 
-FutureTech=[futResearchTechnology,futProductionTechnology,futArmorTechnology,
-  futMissileTechnology];
-
 TerrType_Canalable=[fGrass,fDesert,fPrairie,fTundra,fSwamp,fForest,fHills];
 
 nStartUn=1;
@@ -287,7 +284,12 @@ with m do
   Defense:=(Cap[mcDefense]+Cap[mcOver])*MStrength;
   case Domain of
     dGround: Speed:=150+Cap[mcMob]*50;
-    dSea: Speed:=350+100*(Cap[mcSE]+Cap[mcNP])+200*Cap[mcTurbines];
+    dSea:
+      begin
+      Speed:=350+200*Cap[mcNP]+200*Cap[mcTurbines];
+      if Cap[mcNP]=0 then
+        inc(Speed,100*Cap[mcSE]);
+      end;
     dAir: Speed:=850+400*Cap[mcJet];
     end;
   Cost:=0;
@@ -2183,7 +2185,7 @@ end;
 
 procedure DiscoverViewAreas(p: integer);
 var
-pTell, uix, cix: integer;
+pTell, uix, cix, ecix, Loc, RealOwner: integer;
 PModel: ^TModel;
 begin // discover unit and city view areas
 for pTell:=0 to nPl-1 do
@@ -2207,6 +2209,21 @@ for pTell:=0 to nPl-1 do
         end;
     for cix:=0 to RW[pTell].nCity-1 do if RW[pTell].City[cix].Loc>=0 then
       Discover21(RW[pTell].City[cix].Loc,p,lObserveUnhidden,false,true);
+    for ecix:=0 to RW[pTell].nEnemyCity-1 do
+      begin // players know territory, so no use in hiding city owner
+      Loc:=RW[pTell].EnemyCity[ecix].Loc;
+      if Loc>=0 then
+        begin
+        RealOwner:=(RealMap[Loc] shr 27) and $F;
+        if RealOwner<nPl then
+          RW[pTell].EnemyCity[ecix].owner:=RealOwner
+        else
+          begin
+          RW[pTell].EnemyCity[ecix].Loc:=-1;
+          RW[pTell].Map[Loc]:=RW[pTell].Map[Loc] and not fCity
+          end
+        end
+      end
     end;
 end;
 
@@ -2379,8 +2396,14 @@ inc(TerritoryCount[p]);
 RealMap[Loc]:=RealMap[Loc] and not ($F shl 27) or Cardinal(p) shl 27;
 if p=$F then p:=-1;
 for p1:=0 to nPl-1 do if 1 shl p1 and (GAlive or GWatching)<>0 then
-  if ObserveLevel[Loc] and (3 shl (p1*2))>0 then
+  if RW[p1].Map[Loc] and fTerrain<>fUNKNOWN then
+    begin
     RW[p1].Territory[Loc]:=p;
+    if (p<nPl) and (p<>p1) and (1 shl p and GAlive<>0)
+      and (RW[p1].Treaty[p] in [trPeace,trFriendlyContact]) then
+      RW[p1].Map[Loc]:=RW[p1].Map[Loc] or fPeace
+    else RW[p1].Map[Loc]:=RW[p1].Map[Loc] and not fPeace;
+    end
 end;
 
 procedure ExpandTerritory(OriginLoc: integer);
@@ -3109,8 +3132,8 @@ for Loc:=0 to MapSize-1 do
     if RW[pSender].Territory[Loc]<>RW[pTarget].Territory[Loc] then
       begin
       RW[pTarget].Territory[Loc]:=RW[pSender].Territory[Loc];
-      if RW[pTarget].BorderHelper<>nil then
-        RW[pTarget].BorderHelper[Loc]:=0;
+      {if RW[pTarget].BorderHelper<>nil then
+        RW[pTarget].BorderHelper[Loc]:=0;}
       end;
     RW[pTarget].Territory[Loc]:=RW[pSender].Territory[Loc];
     RW[pTarget].MapObservedLast[Loc]:=RW[pSender].MapObservedLast[Loc];

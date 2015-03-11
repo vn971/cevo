@@ -5,6 +5,8 @@ unit Direct;
 interface
 
 uses
+  Messg,
+
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 const
@@ -14,10 +16,9 @@ WM_NEXTPLAYER = WM_USER+2; // active player's turn ended, next player
 WM_AIEXCEPTION = WM_USER+3;
 
 type
-  TDirectDlg = class(TForm)
+  TDirectDlg = class(TDrawDlg)
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   public
@@ -28,7 +29,6 @@ type
     Gone, Quick: boolean;
     procedure SetInfo(x: string);
     procedure SetState(x: integer);
-    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
     procedure OnGo(var m:TMessage); message WM_GO;
     procedure OnChangeClient(var m:TMessage); message WM_CHANGECLIENT;
     procedure OnNextPlayer(var m:TMessage); message WM_NEXTPLAYER;
@@ -41,7 +41,7 @@ var
 implementation
 
 uses
-ScreenTools,Protocol,GameServer,Start,LocalPlayer,NoTerm,Back,Messg,ShellAPI;
+ScreenTools,Protocol,GameServer,Start,LocalPlayer,NoTerm,Back,ShellAPI;
 
 {$R *.DFM}
 
@@ -59,9 +59,10 @@ begin
 case ID of
   ntInitLocalHuman:
     begin
+    SetMainTextureByAge(-1);
     State:=-1;
     Info:=Phrases.Lookup('BUSY_MODLH');
-    Show; Update;
+    Show; Invalidate; Update;
     end;
   ntInitModule..ntInitModule+maxBrain-1:
     if visible then
@@ -132,8 +133,24 @@ case ID of
     PostMessage(Handle,WM_CHANGECLIENT,0,0);
   ntNextPlayer:
     PostMessage(Handle,WM_NEXTPLAYER,0,0);
+  ntDeinitModule..ntDeinitModule+maxBrain-1:
+    begin
+    Info:=Format(Phrases2.Lookup('BUSY_DEINIT'),
+      [Brain[ID-ntDeinitModule].Name]);
+    while BiColorTextWidth(Canvas,Info)+64>ClientWidth do
+      Delete(Info,Length(Info),1);
+    SetMainTextureByAge(-1);
+    State:=-1;
+    Show;
+    Invalidate;
+    Update;
+    end;
   ntBackOn:
-    begin background.Show; background.update end;
+    begin
+    background.Show;
+    background.update;
+    sleep(50); // prevent flickering
+    end;
   ntBackOff:
     background.Close;
   end;
@@ -154,19 +171,17 @@ Brain[bixTerm].Name:=Phrases.Lookup('HUMAN');
 Brain[bixRandom].name:=Phrases.Lookup('RANDOMAI');
 Canvas.Font.Assign(UniFont[ftNormal]);
 Canvas.Brush.Style:=bsClear;
-left:=(screen.width-width) div 2;
-top:=(screen.height-height) div 2;
-end;
-
-procedure TDirectDlg.FormDestroy(Sender: TObject);
-begin
-GameServer.Done;
 end;
 
 procedure TDirectDlg.FormShow(Sender: TObject);
 begin
 if not Gone then
   begin PostMessage(Handle,WM_GO,0,0); Gone:=true end
+end;
+
+procedure TDirectDlg.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+GameServer.Done;
 end;
 
 procedure TDirectDlg.OnGo(var m:TMessage);
@@ -190,7 +205,7 @@ if ParamCount>0 then
     Delete(s,1,1);
     for i:=1 to Length(s) do if s[i] in ['a'..'z'] then dec(s[i],32);
     if s='MAN' then
-      begin Quick:=true; DirectHelp(false); Close end;
+      begin Quick:=true; DirectHelp(cHelpOnly); Close end;
     end
   else if (FileExists(ParamStr(1))) then
     begin
@@ -220,10 +235,6 @@ procedure TDirectDlg.OnAIException(var Msg:TMessage);
 begin
 Application.MessageBox(PChar(Format(Phrases.Lookup('AIEXCEPTION'),
   [Brain[Msg.WParam].Name])), 'C-evo', 0);
-end;
-
-procedure TDirectDlg.OnEraseBkgnd(var m:TMessage);
-begin
 end;
 
 procedure TDirectDlg.FormPaint(Sender: TObject);
@@ -258,11 +269,6 @@ else if x<>State then
   State:=x;
   PaintProgressBar(Canvas,6,ClientWidth div 2 -64,40,State,128-State,128,MainTexture);
   end
-end;
-
-procedure TDirectDlg.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-background.Close;
 end;
 
 end.

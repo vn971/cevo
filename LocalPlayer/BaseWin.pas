@@ -5,12 +5,12 @@ unit BaseWin;
 interface
 
 uses
-  ScreenTools,
+  ScreenTools,Messg,
 
   Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms;
 
 type
-  TBaseDlg = class(TForm)
+  TBufferedDrawDlg = class(TDrawDlg)
   public
     UserLeft, UserTop: integer;
     constructor Create(AOwner: TComponent); override;
@@ -19,7 +19,6 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormDeactivate(Sender: TObject);
-    procedure SmartInvalidate; virtual;
     procedure SmartUpdateContent(ImmUpdate: boolean = false);
     procedure StayOnTop_Workaround;
   protected
@@ -27,7 +26,6 @@ type
     HelpContext: string;
     procedure ShowNewContent(NewMode: integer; forceclose: boolean = false);
     procedure MarkUsedOffscreen(xMax,yMax: integer);
-    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
     procedure OffscreenPaint; virtual;
     procedure VPaint; virtual;
   public
@@ -35,16 +33,15 @@ type
   end;
 
 
-  TFramedDlg = class(TBaseDlg)
+  TFramedDlg = class(TBufferedDrawDlg)
   public
     constructor Create(AOwner: TComponent); override;
     procedure FormCreate(Sender:TObject);
     procedure SmartInvalidate; override;
   protected
-    CaptionLeft, CaptionRight, InnerWidth, InnerHeight, TitleHeight: integer;
+    CaptionLeft, CaptionRight, InnerWidth, InnerHeight: integer;
     WideBottom, FullCaption, TexOverride, ModalIndication: boolean;
     procedure InitWindowRegion;
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
     procedure VPaint; override;
     procedure FillOffscreen(Left,Top,Width,Height: integer);
     end;
@@ -55,7 +52,7 @@ const
 wmNone=0; wmModal=$1; wmPersistent=$2; wmSubmodal=$3;
 
 
-yUnused=104;
+yUnused=161;
 NarrowFrame=11; WideFrame=36; SideFrame=9;
 
 var
@@ -69,10 +66,10 @@ procedure CreateOffscreen;
 implementation
 
 uses
-Term, Help, ButtonBase;
+Term, Help, ButtonBase, Area;
 
 
-constructor TBaseDlg.Create;
+constructor TBufferedDrawDlg.Create;
 begin
 OnClose:=FormClose;
 OnPaint:=FormPaint;
@@ -81,25 +78,26 @@ OnDeactivate:=FormDeactivate;
 inherited;
 FWindowMode:=wmNone;
 HelpContext:='CONCEPTS';
+TitleHeight:=WideFrame;
 ModalFrameIndent:=45;
 UserLeft:=(Screen.Width-Width) div 2;
 UserTop:=(Screen.Height-Height) div 2;
 end;
 
-procedure TBaseDlg.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TBufferedDrawDlg.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
 if FWindowMode=wmPersistent then
   begin UserLeft:=Left; UserTop:=Top end;
 if OffscreenUser=self then OffscreenUser:=nil;
 end;
 
-procedure TBaseDlg.FormPaint(Sender:TObject);
+procedure TBufferedDrawDlg.FormPaint(Sender:TObject);
 begin
 if OffscreenUser<>self then OffscreenPaint;
 VPaint
 end;
 
-procedure TBaseDlg.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TBufferedDrawDlg.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
 if Key=VK_ESCAPE then
@@ -116,29 +114,25 @@ else if FWindowMode=wmPersistent then
   MainScreen.FormKeyDown(Sender, Key, Shift);
 end;
 
-procedure TBaseDlg.FormDeactivate(Sender: TObject);
+procedure TBufferedDrawDlg.FormDeactivate(Sender: TObject);
 begin
 if FWindowMode=wmSubmodal then Close
 end;
 
-procedure TBaseDlg.OnEraseBkgnd(var m:TMessage);
-begin
-end;
-
-procedure TBaseDlg.OffscreenPaint;
+procedure TBufferedDrawDlg.OffscreenPaint;
 begin
 if (OffscreenUser<>nil) and (OffscreenUser<>self) then
   OffscreenUser.Update; // complete working with old owner to prevent rebound
 OffscreenUser:=self;
 end;
 
-procedure TBaseDlg.VPaint;
+procedure TBufferedDrawDlg.VPaint;
 begin
 BitBlt(Canvas.Handle, 0, 0, ClientWidth,
   ClientHeight, offscreen.Canvas. Handle, 0, 0, SRCCOPY);
 end;
 
-procedure TBaseDlg.ShowNewContent(NewMode: integer; forceclose: boolean);
+procedure TBufferedDrawDlg.ShowNewContent(NewMode: integer; forceclose: boolean);
 begin
 if Visible then
   begin
@@ -178,7 +172,7 @@ else
   end
 end;
 
-procedure TBaseDlg.SmartUpdateContent(ImmUpdate: boolean);
+procedure TBufferedDrawDlg.SmartUpdateContent(ImmUpdate: boolean);
 begin
 if Visible then
   begin
@@ -188,30 +182,13 @@ if Visible then
   end
 end;
 
-procedure TBaseDlg.MarkUsedOffscreen(xMax,yMax: integer);
+procedure TBufferedDrawDlg.MarkUsedOffscreen(xMax,yMax: integer);
 begin
 if xMax>UsedOffscreenWidth then UsedOffscreenWidth:=xMax;
 if yMax>UsedOffscreenHeight then UsedOffscreenHeight:=yMax;
 end;
 
-procedure TBaseDlg.SmartInvalidate;
-var
-i: integer;
-r0,r1: HRgn;
-begin
-r0:=CreateRectRgn(0,0,ClientWidth,ClientHeight);
-for i:=0 to ControlCount-1 do if Controls[i].Visible then
-  begin
-  with Controls[i].BoundsRect do
-    r1:=CreateRectRgn(Left,Top,Right,Bottom);
-  CombineRgn(r0,r0,r1,RGN_DIFF);
-  DeleteObject(r1);
-  end;
-InvalidateRgn(Handle,r0,false);
-DeleteObject(r0);
-end;
-
-procedure TBaseDlg.StayOnTop_Workaround;
+procedure TBufferedDrawDlg.StayOnTop_Workaround;
 // stayontop doesn't work when window is shown for the first time
 // after application lost focus, so show all stayontop-windows in first turn
 var
@@ -243,17 +220,9 @@ WideBottom:=false;
 FullCaption:=true;
 TexOverride:=false;
 ModalIndication:=true;
-TitleHeight:=WideFrame;
 Canvas.Brush.Style:=bsClear;
 InnerWidth:=ClientWidth-2*SideFrame;
 InnerHeight:=ClientHeight-TitleHeight-NarrowFrame;
-end;
-
-procedure TFramedDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+TitleHeight) or (Msg.LParamLo>=Left+CaptionRight)
-  or (Msg.LParamLo<Left+CaptionLeft) then Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
 end;
 
 procedure TFramedDlg.SmartInvalidate;
@@ -264,13 +233,14 @@ begin
 if WideBottom then BottomFrame:=WideFrame else BottomFrame:=NarrowFrame;
 r0:=CreateRectRgn(SideFrame,TitleHeight,ClientWidth-SideFrame,
   ClientHeight-BottomFrame);
-for i:=0 to ControlCount-1 do if Controls[i].Visible then
-  begin
-  with Controls[i].BoundsRect do
-    r1:=CreateRectRgn(Left,Top,Right,Bottom);
-  CombineRgn(r0,r0,r1,RGN_DIFF);
-  DeleteObject(r1);
-  end;
+for i:=0 to ControlCount-1 do
+  if not (Controls[i] is TArea) and Controls[i].Visible then
+    begin
+    with Controls[i].BoundsRect do
+      r1:=CreateRectRgn(Left,Top,Right,Bottom);
+    CombineRgn(r0,r0,r1,RGN_DIFF);
+    DeleteObject(r1);
+    end;
 InvalidateRgn(Handle,r0,false);
 DeleteObject(r0);
 end;
@@ -456,8 +426,7 @@ procedure CreateOffscreen;
 begin
 if OffScreen<>nil then exit;
 offscreen:=TBitmap.Create;
-if TrueColor=1 then
-  Offscreen.PixelFormat:=pf24bit;
+Offscreen.PixelFormat:=pf24bit;
 offscreen.Width:=Screen.Width;
 if Screen.Height-yUnused<480 then offscreen.Height:=480
 else offscreen.Height:=Screen.Height-yUnused;

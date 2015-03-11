@@ -266,7 +266,7 @@ with RW[p],Un[uix] do
         end
       else
         begin
-        if (PModel.Domain=dSea) and (PModel.Cap[mcLongRange]=0) then
+        if (PModel.Domain=dSea) and (PModel.Cap[mcArtillery]=0) then
           begin result:=eDomainMismatch; exit end
         else if (PModel.Attack=0)
           and not ((PModel.Cap[mcBombs]>0) and (Flags and unBombsLoaded<>0)) then
@@ -391,10 +391,15 @@ with BattleForecast do
     begin result:=eOK; exit end; // no attack, simple move
 
   PModel:=@RW[pAtt].Model[mixAtt];
-  if (PModel.Kind=mkDiplomat) and (RealMap[Loc] and fCity<>0) then
-    begin result:=eOk; exit end; // spy mission -- return as if move was possible
-
   Strongest(Loc,Duix,DStr,DBon,DCnt); {get defense strength and bonus}
+  if (PModel.Kind=mkDiplomat) and (RealMap[Loc] and fCity<>0) then
+    begin // spy mission -- return as if move was possible
+    EndHealthAtt:=HealthAtt;
+    EndHealthDef:=RW[Defender].Un[Duix].Health;
+    result:=eOk;
+    exit
+    end;
+
   DModel:=@RW[Defender].Model[RW[Defender].Un[Duix].mix];
   if (RealMap[Loc] and fCity=0) and (RealMap[Loc] and fTerImp<>tiBase) then
     begin
@@ -409,9 +414,11 @@ with BattleForecast do
       and (PModel.Domain<>dAir) then
       begin result:=eDomainMismatch; exit end; //can't attack plane
     end;
-  if (PModel.Cap[mcLongRange]=0)
-    and ((PModel.Domain<dSea) and (RealMap[Loc] and fTerrain<fGrass)
-    or (PModel.Domain=dSea) and (RealMap[Loc] and fTerrain>=fGrass)) then
+  if ((PModel.Cap[mcArtillery]=0)
+    or ((ServerVersion[pAtt]>=$010200) and (RealMap[Loc] and fTerrain<fGrass)
+      and (DModel.Cap[mcSub]>0))) // ground units can't attack submarines
+    and ((PModel.Domain=dGround) and (RealMap[Loc] and fTerrain<fGrass)
+      or (PModel.Domain=dSea) and (RealMap[Loc] and fTerrain>=fGrass)) then
     begin result:=eDomainMismatch; exit end;
   if (PModel.Attack=0)
     and not ((PModel.Cap[mcBombs]>0) and (FlagsAtt and unBombsLoaded<>0)
@@ -441,7 +448,7 @@ with BattleForecast do
   if RealMap[Loc] and fCity<>0 then
     begin // consider city improvements
     SearchCity(Loc,Defender,Dcix);
-    if (PModel.Domain<dSea) and (PModel.Cap[mcLongRange]=0)
+    if (PModel.Domain<dSea) and (PModel.Cap[mcArtillery]=0)
       and ((RW[Defender].City[Dcix].Built[imWalls]=1)
       or (Continent[RW[Defender].City[Dcix].Loc]=GrWallContinent[Defender])) then
       inc(DBon,8)
@@ -685,7 +692,8 @@ with RW[p].Model[RW[p].Un[uix].mix] do
         else RailCost:=Speed*(4*1311) shr 17;
         maxmov:=Speed;
         initmov:=0;
-        Resistant:= GWonder[woGardens].EffectiveOwner=p;
+        Resistant:= (GWonder[woGardens].EffectiveOwner=p) or
+          (Kind=mkSettler) and (Speed>=200);
         end;
     dSea:
       if (a.ToLoc<>maNextCity) and (Map[a.ToLoc] and fTerrain>=fGrass)
@@ -1067,7 +1075,7 @@ with RW[p].Un[uix] do
   if NewJob=jNone then
     begin if not TestOnly then Job:=jNone; exit end;
   Loc0:=Loc;
-  if RealMap[Loc0] and fDeadLands<>0 then
+  if (RealMap[Loc0] and fDeadLands<>0) and (NewJob<>jRoad) and (NewJob<>jRR) then
     begin result:=eDeadLands; exit end;
   TerrType:=RealMap[Loc0] and fTerrain;
   if (RealMap[Loc0] and fCity<>0) or (TerrType<fGrass)

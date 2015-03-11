@@ -8,7 +8,7 @@ uses
   Protocol,ClientTools,Term,ScreenTools,IsoEngine,BaseWin,
 
   Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms,ExtCtrls,ButtonA,
-  ButtonB, ButtonBase, ButtonC;
+  ButtonB, ButtonBase, ButtonC, Area;
 
 const
 WM_PLAYSOUND=WM_USER;
@@ -16,15 +16,25 @@ WM_PLAYSOUND=WM_USER;
 type
   TCityCloseAction=(None, RestoreFocus, StepFocus);
 
-  TCityDlg = class(TBaseDlg)
+  TCityDlg = class(TBufferedDrawDlg)
     Timer1: TTimer;
-    BuyBtn: TButtonB;
     CloseBtn: TButtonA;
-    SupportBtn: TButtonB;
     PrevCityBtn: TButtonC;
     NextCityBtn: TButtonC;
     PageUpBtn: TButtonC;
     PageDownBtn: TButtonC;
+    BuyBtn: TButtonC;
+    ProjectArea: TArea;
+    PrimacyArea: TArea;
+    Imp2Area: TArea;
+    Imp4Area: TArea;
+    Imp0Area: TArea;
+    Imp3Area: TArea;
+    Imp5Area: TArea;
+    Imp1Area: TArea;
+    Pop0Area: TArea;
+    Pop1Area: TArea;
+    SupportArea: TArea;
     procedure FormCreate(Sender:TObject);
     procedure FormDestroy(Sender:TObject);
     procedure FormMouseDown(Sender:TObject;Button:TMouseButton;
@@ -34,13 +44,12 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
-    procedure SupportBtnClick(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure NextCityBtnClick(Sender: TObject);
     procedure PrevCityBtnClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure AdviceBtnClick(Sender: TObject);
+    //procedure AdviceBtnClick(Sender: TObject);
     procedure PageUpBtnClick(Sender: TObject);
     procedure PageDownBtnClick(Sender: TObject);
 
@@ -65,13 +74,12 @@ type
     CityAreaInfo: TCityAreaInfo;
     AreaMap: TIsoMap;
     CityMapTemplate, SmallCityMapTemplate, Back, SmallCityMap, ZoomCityMap, Template: TBitmap;
-    IsPort,ProdHint: boolean;
+    IsPort,ProdHint,AllowChange: boolean;
     procedure InitSmallCityMap;
     procedure InitZoomCityMap;
     procedure ChooseProject;
     procedure ChangeCity(d: integer);
     procedure ChangeResourceWeights(iResourceWeights: integer);
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
     procedure OnPlaySound(var Msg:TMessage); message WM_PLAYSOUND;
   end;
 
@@ -81,7 +89,7 @@ var
 implementation
 
 uses
-  Select,Messg,MessgEx,Help,Inp,Tribes, Advisor,DePNG,
+  Select,Messg,MessgEx,Help,Inp,Tribes,Directories,
 
   Math;
 
@@ -102,8 +110,9 @@ xProd=404; yProd=yFood+3*dyBar+6;
 xTrade=404; yTrade=yProd+2*dyBar+22;
 xPoll=xmArea-186; yPoll=ymArea+64;
 xmOpt=40; ymOpt=ymArea+96+34;
-xSmallMap=271; ySmallMap=346; wSmallMap=98; hSmallMap=74;
-xZoomMap=13; yZoomMap=340; wZoomMap=228; hZoomMap=124; wZoomEnvironment=68;
+xSmallMap=271; ySmallMap=339; wSmallMap=98; hSmallMap=74;
+xSupport=xSmallMap; ySupport=ySmallmap+hSmallmap+2; wSupport=64; hSupport=18;
+xZoomMap=34; yZoomMap=338; wZoomMap=228; hZoomMap=124; wZoomEnvironment=68;
 
 ImpPosition: array[28..nImp-1] of integer=
 (-1, //imTrGoods
@@ -167,24 +176,32 @@ RestoreUnFocus:=-1;
 OpenSoundEvent:=-1;
 AgePrepared:=-2;
 Optimize_cixTileChange:=-1;
-InitButtons(self);
+InitButtons();
 //InitWindowRegion;
-SupportBtn.Visible:=true;
 CloseBtn.Caption:=Phrases.Lookup('BTN_OK');
-SupportBtn.Hint:=Phrases.Lookup('BTN_SUPPORT');
 BuyBtn.Hint:=Phrases.Lookup('BTN_BUY');
+if not Phrases2FallenBackToEnglish then
+  SupportArea.Hint:=Phrases2.Lookup('TIP_SUPUNITS')
+else SupportArea.Hint:=Phrases.Lookup('SUPUNITS');
+if not Phrases2FallenBackToEnglish then
+  begin
+  Pop0Area.Hint:=Phrases2.Lookup('TIP_WORKING');
+  Pop1Area.Hint:=Phrases2.Lookup('TIP_CIVIL');
+  PrimacyArea.Hint:=Phrases2.Lookup('TIP_PRIMACY');
+  ProjectArea.Hint:=Phrases2.Lookup('TIP_PROJECT');
+  end;
 
 Back:=TBitmap.Create;
 Back.PixelFormat:=pf24bit;
 Back.Width:=ClientWidth; Back.Height:=ClientHeight;
 Template:=TBitmap.Create;
-LoadGraphicFile(Template, 'Graphics\City', gfNoGamma);
+LoadGraphicFile(Template, HomeDir+'Graphics\City', gfNoGamma);
 Template.PixelFormat:=pf8bit;
 CityMapTemplate:=TBitmap.Create;
-LoadGraphicFile(CityMapTemplate, 'Graphics\BigCityMap', gfNoGamma);
+LoadGraphicFile(CityMapTemplate, HomeDir+'Graphics\BigCityMap', gfNoGamma);
 CityMapTemplate.PixelFormat:=pf8bit;
 SmallCityMapTemplate:=TBitmap.Create;
-LoadGraphicFile(SmallCityMapTemplate, 'Graphics\SmallCityMap', gfNoGamma);
+LoadGraphicFile(SmallCityMapTemplate, HomeDir+'Graphics\SmallCityMap', gfNoGamma);
 SmallCityMapTemplate.PixelFormat:=pf24bit;
 SmallCityMap:=TBitmap.Create;
 SmallCityMap.PixelFormat:=pf24bit;
@@ -201,6 +218,7 @@ SmallCityMap.Free;
 ZoomCityMap.Free;
 CityMapTemplate.Free;
 Template.Free;
+Back.Free;
 end;
 
 procedure TCityDlg.Reset;
@@ -218,13 +236,6 @@ if MainTextureAge<>AgePrepared then
     MainTexture.Image.Canvas.Handle,0,0,SRCCOPY);
   ImageOp_B(Back,Template,0,0,0,0,ClientWidth,ClientHeight);
   end
-end;
-
-procedure TCityDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+30) or (Msg.LParamLo>=Left+PrevCityBtn.Left) then
-  Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
 end;
 
 procedure TCityDlg.CloseBtnClick(Sender:TObject);
@@ -322,8 +333,7 @@ end;
 
 procedure TCityDlg.OffscreenPaint;
 
-  procedure FillBar(x,y,pos,Growth,max,Kind: integer;
-    AllowCompleteIndication: boolean = true);
+  procedure FillBar(x,y,pos,Growth,max,Kind: integer; IndicateComplete: boolean);
   var
   Tex: TTexture;
   begin
@@ -333,13 +343,8 @@ procedure TCityDlg.OffscreenPaint;
     Tex.clBevelLight:=GrExt[HGrSystem].Data.Canvas.Pixels[104,36];
     Tex.clBevelShade:=Tex.clBevelLight;
     end;
-  if Growth>0 then
-    PaintProgressBar(offscreen.Canvas,Kind,x-3,y,pos*(wBar-4) div max,
-      (Growth*(wBar-4)+max div 2) div max,wBar-4,Tex)
-  else PaintProgressBar(offscreen.Canvas,Kind,x-3,y,pos*(wBar-4) div max,
-    (Growth*(wBar-4)-max div 2) div max,wBar-4,Tex);
-  if AllowCompleteIndication and (pos+Growth>=max) then
-    Sprite(offscreen, HGrSystem, x+wBar-17, y-7, 23, 16, 1, 129);
+  PaintRelativeProgressBar(offscreen.Canvas,Kind,x-3,y,wBar-4,pos,Growth,max,
+    IndicateComplete,Tex);
   end;
 
   procedure PaintResources(x,y,Loc:integer; Add4Happy: boolean);
@@ -397,30 +402,6 @@ procedure TCityDlg.OffscreenPaint;
     RedLine(@(PLine(Offscreen.ScanLine[y+i])[x]),w)
   end;
 
-  procedure MakeBlue(x,y,w,h: integer);
-  type
-  TLine=array[0..99999,0..2] of Byte;
-  PLine=^TLine;
-
-    procedure BlueLine(line: PLine; length: integer);
-    var
-    i: integer;
-    begin
-    for i:=0 to length-1 do
-      begin
-      line[i,0]:=line[i,0] div 2;
-      line[i,1]:=line[i,1] div 2;
-      line[i,2]:=line[i,2] div 2;
-      end
-    end;
-
-  var
-  i: integer;
-  begin
-  for i:=0 to h-1 do
-    BlueLine(@(PLine(Offscreen.ScanLine[y+i])[x]),w)
-  end;
-
 var
 line, MessageCount: integer;
 
@@ -435,7 +416,7 @@ line, MessageCount: integer;
     test:=1;
     while test<Flag do begin inc(i); inc(test,test) end;
 
-    if (cix>=0) and (Sounds<>nil) and (OpenSoundEvent=-1) then
+    if AllowChange and (Sounds<>nil) and (OpenSoundEvent=-1) then
       begin
       s:=CityEventSoundItem[i];
       if s<>'' then s:=Sounds.Lookup(s);
@@ -443,7 +424,7 @@ line, MessageCount: integer;
         OpenSoundEvent:=i
       end;
 
-    s:=Phrases.Lookup('CITYEVENTS',i);
+    s:=CityEventName(i);
 {    if Flag=chNoGrowthWarning then
       if c.Built[imAqueduct]=0 then
         s:=Format(s,[Phrases.Lookup('IMPROVEMENTS',imAqueduct)])
@@ -455,12 +436,12 @@ line, MessageCount: integer;
 
 var
 x,y,xGr,i,i1,j,iix,d,dx,dy,PrCost,Cnt,Loc1,FreeSupp,Paintiix,HappyGain,
-  OptiType,rx,ry: integer;
+  OptiType,rx,ry,TrueFood,TrueProd,TruePoll: integer;
 PrName,s:string;
 UnitInfo: TUnitInfo;
 UnitReport: TUnitReport;
 RedTex: TTexture;
-IsCityAlive: boolean;
+IsCityAlive,CanGrow: boolean;
 begin
 inherited;
 if cix>=0 then c:=MyCity[cix];
@@ -469,6 +450,21 @@ Report.HypoTaxRate:=-1;
 Report.HypoLuxuryRate:=-1;
 if cix>=0 then Server(sGetCityReportNew,me,cix,Report) // own city
 else Server(sGetEnemyCityReportNew,me,cLoc,Report); // enemy city
+TrueFood:=c.Food;
+TrueProd:=c.Prod;
+TruePoll:=c.Pollution;
+if supervising or (cix<0) then
+  begin // normalize city from after-turn state
+  dec(TrueFood,Report.FoodSurplus);
+  if TrueFood<0 then
+    TrueFood:=0; // shouldn't happen
+  dec(TrueProd,Report.Production);
+  if TrueProd<0 then
+    TrueProd:=0; // shouldn't happen
+  dec(TruePoll,Report.AddPollution);
+  if TruePoll<0 then
+    TruePoll:=0; // shouldn't happen
+  end;
 IsCityAlive:= (cGov<>gAnarchy) and (c.Flags and chCaptured=0);
 if not IsCityAlive then Report.Working:=c.Size;
 
@@ -485,9 +481,9 @@ RisedTextout(offscreen.Canvas,42,7,Caption);
 with offscreen.canvas do
   begin // city size
   brush.color:=$000000;
-  fillrect(rect(8+1,7+1,36+1,29+1));
+  fillrect(rect(8+1,7+1,36+1,32+1));
   brush.color:=$FFFFFF;
-  fillrect(rect(8,7,36,29));
+  fillrect(rect(8,7,36,32));
   brush.style:=bsClear;
   font.color:=$000000;
   s:=inttostr(c.Size);
@@ -495,55 +491,54 @@ with offscreen.canvas do
   end;
 offscreen.Canvas.Font.Assign(UniFont[ftSmall]);
 
-if cix>=0 then
-  if IsCityAlive then
-    begin
-    OptiType:=c.Status shr 4 and $0F;
-    Sprite(offscreen,HGrSystem2,xmOpt-32,ymOpt-32,64,64,1+OptiType mod 3*64,217+OptiType div 3*64);
+if not IsCityAlive then
+  begin
+  MakeRed(18,280,298,40);
+  if cGov=gAnarchy then s:=Phrases.Lookup('GOVERNMENT',gAnarchy)
+  else {if c.Flags and chCaptured<>0 then}
+    s:=Phrases.Lookup('CITYEVENTS',14);
+  RisedTextout(offscreen.canvas,167-BiColorTextWidth(offscreen.canvas,s) div 2,ymOpt-9, s);
+  end
+else if AllowChange then
+  begin
+  OptiType:=c.Status shr 4 and $0F;
+  Sprite(offscreen,HGrSystem2,xmOpt-32,ymOpt-32,64,64,1+OptiType mod 3*64,217+OptiType div 3*64);
 
-    {display messages now}
-    MessageCount:=0;
-    for i:=0 to 31 do
-      if Happened and ($FFFFFFFF-chCaptured) and (1 shl i)<>0 then
-        inc(MessageCount);
-    if MessageCount>3 then
-      MessageCount:=3;
-    if MessageCount>0 then
-      begin
-      MakeBlue(74,280,242,40);
-      line:=0;
-      for i:=0 to nCityEventPriority-1 do
-        if line<MessageCount then
-          CheckMessage(CityEventPriority[i]);
-      end
-    else
-      begin
-      s:=Phrases.Lookup('CITYMANAGETYPE',OptiType);
-      j:=pos('\',s);
-      if j=0 then
-        LoweredTextout(offscreen.canvas, -1, MainTexture, xmOpt+40, ymOpt-9, s)
-      else
-        begin
-        LoweredTextout(offscreen.canvas, -1, MainTexture, xmOpt+40, ymOpt-17,
-          copy(s,1,j-1));
-        LoweredTextout(offscreen.canvas, -1, MainTexture, xmOpt+40, ymOpt-1,
-          copy(s,j+1,255));
-        end
-      end
+  {display messages now}
+  MessageCount:=0;
+  for i:=0 to 31 do
+    if Happened and ($FFFFFFFF-chCaptured) and (1 shl i)<>0 then
+      inc(MessageCount);
+  if MessageCount>3 then
+    MessageCount:=3;
+  if MessageCount>0 then
+    begin
+    MakeBlue(Offscreen,74,280,242,40);
+    line:=0;
+    for i:=0 to nCityEventPriority-1 do
+      if line<MessageCount then
+        CheckMessage(CityEventPriority[i]);
     end
   else
     begin
-    MakeRed(18,280,298,40);
-    if cGov=gAnarchy then s:=Phrases.Lookup('GOVERNMENT',gAnarchy)
-    else {if c.Flags and chCaptured<>0 then}
-      s:=Phrases.Lookup('CITYEVENTS',14);
-    RisedTextout(offscreen.canvas,167-BiColorTextWidth(offscreen.canvas,s) div 2,ymOpt-9, s);
-    end;
+    s:=Phrases.Lookup('CITYMANAGETYPE',OptiType);
+    j:=pos('\',s);
+    if j=0 then
+      LoweredTextout(offscreen.canvas, -1, MainTexture, xmOpt+40, ymOpt-9, s)
+    else
+      begin
+      LoweredTextout(offscreen.canvas, -1, MainTexture, xmOpt+40, ymOpt-17,
+        copy(s,1,j-1));
+      LoweredTextout(offscreen.canvas, -1, MainTexture, xmOpt+40, ymOpt-1,
+        copy(s,j+1,255));
+      end
+    end
+  end;
 
 rx:=(192+xxt*2-1) div (xxt*2);
 ry:=(96+yyt*2-1) div (yyt*2);
 AreaMap.Paint(xmArea-xxt*2*rx,ymArea-yyt*2*ry-3*yyt,dLoc(cLoc,-2*rx+1,-2*ry-1),4*rx-1,4*ry+1,cLoc,cOwner,
-  false,(cix>=0) and IsCityAlive and (c.Status and csResourceWeightsMask=0));
+  false,AllowChange and IsCityAlive and (c.Status and csResourceWeightsMask=0));
 bitblt(offscreen.canvas.handle,xmArea+102,42,90,33,Back.Canvas.handle,xmArea+102,42,SRCCOPY);
 
 if IsCityAlive then
@@ -637,17 +632,15 @@ if IsCityAlive then
       -Report.FoodSurplus,RedTex);
     end;
   end;
-i:=Report.FoodSurplus; // growth
-if not IsCityAlive or (i>0) and ((cGov=gFuture)
-  or (c.Size>=NeedAqueductSize) and (Report.FoodSurplus<2)) then
-  i:=0; {no growth}
-FillBar(xFood+3,yFood+102,c.Food,i,Report.Storage,1,
-  (c.Size<MaxCitySize) and (cGov<>gFuture)
+CanGrow:= (c.Size<MaxCitySize) and (cGov<>gFuture)
   and (Report.FoodSurplus>0)
   and ((c.Size<NeedAqueductSize)
     or (c.Built[imAqueduct]=1) and (c.Size<NeedSewerSize)
-    or (c.Built[imSewer]=1)));
-LoweredTextOut(offscreen.Canvas,-1,MainTexture,xFood+3-5,yFood+102-20,Format('%d/%d',[c.Food,Report.Storage]));
+    or (c.Built[imSewer]=1));
+FillBar(xFood+3,yFood+102,TrueFood,
+  CutCityFoodSurplus(Report.FoodSurplus,IsCityAlive,cGov,c.size),
+  Report.Storage,1,CanGrow);
+LoweredTextOut(offscreen.Canvas,-1,MainTexture,xFood+3-5,yFood+102-20,Format('%d/%d',[TrueFood,Report.Storage]));
 LoweredTextOut(offscreen.Canvas,-1,MainTexture,xFood-2,yFood+66,Phrases.Lookup('STORAGE'));
 
 // production section
@@ -674,9 +667,9 @@ if c.Project and (cpImp+cpIndex)<>cpImp+imTrGoods then with offscreen.Canvas do
   begin
   i:=Report.Production;
   if (i<0) or not IsCityAlive then i:=0;
-  FillBar(xProd+3,yProd+16+63,c.Prod,i,PrCost,4);
+  FillBar(xProd+3,yProd+16+63,TrueProd,i,PrCost,4,true);
   LoweredTextOut(offscreen.Canvas,-1,MainTexture,xProd+3-5,yProd+16+43,
-    Format('%d/%d',[c.Prod,PrCost]));
+    Format('%d/%d',[TrueProd,PrCost]));
   if BiColorTextWidth(offscreen.Canvas,PrName)>wBar+dxBar then
     begin
     repeat Delete(PrName,Length(PrName),1)
@@ -689,8 +682,8 @@ RisedTextOut(offscreen.Canvas,xProd-2,yProd+36,PrName);
 // pollution section
 if IsCityAlive and (Report.AddPollution>0) then
   begin
-  FillBar(xPoll+3,yPoll+20,c.Pollution,Report.AddPollution,
-    MaxPollution,3);
+  FillBar(xPoll+3,yPoll+20,TruePoll,Report.AddPollution,
+    MaxPollution,3,true);
   RisedTextOut(offscreen.Canvas,xPoll+3-5,yPoll+20-20,Phrases.Lookup('POLL'));
   end;
 
@@ -703,6 +696,7 @@ if IsCityAlive and (Report.CollectedTrade>0) then
   CountBar(offscreen,xTrade+dxBar,yTrade+dyBar,wBar,12,Phrases.Lookup('SCIENCE'),Report.Science,MainTexture);
   end;
 
+// small map
 BitBlt(Offscreen.Canvas.Handle,xSmallMap,ySmallmap,wSmallMap,hSmallMap,SmallCitymap.Canvas.Handle,0,0,SRCCOPY);
 if Mode=mImp then
   Frame(Offscreen.Canvas,xSmallMap+48*(ZoomArea div 3),ySmallmap+24*(ZoomArea mod 3),
@@ -710,6 +704,20 @@ if Mode=mImp then
     MainTexture.clMark,MainTexture.clMark);
 Frame(Offscreen.Canvas,xSmallMap-1,ySmallmap-1,xSmallMap+wSmallMap,ySmallmap+hSmallMap,$B0B0B0,$FFFFFF);
 RFrame(Offscreen.Canvas,xSmallMap-2,ySmallmap-2,xSmallMap+wSmallMap+1,ySmallmap+hSmallMap+1,$FFFFFF,$B0B0B0);
+
+Frame(Offscreen.Canvas,xSupport-1,ySupport-1,xSupport+wSupport,ySupport+hSupport,$B0B0B0,$FFFFFF);
+RFrame(Offscreen.Canvas,xSupport-2,ySupport-2,xSupport+wSupport+1,ySupport+hSupport+1,$FFFFFF,$B0B0B0);
+x:=xSupport+wSupport div 2;
+y:=ySupport+hSupport div 2;
+if Mode=mSupp then
+  begin
+  Offscreen.Canvas.brush.Color:=MainTexture.clMark;
+  Offscreen.Canvas.FillRect(Rect(x-27,y-6,x+27,y+6));
+  Offscreen.Canvas.brush.style:=bsClear;
+  end;
+Sprite(offscreen,HGrSystem,x-16,y-5,10,10,88,115);
+Sprite(offscreen,HGrSystem,x-5,y-5,10,10,66,115);
+Sprite(offscreen,HGrSystem,x+6,y-5,10,10,154,126);
 
 BitBlt(Offscreen.Canvas.Handle,xZoomMap,yZoommap,wZoomMap,hZoomMap,ZoomCitymap.Canvas.Handle,0,0,SRCCOPY);
 
@@ -744,7 +752,7 @@ if Mode=mImp then
     iix:=imix[i];
     x:=xZoomMap+14+72*(i mod 3);
     y:=yZoomMap+14+56*(i div 3);
-    ImpImage(offscreen.Canvas,x,y,iix,cGov,(cix>=0) and (ClientMode<scContact));
+    ImpImage(offscreen.Canvas,x,y,iix,cGov,AllowChange and (ClientMode<scContact));
     if IsCityAlive then
       begin
       if iix=imColosseum then
@@ -769,7 +777,25 @@ if Mode=mImp then
       for j:=0 to Imp[iix].Maint-1 do
         Sprite(offscreen,HGrSystem,x-4,y+29-3*j,10,10,132,115);
       end
-    end
+    end;
+  if imix[0]>=0 then
+    Imp0Area.Hint:=Phrases.Lookup('IMPROVEMENTS',imix[0])
+  else Imp0Area.Hint:='';
+  if imix[1]>=0 then
+    Imp1Area.Hint:=Phrases.Lookup('IMPROVEMENTS',imix[1])
+  else Imp1Area.Hint:='';
+  if imix[2]>=0 then
+    Imp2Area.Hint:=Phrases.Lookup('IMPROVEMENTS',imix[2])
+  else Imp2Area.Hint:='';
+  if imix[3]>=0 then
+    Imp3Area.Hint:=Phrases.Lookup('IMPROVEMENTS',imix[3])
+  else Imp3Area.Hint:='';
+  if imix[4]>=0 then
+    Imp4Area.Hint:=Phrases.Lookup('IMPROVEMENTS',imix[4])
+  else Imp4Area.Hint:='';
+  if imix[5]>=0 then
+    Imp5Area.Hint:=Phrases.Lookup('IMPROVEMENTS',imix[5])
+  else Imp5Area.Hint:='';
   end
 else {if mode=mSupp then}
   begin
@@ -801,12 +827,19 @@ else {if mode=mSupp then}
           else Sprite(offscreen,HGrSystem,x+16-11*j,y+40,10,10,88,115);
           end;
         if UnitReport.ReportFlags and urfDeployed<>0 then
-          Sprite(offscreen,HGrSystem,x+27,y+40,10,10,154,126)
+          for j:=0 to 1 do
+          Sprite(offscreen,HGrSystem,x+27+11*j,y+40,10,10,154,126)
         end // unit visible in display
       else dec(FreeSupp, UnitReport.ProdSupport);
       inc(Cnt);
       end;
   PageCount:=(Cnt+5) div 6;
+  Imp0Area.Hint:='';
+  Imp1Area.Hint:='';
+  Imp2Area.Hint:='';
+  Imp3Area.Hint:='';
+  Imp4Area.Hint:='';
+  Imp5Area.Hint:='';
   end;
 PageUpBtn.Visible:= PageCount>1;
 PageDownBtn.Visible:= PageCount>1;
@@ -816,7 +849,18 @@ with offscreen.Canvas do
   {display project now}
   DLine(offscreen.Canvas,xView+9+xSizeBig,xProd+2*wBar+10,yProd+dyBar+16,
     $FFFFFF,$B0B0B0);
-  if (cix>=0) and (c.Status and 7<>0) then
+  if prodhint then
+    begin
+    Frame(offscreen.canvas,xView+9-1,yView+5-1,xView+9+xSizeBig,yView+5+ySizeBig,$B0B0B0,$FFFFFF);
+    RFrame(offscreen.canvas,xView+9-2,yView+5-2,xView+9+xSizeBig+1,yView+5+ySizeBig+1,$FFFFFF,$B0B0B0);
+    with offscreen.canvas do
+      begin
+      Brush.Color:=$000000;
+      FillRect(Rect(xView+9,yView+5,xView+1+72-8,yView+5+40));
+      Brush.Style:=bsClear;
+      end
+    end
+  else if AllowChange and (c.Status and 7<>0) then
     begin // city type autobuild
     FrameImage(offscreen.canvas,bigimp,xView+9,yView+5,xSizeBig,ySizeBig,
       (c.Status and 7-1+3)*xSizeBig,0,
@@ -825,7 +869,7 @@ with offscreen.Canvas do
   else if c.Project and cpImp=0 then
     begin // project is unit
     FrameImage(offscreen.canvas,bigimp,xView+9,yView+5,xSizeBig,ySizeBig,0,0,
-      (cix>=0) and (ClientMode<scContact));
+      AllowChange and (ClientMode<scContact));
     with Tribe[cOwner].ModelPicture[c.Project and cpIndex] do
       Sprite(offscreen,HGr,xView+5,yView+1,64,44,
         pix mod 10 *65+1,pix div 10*49+1);
@@ -835,14 +879,14 @@ with offscreen.Canvas do
     if ProdHint then Paintiix:=c.Project0 and cpIndex
     else Paintiix:=c.Project and cpIndex;
     ImpImage(Offscreen.Canvas,xView+9,yView+5,Paintiix,cGov,
-      (cix>=0) and (ClientMode<scContact));
+      AllowChange and (ClientMode<scContact));
     end;
   end;
 
-if (cix>=0) and (ClientMode<scContact) then
+if AllowChange and (ClientMode<scContact) then
   begin
   i:=Server(sBuyCityProject-sExecute,me,cix,nil^);
-  BuyBtn.Visible:= (i<>eInvalid) and (i<>eOutOfControl)
+  BuyBtn.Visible:= (i=eOk) or (i=eViolation);
   end
 else BuyBtn.Visible:=false;
 
@@ -854,15 +898,14 @@ var
 dx,dy,Loc1: integer;
 GetCityData: TGetCityData;
 begin
-BlinkTime:=-1;
+BlinkTime:=5;
 if cix>=0 then
   begin {own city}
   c:=MyCity[cix];
   cOwner:=me;
   cGov:=MyRO.Government;
   ProdHint:= (cGov<>gAnarchy)
-    and (Happened and (chProduction or chFounded or chCaptured)<>0)
-    and (c.Project and (cpImp+cpIndex)=cpImp+imTrGoods);
+    and (Happened and (chProduction or chFounded or chCaptured or chAllImpsMade)<>0);
   Server(sGetCityAreaInfo,me,cix,CityAreaInfo);
   NextCityBtn.Visible:= WindowMode=wmPersistent;
   PrevCityBtn.Visible:= WindowMode=wmPersistent;
@@ -918,7 +961,6 @@ InitSmallCityMap;
 InitZoomCityMap;
 OpenSoundEvent:=-1;
 OffscreenPaint;
-SupportBtn.Visible:= Mode=mImp;
 Timer1.Enabled:=true;
 end;
 
@@ -942,6 +984,7 @@ if MyMap[Loc] and fOwned<>0 then
   Optimize_TilesBeforeChange:=MyCity[cix].Tiles;
   end
 else cix:=-1;
+AllowChange:=not supervising and (cix>=0);
 cLoc:=Loc;
 Happened:=ShowEvent;
 inherited ShowNewContent(NewMode);
@@ -960,11 +1003,19 @@ if (ssLeft in Shift) and (x>=xSmallMap) and (x<xSmallMap+wSmallMap)
   ZoomArea:=(y-ySmallMap)*3 div hSmallMap+3*((x-xSmallMap)*2 div wSmallMap);
   Page:=0;
   InitZoomCityMap;
-  SupportBtn.Visible:=true;
   SmartUpdateContent;
   exit;
   end;
-if cix<0 then exit; // not an own city
+if (ssLeft in Shift) and (x>=xSupport) and (x<xSupport+wSupport)
+  and (y>=ySupport) and (y<ySupport+hSupport) then
+  begin
+  Mode:=mSupp;
+  Page:=0;
+  InitZoomCityMap;
+  SmartUpdateContent;
+  exit;
+  end;
+if not AllowChange then exit; // not an own city
 
 if (ssLeft in Shift) then
   if (ClientMode<scContact)
@@ -1034,8 +1085,11 @@ if (ssLeft in Shift) then
               if Server(sRebuildCityImprovement-sExecute,me,cix,iix)<rExecuted then
                 begin // no rebuild possible, ask for sell only
                 Rebuild:=false;
-                MessgText:=Format(Phrases.Lookup('SELL'),
-                  [Phrases.Lookup('IMPROVEMENTS',iix)]);
+                MessgText:=Phrases.Lookup('IMPROVEMENTS',iix);
+                if not Phrases2FallenBackToEnglish then
+                  MessgText:=Format(Phrases2.Lookup('SELL2'),[MessgText,
+                    Imp[iix].Cost*BuildCostMod[G.Difficulty[me]] div 12])
+                else MessgText:=Format(Phrases.Lookup('SELL'),[MessgText]);
                 if iix=imSpacePort then with MyRO.Ship[me] do
                   if Parts[0]+Parts[1]+Parts[2]>0 then
                     MessgText:=MessgText+' '+Phrases.Lookup('SPDESTRUCTQUERY');
@@ -1046,8 +1100,11 @@ if (ssLeft in Shift) then
               else
                 begin
                 Rebuild:=true;
-                MessgText:=Format(Phrases.Lookup('DISPOSE'),
-                  [Phrases.Lookup('IMPROVEMENTS',iix)]);
+                MessgText:=Phrases.Lookup('IMPROVEMENTS',iix);
+                if not Phrases2FallenBackToEnglish then
+                  MessgText:=Format(Phrases2.Lookup('DISPOSE2'),[MessgText,
+                    Imp[iix].Cost*BuildCostMod[G.Difficulty[me]] div 12 *2 div 3])
+                else MessgText:=Format(Phrases.Lookup('DISPOSE'),[MessgText]);
                 if iix=imSpacePort then with MyRO.Ship[me] do
                   if Parts[0]+Parts[1]+Parts[2]>0 then
                     MessgText:=MessgText+' '+Phrases.Lookup('SPDESTRUCTQUERY');
@@ -1114,10 +1171,18 @@ if (ssLeft in Shift) then
       else if (ClientMode<scContact) and (cGov<>gAnarchy)
         and (c.Flags and chCaptured=0) then
         begin // toggle exploitation
+        assert(not supervising);
         if c.Status and csResourceWeightsMask<>0 then
           begin
-          if SimpleQuery(mkOkCancel, Phrases.Lookup('CITYMANAGEOFF'),
-            'MSG_DEFAULT')=mrOK then
+          with MessgExDlg do
+            begin
+            MessgText:=Phrases.Lookup('CITYMANAGEOFF');
+            OpenSound:='MSG_DEFAULT';
+            Kind:=mkOkCancel;
+            IconKind:=mikFullControl;
+            ShowModal;
+            end;
+          if MessgExDlg.ModalResult=mrOK then
             begin
             MyCity[cix].Status:=MyCity[cix].Status
               and not csResourceWeightsMask; // off
@@ -1188,6 +1253,7 @@ var
 NewProject, OldMoney,pt0,pt1,cix1: integer;
 QueryOk: boolean;
 begin
+assert(not supervising);
 ModalSelectDlg.ShowNewContent_CityProject(wmModal,cix);
 if ModalSelectDlg.result<>-1 then
   begin
@@ -1329,23 +1395,37 @@ if ProdHint then
   BlinkTime:=(BlinkTime+1) mod 12;
   if BlinkTime=0 then with Canvas do
     begin
+    BitBlt(canvas.Handle,xView+5,yView+1,64,2,
+      back.Canvas.Handle,xView+5,yView+1,SRCCOPY);
+    BitBlt(canvas.Handle,xView+5,yView+3,2,42,
+      back.Canvas.Handle,xView+5,yView+3,SRCCOPY);
+    BitBlt(canvas.Handle,xView+5+62,yView+3,2,42,
+      back.Canvas.Handle,xView+5+62,yView+3,SRCCOPY);
+    Frame(canvas,xView+9-1,yView+5-1,xView+9+xSizeBig,yView+5+ySizeBig,$B0B0B0,$FFFFFF);
+    RFrame(canvas,xView+9-2,yView+5-2,xView+9+xSizeBig+1,yView+5+ySizeBig+1,$FFFFFF,$B0B0B0);
     Brush.Color:=$000000;
     FillRect(Rect(xView+9,yView+5,xView+1+72-8,yView+5+40));
     Brush.Style:=bsClear;
     end
   else if BlinkTime=6 then
-    ImpImage(Canvas,xView+9,yView+5,
+    begin
+    if AllowChange and (c.Status and 7<>0) then
+      begin // city type autobuild
+      FrameImage(canvas,bigimp,xView+9,yView+5,xSizeBig,ySizeBig,
+        (c.Status and 7-1+3)*xSizeBig,0,true);
+      end
+    else if c.Project and cpImp=0 then
+      begin // project is unit
+      BitBlt(canvas.Handle,xView+9,yView+5,xSizeBig,ySizeBig,
+        bigimp.Canvas.Handle,0,0,SRCCOPY);
+      with Tribe[cOwner].ModelPicture[c.Project and cpIndex] do
+        Sprite(canvas,HGr,xView+5,yView+1,64,44,
+          pix mod 10 *65+1,pix div 10*49+1);
+      end
+    else ImpImage(Canvas,xView+9,yView+5,
       c.Project0 and cpIndex,cGov,true);
+    end
   end
-end;
-
-procedure TCityDlg.SupportBtnClick(Sender: TObject);
-begin
-Mode:=mSupp;
-Page:=0;
-SupportBtn.Visible:=false;
-InitZoomCityMap;
-SmartUpdateContent
 end;
 
 procedure TCityDlg.FormPaint(Sender: TObject);
@@ -1422,10 +1502,10 @@ else if ((Key=VK_DOWN) or (Key=VK_NUMPAD2))
 else inherited  
 end;
 
-procedure TCityDlg.AdviceBtnClick(Sender: TObject);
+{procedure TCityDlg.AdviceBtnClick(Sender: TObject);
 begin
 AdvisorDlg.GiveCityAdvice(cix);
-end;
+end;}
 
 var
 i,j,k: integer;
@@ -1452,6 +1532,7 @@ procedure TCityDlg.ChangeResourceWeights(iResourceWeights: integer);
 var
 Advice: TCityTileAdviceData;
 begin
+assert(not supervising);
 assert(cix>=0);
 MyCity[cix].Status:=MyCity[cix].Status
   and not csResourceWeightsMask or (iResourceWeights shl 4);

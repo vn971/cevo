@@ -8,32 +8,40 @@ uses
   Protocol,ClientTools,Term,ScreenTools,BaseWin,
 
   Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms,ButtonA,ButtonB,
-  ButtonBase;
+  ButtonBase, ButtonC;
 
 type
-  TUnitStatDlg = class(TFramedDlg)
+  TUnitStatDlg = class(TBufferedDrawDlg)
     SwitchBtn: TButtonB;
     CloseBtn: TButtonB;
     ConscriptsBtn: TButtonB;
+    HelpBtn: TButtonC;
     procedure FormShow(Sender: TObject);
     procedure CloseBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
     procedure ModelBoxChange(Sender: TObject);
     procedure SwitchBtnClick(Sender: TObject);
     procedure ConscriptsBtnClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure HelpBtnClick(Sender: TObject);
 
   public
+    procedure CheckAge;
     procedure ShowNewContent_OwnModel(NewMode, mix: integer);
+    procedure ShowNewContent_OwnUnit(NewMode, uix: integer);
     procedure ShowNewContent_EnemyUnit(NewMode, euix: integer);
     procedure ShowNewContent_EnemyLoc(NewMode, Loc: integer);
     procedure ShowNewContent_EnemyModel(NewMode, emix: integer);
+    procedure ShowNewContent_EnemyCity(NewMode, Loc: integer);
 
   protected
     mixShow, // for dkOwnModel
-    euixShow,ecixShow,UnitLoc: integer; // for dkEnemyUnit, euixShow=-1 ->
+    uixShow,euixShow,ecixShow,
+    UnitLoc,AgePrepared: integer; // for dkEnemyUnit, euixShow=-1 ->
     mox: ^TModelInfo; // for dkEnemyModel
-    Kind:(dkOwnModel,dkEnemyModel,dkEnemyUnit);
+    Kind:(dkOwnModel,dkOwnUnit,dkEnemyModel,dkEnemyUnit,dkEnemyCityDefense,dkEnemyCity);
+    Back, Template: TBitmap;
     procedure OffscreenPaint; override;
   end;
 
@@ -42,18 +50,71 @@ var
 
 implementation
 
-uses Inp, Select, Tribes, IsoEngine;
+uses Inp, Select, Tribes, IsoEngine, Help, Directories;
 
 {$R *.DFM}
 
 const
-xView=13; yView=11;
-xStat=99; yStat=118;
-xTotal=99; yTotal=6;
+xView=71;
+xTotal=20; StatDown=112;
+yImp=133;
+
+// window size
+wCommon=208; hOwnModel=293; hEnemyModel=236; hEnemyUnit=212;
+hEnemyCityDefense=320; hEnemyCity=166; hMax=320;
+
+
+procedure TUnitStatDlg.FormCreate(Sender: TObject);
+begin
+inherited;
+AgePrepared:=-2;
+TitleHeight:=Screen.Height;
+InitButtons();
+
+Back:=TBitmap.Create;
+Back.PixelFormat:=pf24bit;
+Back.Width:=5*wCommon; Back.Height:=hMax;
+Template:=TBitmap.Create;
+LoadGraphicFile(Template, HomeDir+'Graphics\Unit', gfNoGamma);
+Template.PixelFormat:=pf8bit;
+end;
+
+procedure TUnitStatDlg.FormDestroy(Sender: TObject);
+begin
+Template.Free;
+Back.Free;
+end;
+
+procedure TUnitStatDlg.CheckAge;
+begin
+if MainTextureAge<>AgePrepared then
+  begin
+  AgePrepared:=MainTextureAge;
+  bitblt(Back.Canvas.Handle,0,0,wCommon,hOwnModel,
+    MainTexture.Image.Canvas.Handle,(wMainTexture-wCommon) div 2,
+    (hMainTexture-hOwnModel) div 2,SRCCOPY);
+  bitblt(Back.Canvas.Handle,wCommon,0,wCommon,hEnemyModel,
+    MainTexture.Image.Canvas.Handle,(wMainTexture-wCommon) div 2,
+    (hMainTexture-hEnemyModel) div 2,SRCCOPY);
+  bitblt(Back.Canvas.Handle,2*wCommon,0,wCommon,hEnemyUnit,
+    MainTexture.Image.Canvas.Handle,(wMainTexture-wCommon) div 2,
+    (hMainTexture-hEnemyUnit) div 2,SRCCOPY);
+  bitblt(Back.Canvas.Handle,3*wCommon,0,wCommon,hEnemyCityDefense,
+    MainTexture.Image.Canvas.Handle,(wMainTexture-wCommon) div 2,
+    (hMainTexture-hEnemyCityDefense) div 2,SRCCOPY);
+  bitblt(Back.Canvas.Handle,4*wCommon,0,wCommon,hEnemyCity,
+    MainTexture.Image.Canvas.Handle,(wMainTexture-wCommon) div 2,
+    (hMainTexture-hEnemyCity) div 2,SRCCOPY);
+  ImageOp_B(Back,Template,0,0,0,0,5*wCommon,hMax);
+  end
+end;
 
 procedure TUnitStatDlg.FormShow(Sender: TObject);
+var
+owner, mix: integer;
+IsSpecialUnit: boolean;
 begin
-if Kind=dkEnemyUnit then
+if Kind in [dkEnemyUnit,dkEnemyCityDefense,dkEnemyCity] then
   begin
   if MyMap[UnitLoc] and fUnit<>0 then
     begin // find model
@@ -71,35 +132,69 @@ if Kind=dkEnemyUnit then
       end
     end
   else mox:=nil;
-  if MyMap[UnitLoc] and (fCity or fSpiedOut)=fCity then
+  if Kind in [dkEnemyCityDefense,dkEnemyCity] then
     begin
     ecixShow:=MyRO.nEnemyCity-1;
     while (ecixShow>=0) and (MyRO.EnemyCity[ecixShow].Loc<>UnitLoc) do dec(ecixShow);
     assert(ecixShow>=0);
     end
   end;
-WideBottom:=false;
 case Kind of
-  dkOwnModel: InnerHeight:=200;
-  dkEnemyModel: InnerHeight:=139;
-  dkEnemyUnit: InnerHeight:=148;
+  dkOwnModel: ClientHeight:=hOwnModel;
+  dkOwnUnit: ClientHeight:=hEnemyUnit;
+  dkEnemyModel: ClientHeight:=hEnemyModel;
+  dkEnemyUnit: ClientHeight:=hEnemyUnit;
+  dkEnemyCityDefense: ClientHeight:=hEnemyCityDefense;
+  dkEnemyCity: ClientHeight:=hEnemyCity;
   end;
-if Kind=dkEnemyUnit then
-  TitleHeight:=WideFrame+20
-else TitleHeight:=WideFrame;
 
-if WideBottom then ClientHeight:=InnerHeight+TitleHeight+WideFrame
-else ClientHeight:=InnerHeight+TitleHeight+NarrowFrame;
-Top:=(Screen.Height-Height) div 2;
-SwitchBtn.Visible:= Kind=dkOwnModel;
-ConscriptsBtn.Visible:= (Kind=dkOwnModel) and (MyRO.Tech[adConscription]>=tsApplicable)
+if Kind in [dkOwnModel,dkEnemyModel] then
+  begin
+  Left:=UserLeft;
+  Top:=UserTop;
+  end
+else
+  begin
+  Left:=(Screen.Width-Width) div 2;
+  Top:=(Screen.Height-Height) div 2;
+  end;
+
+SwitchBtn.Visible:= not supervising and (Kind=dkOwnModel);
+ConscriptsBtn.Visible:= not supervising and (Kind=dkOwnModel)
+  and (MyRO.Tech[adConscription]>=tsApplicable)
   and (MyModel[mixShow].Domain=dGround) and (MyModel[mixShow].Kind<mkScout);
-if (Kind=dkEnemyUnit) and (MyMap[UnitLoc] and (fCity or fSpiedOut)=fCity) then
-  Caption:=Phrases.Lookup('TITLE_EDEFENSE')
-else if Kind<>dkOwnModel then
-  if MainScreen.mNames.Checked then Caption:=Tribe[mox.Owner].ModelName[mox.mix]
-  else Caption:=Format(Tribe[mox.Owner].TPhrase('GENMODEL'),[mox.mix])
-else Caption:=Tribe[me].ModelName[mixShow];
+IsSpecialUnit:=false;
+if Kind in [dkEnemyCity,dkEnemyCityDefense] then
+   Caption:=CityName(MyRO.EnemyCity[ecixShow].ID)
+else
+  begin
+  case Kind of
+    dkOwnModel:
+      begin
+      owner:=me;
+      mix:=mixShow;
+      IsSpecialUnit:= MyModel[mix].Kind>=$10;
+      end;
+    dkOwnUnit:
+      begin
+      owner:=me;
+      mix:=MyUn[uixShow].mix;
+      IsSpecialUnit:= MyModel[mix].Kind>=$10;
+      end
+    else
+      begin
+      owner:=mox.owner;
+      mix:=mox.mix;
+      IsSpecialUnit:= mox.Kind>=$10;
+      end;
+    end;
+  if MainScreen.mNames.Checked then
+    Caption:=Tribe[Owner].ModelName[mix]
+  else Caption:=Format(Tribe[Owner].TPhrase('GENMODEL'),[mix])
+  end;
+if IsSpecialUnit then
+  HelpBtn.Hint:=Phrases.Lookup('CONTROLS',6);
+HelpBtn.Visible:=IsSpecialUnit;
 OffscreenPaint;
 end;
 
@@ -107,6 +202,13 @@ procedure TUnitStatDlg.ShowNewContent_OwnModel(NewMode, mix: integer);
 begin
 Kind:=dkOwnModel;
 mixShow:=mix;
+inherited ShowNewContent(NewMode);
+end;
+
+procedure TUnitStatDlg.ShowNewContent_OwnUnit(NewMode, uix: integer);
+begin
+Kind:=dkOwnUnit;
+uixShow:=uix;
 inherited ShowNewContent(NewMode);
 end;
 
@@ -133,36 +235,27 @@ mox:=@MyRO.EnemyModel[emix];
 inherited ShowNewContent(NewMode);
 end;
 
+procedure TUnitStatDlg.ShowNewContent_EnemyCity(NewMode, Loc: integer);
+begin
+if MyMap[Loc] and fUnit<>0 then
+  Kind:=dkEnemyCityDefense
+else Kind:=dkEnemyCity;
+UnitLoc:=Loc;
+euixShow:=-1;
+inherited ShowNewContent(NewMode);
+end;
+
+procedure TUnitStatDlg.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+if Kind in [dkOwnModel,dkEnemyModel] then
+  begin UserLeft:=Left; UserTop:=Top end;
+if OffscreenUser=self then OffscreenUser:=nil;
+end;
+
 procedure TUnitStatDlg.CloseBtnClick(Sender: TObject);
 begin
 Close
-end;
-
-procedure TUnitStatDlg.FormCreate(Sender: TObject);
-begin
-inherited;
-WideBottom:=true;
-CaptionRight:=CloseBtn.Left;
-InnerHeight:=ClientHeight-2*WideFrame;
-InitButtons(self);
-end;
-
-procedure TUnitStatDlg.FormPaint(Sender: TObject);
-var
-s: string;
-begin
-inherited;
-if SwitchBtn.Visible then BtnFrame(Canvas,SwitchBtn.BoundsRect,MainTexture);
-if ConscriptsBtn.Visible then BtnFrame(Canvas,ConscriptsBtn.BoundsRect,MainTexture);
-if Kind=dkEnemyUnit then
-  begin
-  Canvas.Font.Assign(UniFont[ftNormal]);
-  if MyMap[UnitLoc] and (fCity or fSpiedOut)=fCity then
-    s:=CityName(MyRO.EnemyCity[ecixShow].ID)
-  else s:=Tribe[mox.Owner].TPhrase('UNITOWNER');
-  LoweredTextOut(Canvas, -1, MainTexture,
-    (ClientWidth-BiColorTextWidth(Canvas,s)) div 2, 31, s);
-  end
 end;
 
 procedure TUnitStatDlg.OffscreenPaint;
@@ -189,7 +282,7 @@ PPicture: ^TModelPicture;
   i,w,dx,num: integer;
   s: string;
   begin
-  DarkGradient(dst.Canvas,x-6,y+1,179,1);
+  DarkGradient(dst.Canvas,x-6,y+1,180,1);
   with dst.Canvas do
     if mi.Kind>=$10 then
       begin
@@ -246,18 +339,54 @@ PPicture: ^TModelPicture;
   end;
 
 var
-i,j,x,y,cix,uix,emix,InProd,Available,Destroyed,Loc,Cnt: integer;
+i,j,x,y,cix,uix,emix,InProd,Available,Destroyed,Loc,Cnt,yView,yTotal,
+  yCaption: integer;
 s: string;
+ui: TUnitInfo;
 mi: TModelInfo;
 begin
 inherited;
 
-FillOffscreen(0,0,InnerWidth,InnerHeight);
-MarkUsedOffscreen(InnerWidth,InnerHeight);
+case Kind of
+  dkOwnModel:
+    begin
+    bitblt(offscreen.canvas.handle,0,0,wCommon,hOwnModel,Back.Canvas.handle,0,0,SRCCOPY);
+    yView:=13;
+    yTotal:=92;
+    end;
+  dkEnemyModel:
+    begin
+    bitblt(offscreen.canvas.handle,0,0,wCommon,hEnemyModel,Back.Canvas.handle,wCommon,0,SRCCOPY);
+    yView:=13;
+    yTotal:=92;
+    end;
+  dkEnemyUnit,dkOwnUnit:
+    begin
+    bitblt(offscreen.canvas.handle,0,0,wCommon,hEnemyUnit,Back.Canvas.handle,2*wCommon,0,SRCCOPY);
+    yView:=13;
+    yTotal:=123;
+    end;
+  dkEnemyCityDefense:
+    begin
+    bitblt(offscreen.canvas.handle,0,0,wCommon,hEnemyCityDefense,Back.Canvas.handle,3*wCommon,0,SRCCOPY);
+    yView:=171;
+    yTotal:=231;
+    end;
+  dkEnemyCity:
+    begin
+    bitblt(offscreen.canvas.handle,0,0,wCommon,hEnemyCity,Back.Canvas.handle,4*wCommon,0,SRCCOPY);
+    end;
+  end;
+MarkUsedOffscreen(ClientWidth,ClientHeight);
+HelpBtn.Top:=yTotal+22;
 
-if (Kind=dkEnemyUnit) and (MyMap[UnitLoc] and (fCity or fSpiedOut)=fCity) then
+if Kind in [dkEnemyCityDefense,dkEnemyCity] then
   begin // show city defense facilities
-  x:=13;
+  cnt:=0;
+  for i:=0 to 3 do
+    if MyRO.EnemyCity[ecixShow].Flags and (2 shl i)<>0 then
+      inc(cnt);
+  x:=(wCommon-cnt*xSizeSmall) div 2 -(cnt-1)*2;
   for i:=0 to 3 do
     if MyRO.EnemyCity[ecixShow].Flags and (2 shl i)<>0 then
       begin
@@ -267,10 +396,13 @@ if (Kind=dkEnemyUnit) and (MyMap[UnitLoc] and (fCity or fSpiedOut)=fCity) then
         2: j:=imMissileBat;
         3: j:=imBunker
         end;
-      ImpImage(offscreen.canvas,x,96,j,gDespotism);
-      inc(x,64)
+      Frame(offscreen.Canvas,x-1,yImp-1,x+xSizeSmall,yImp+ySizeSmall,
+        MainTexture.clBevelLight,MainTexture.clBevelShade);
+      BitBlt(offscreen.Canvas.Handle,x,yImp,xSizeSmall,ySizeSmall,
+        SmallImp.Canvas.Handle,j mod 7*xSizeSmall,
+        (j+SystemIconLines*7) div 7*ySizeSmall,SRCCOPY);
+      inc(x,xSizeSmall+4)
       end;
-  if mox=nil then exit;
   end;
 
 if Kind=dkEnemyModel then
@@ -307,131 +439,169 @@ else
       inc(InProd);
   end;
 
-if Kind<>dkOwnModel then mi:=mox^
-else MakeModelInfo(me,mixShow,MyModel[mixShow],mi);
-with Tribe[mi.Owner].ModelPicture[mi.mix] do
+offscreen.Canvas.Font.Assign(UniFont[ftSmall]);
+if Kind in [dkEnemyCityDefense,dkEnemyCity] then
   begin
-  offscreen.Canvas.Font.Assign(UniFont[ftSmall]);
+  NoMap.SetOutput(offscreen);
+  NoMap.PaintCity(ClientWidth div 2,53,MyRO.EnemyCity[ecixShow],false);
 
-  if Kind=dkEnemyUnit then with MyRO.EnemyUn[euixShow] do
+  s:=Tribe[MyRO.EnemyCity[ecixShow].Owner].TPhrase('UNITOWNER');
+  LoweredTextOut(offscreen.Canvas, -1, MainTexture,
+    (ClientWidth-BiColorTextWidth(offscreen.Canvas,s)) div 2, 105, s);
+  end;
+
+if Kind<>dkEnemyCity then
+  begin // show unit stats
+  if Kind=dkOwnModel then
+    MakeModelInfo(me,mixShow,MyModel[mixShow],mi)
+  else if Kind=dkOwnUnit then
     begin
-    Frame(offscreen.canvas,xView-1,yView-1,xView+64,yView+48,
-      MainTexture.clBevelShade,MainTexture.clBevelLight);
-    RFrame(offscreen.canvas,xView-2,yView-2,xView+65,yView+49,
-      MainTexture.clBevelShade,MainTexture.clBevelLight);
-    with offscreen.canvas do
-      begin
-      Brush.Color:=GrExt[HGrSystem].Data.Canvas.Pixels[98,67];
-      offscreen.canvas.FillRect(Rect(xView,yView,xView+64,yView+16));
-      Brush.Style:=bsClear;
-      end;
-
-    // show terrain
-    if MyMap[UnitLoc] and fTerrain>=fForest then
-      begin x:=1+2*(xxt*2+1); y:=1+yyt+2*(yyt*3+1) end
-    else begin x:=integer(MyMap[UnitLoc] and fTerrain) *(xxt*2+1)+1; y:=1+yyt end;
-    for j:=-1 to 1 do for i:=-1 to 1 do if (i+j) and 1=0 then
-      begin
-      Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,x,y);
-      if MyMap[UnitLoc] and (fTerrain or fSpecial)=fGrass or fSpecial1 then
-        Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,1+2*(xxt*2+1),
-          1+yyt+1*(yyt*3+1))
-      else if (MyMap[UnitLoc] and fTerrain=fForest)
-        and IsJungle(UnitLoc div G.lx) then
-        Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,1+7*(xxt*2+1),
-          1+yyt+19*(yyt*3+1))
-      else if MyMap[UnitLoc] and fTerrain>=fForest then
-        Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,1+7*(xxt*2+1),
-          1+yyt+2*integer(2+MyMap[UnitLoc] and fTerrain-fForest)*(yyt*3+1));
-      end;
-    BitBlt(offscreen.canvas.handle,xView,yView+16,xxt*2,yyt*2,Buffer.Canvas.Handle,1,0,
-      SRCCOPY);
-
-    // show unit, experience and health
-    Sprite(offscreen,HGr,xView,yView,64,48,pix mod 10 *65+1,pix div 10*49+1);
-    if Flags and unFortified<>0 then
-      Sprite(offscreen,HGrStdUnits,xView,yView,xxu*2,yyu*2,1+6*(xxu*2+1),1);
-    FrameImage(offscreen.canvas,GrExt[HGrSystem].Data,xView,yView+53,12,14,
-      121+Exp div ExpCost *13,28);
-    if Health<100 then
-      begin
-      s:=IntToStr(Health)+'%';
-      LightGradient(offscreen.canvas,xView+26,yView+52,38,
-        (ColorOfHealth(Health) and $FEFEFE shr 2)*3);
-      RisedTextOut(offscreen.canvas,xView+26+20-BiColorTextWidth(offscreen.Canvas,s) div 2,
-        yView+51,s);
-      end;
+    MakeUnitInfo(me,MyUn[uixShow],ui);
+    MakeModelInfo(me,MyUn[uixShow].mix,MyModel[MyUn[uixShow].mix],mi)
     end
   else
     begin
-    FrameImage(offscreen.canvas,BigImp,xView+4,yView+20+4,56,40,0,0);
-    Sprite(offscreen,HGr,xView,yView+20,64,44,pix mod 10 *65+1,pix div 10*49+1);
+    mi:=mox^;
+    if Kind in [dkEnemyUnit,dkEnemyCityDefense] then
+      ui:=MyRO.EnemyUn[euixShow]
     end;
 
-  DarkGradient(offscreen.Canvas,xTotal-6,yTotal+1,179,2);
-  RisedTextOut(offscreen.Canvas,xTotal-2,yTotal,Phrases.Lookup('UNITSTRENGTH'));
-  s:=IntToStr(mi.Attack)+'/'+IntToStr(mi.Defense);
-  RisedTextOut(offscreen.Canvas,xTotal+170-BiColorTextWidth(Offscreen.Canvas,s),yTotal,s);
-  FeatureBar(offscreen,xTotal,yTotal+19,mi,MainTexture);
-  NumberBarS(offscreen,xTotal,yTotal+38,Phrases.Lookup('UNITSPEED'),MovementToString(mi.Speed),MainTexture);
-  LoweredTextOut(offscreen.Canvas,-1,MainTexture,xTotal-2,yTotal+57,Phrases.Lookup('UNITCOST'));
-  DLine(offscreen.Canvas,xTotal-2,xTotal+169,yTotal+57+16,
-    MainTexture.clBevelShade,MainTexture.clBevelLight);
-  if G.Difficulty[me]=0 then s:=IntToStr(mi.cost)
-  else s:=IntToStr(mi.cost*BuildCostMod[G.Difficulty[me]] div 12);
-  RisedTextout(offscreen.Canvas,xTotal+159-BiColorTextWidth(Offscreen.Canvas,s),yTotal+57,s);
-  Sprite(offscreen,HGrSystem,xTotal+160,yTotal+57+5,10,10,88,115);
-
-  if Kind=dkOwnModel then
+  with Tribe[mi.Owner].ModelPicture[mi.mix] do
     begin
-    if MyModel[mixShow].IntroTurn>0 then
+    if Kind in [dkOwnUnit,dkEnemyUnit,dkEnemyCityDefense] then with ui do
       begin
-      if MyModel[mixShow].Kind=mkEnemyDeveloped then
-        LoweredTextOut(offscreen.Canvas,-1,MainTexture,xStat-2,(yStat-19),Phrases.Lookup('UNITADOPT'))
-      else LoweredTextOut(offscreen.Canvas,-1,MainTexture,xStat-2,(yStat-19),Phrases.Lookup('UNITINTRO'));
-      DLine(offscreen.Canvas,xStat-2,xStat+169,(yStat-19)+16,
-        MainTexture.clTextShade,MainTexture.clTextLight);
-      s:=TurnToString(MyModel[mixShow].IntroTurn);
-      RisedTextOut(offscreen.Canvas,xStat+170-BiColorTextWidth(Offscreen.Canvas,s),(yStat-19),s);
-      end;
+      {Frame(offscreen.canvas,xView-1,yView-1,xView+64,yView+48,
+        MainTexture.clBevelShade,MainTexture.clBevelLight);
+      RFrame(offscreen.canvas,xView-2,yView-2,xView+65,yView+49,
+        MainTexture.clBevelShade,MainTexture.clBevelLight);}
+      with offscreen.canvas do
+        begin
+        Brush.Color:=GrExt[HGrSystem].Data.Canvas.Pixels[98,67];
+        offscreen.canvas.FillRect(Rect(xView,yView,xView+64,yView+16));
+        Brush.Style:=bsClear;
+        end;
 
-    NumberBar(offscreen,xStat,yStat,Phrases.Lookup('UNITBUILT'),MyModel[mixShow].Built,MainTexture);
-    if MyModel[mixShow].Lost>0 then
-      NumberBar(offscreen,xStat,yStat+19,Phrases.Lookup('UNITLOST'),MyModel[mixShow].Lost,MainTexture);
-    if InProd>0 then
-      NumberBar(offscreen,xStat,yStat+57,Phrases.Lookup('UNITINPROD'),InProd,MainTexture);
-    if Available>0 then
-      NumberBar(offscreen,xStat,yStat+38,Phrases.Lookup('UNITAVAILABLE'),Available,MainTexture);
+      if MyMap[Loc] and fTerrain>=fForest then
+        begin x:=1+2*(xxt*2+1); y:=1+yyt+2*(yyt*3+1) end
+      else begin x:=integer(MyMap[Loc] and fTerrain) *(xxt*2+1)+1; y:=1+yyt end;
+      for j:=-1 to 1 do for i:=-1 to 1 do if (i+j) and 1=0 then
+        begin
+        Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,x,y);
+        if MyMap[Loc] and (fTerrain or fSpecial)=fGrass or fSpecial1 then
+          Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,1+2*(xxt*2+1),
+            1+yyt+1*(yyt*3+1))
+        else if (MyMap[Loc] and fTerrain=fForest)
+          and IsJungle(Loc div G.lx) then
+          Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,1+7*(xxt*2+1),
+            1+yyt+19*(yyt*3+1))
+        else if MyMap[Loc] and fTerrain>=fForest then
+          Sprite(Buffer,HGrTerrain,i*xxt,j*yyt,xxt*2,yyt*2,1+7*(xxt*2+1),
+            1+yyt+2*integer(2+MyMap[Loc] and fTerrain-fForest)*(yyt*3+1));
+        end;
+      BitBlt(offscreen.canvas.handle,xView,yView+16,64,32,Buffer.Canvas.Handle,1,0,
+        SRCCOPY);
 
-    if MyModel[mixShow].Status and msObsolete<>0 then
-      begin
-      SwitchBtn.ButtonIndex:=12;
-      SwitchBtn.Hint:=Phrases.Lookup('BTN_OBSOLETE');
+      // show unit, experience and health
+      Sprite(offscreen,HGr,xView,yView,64,48,pix mod 10 *65+1,pix div 10*49+1);
+      if Flags and unFortified<>0 then
+        Sprite(offscreen,HGrStdUnits,xView,yView,xxu*2,yyu*2,1+6*(xxu*2+1),1);
+      FrameImage(offscreen.canvas,GrExt[HGrSystem].Data,xView-20,yView+5,12,14,
+        121+Exp div ExpCost *13,28);
+      if Health<100 then
+        begin
+        s:=IntToStr(Health)+'%';
+        LightGradient(offscreen.canvas,xView-45,yView+24,38,
+          (ColorOfHealth(Health) and $FEFEFE shr 2)*3);
+        RisedTextOut(offscreen.canvas,xView-45+20-BiColorTextWidth(offscreen.Canvas,s) div 2,
+          yView+23,s);
+        end;
+
+      if Kind=dkEnemyUnit then
+        begin
+        s:=Tribe[mox.Owner].TPhrase('UNITOWNER');
+        LoweredTextOut(offscreen.Canvas, -1, MainTexture,
+          (ClientWidth-BiColorTextWidth(offscreen.Canvas,s)) div 2, yView+80, s);
+        end
       end
     else
       begin
-      SwitchBtn.ButtonIndex:=11;
-      SwitchBtn.Hint:=Phrases.Lookup('BTN_NONOBSOLETE');
+      FrameImage(offscreen.canvas,BigImp,xView+4,yView,56,40,0,0);
+      Sprite(offscreen,HGr,xView,yView-4,64,44,pix mod 10 *65+1,pix div 10*49+1);
       end;
-    if MyModel[mixShow].Status and msAllowConscripts=0 then
+
+    DarkGradient(offscreen.Canvas,xTotal-6,yTotal+1,180,2);
+    RisedTextOut(offscreen.Canvas,xTotal-2,yTotal,Phrases.Lookup('UNITSTRENGTH'));
+    s:=IntToStr(mi.Attack)+'/'+IntToStr(mi.Defense);
+    RisedTextOut(offscreen.Canvas,xTotal+170-BiColorTextWidth(Offscreen.Canvas,s),yTotal,s);
+    FeatureBar(offscreen,xTotal,yTotal+19,mi,MainTexture);
+    NumberBarS(offscreen,xTotal,yTotal+38,Phrases.Lookup('UNITSPEED'),MovementToString(mi.Speed),MainTexture);
+    LoweredTextOut(offscreen.Canvas,-1,MainTexture,xTotal-2,yTotal+57,Phrases.Lookup('UNITCOST'));
+    DLine(offscreen.Canvas,xTotal-2,xTotal+170,yTotal+57+16,
+      MainTexture.clBevelShade,MainTexture.clBevelLight);
+    if G.Difficulty[me]=0 then s:=IntToStr(mi.cost)
+    else s:=IntToStr(mi.cost*BuildCostMod[G.Difficulty[me]] div 12);
+    RisedTextout(offscreen.Canvas,xTotal+159-BiColorTextWidth(Offscreen.Canvas,s),yTotal+57,s);
+    Sprite(offscreen,HGrSystem,xTotal+160,yTotal+57+5,10,10,88,115);
+
+    if Kind=dkOwnModel then
       begin
-      ConscriptsBtn.ButtonIndex:=30;
-      ConscriptsBtn.Hint:=Phrases.Lookup('BTN_NOCONSCRIPTS');
+      if MyModel[mixShow].IntroTurn>0 then
+        begin
+        if MyModel[mixShow].Kind=mkEnemyDeveloped then
+          LoweredTextOut(offscreen.Canvas,-1,MainTexture,xTotal-2,(yTotal+StatDown-19),Phrases.Lookup('UNITADOPT'))
+        else LoweredTextOut(offscreen.Canvas,-1,MainTexture,xTotal-2,(yTotal+StatDown-19),Phrases.Lookup('UNITINTRO'));
+        DLine(offscreen.Canvas,xTotal-2,xTotal+170,(yTotal+StatDown-19)+16,
+          MainTexture.clTextShade,MainTexture.clTextLight);
+        s:=TurnToString(MyModel[mixShow].IntroTurn);
+        RisedTextOut(offscreen.Canvas,xTotal+170-BiColorTextWidth(Offscreen.Canvas,s),(yTotal+StatDown-19),s);
+        end;
+
+      NumberBar(offscreen,xTotal,yTotal+StatDown,Phrases.Lookup('UNITBUILT'),MyModel[mixShow].Built,MainTexture);
+      if MyModel[mixShow].Lost>0 then
+        NumberBar(offscreen,xTotal,yTotal+StatDown+19,Phrases.Lookup('UNITLOST'),MyModel[mixShow].Lost,MainTexture);
+      if InProd>0 then
+        NumberBar(offscreen,xTotal,yTotal+StatDown+57,Phrases.Lookup('UNITINPROD'),InProd,MainTexture);
+      if Available>0 then
+        NumberBar(offscreen,xTotal,yTotal+StatDown+38,Phrases.Lookup('UNITAVAILABLE'),Available,MainTexture);
+
+      if MyModel[mixShow].Status and msObsolete<>0 then
+        begin
+        SwitchBtn.ButtonIndex:=12;
+        SwitchBtn.Hint:=Phrases.Lookup('BTN_OBSOLETE');
+        end
+      else
+        begin
+        SwitchBtn.ButtonIndex:=11;
+        SwitchBtn.Hint:=Phrases.Lookup('BTN_NONOBSOLETE');
+        end;
+      if MyModel[mixShow].Status and msAllowConscripts=0 then
+        begin
+        ConscriptsBtn.ButtonIndex:=30;
+        ConscriptsBtn.Hint:=Phrases.Lookup('BTN_NOCONSCRIPTS');
+        end
+      else
+        begin
+        ConscriptsBtn.ButtonIndex:=29;
+        ConscriptsBtn.Hint:=Phrases.Lookup('BTN_ALLOWCONSCRIPTS');
+        end
       end
-    else
+    else if Kind=dkEnemyModel then
       begin
-      ConscriptsBtn.ButtonIndex:=29;
-      ConscriptsBtn.Hint:=Phrases.Lookup('BTN_ALLOWCONSCRIPTS');
+      if Destroyed>0 then
+        NumberBar(offscreen,xTotal,yTotal+StatDown-19,Phrases.Lookup('UNITDESTROYED'),Destroyed,MainTexture);
+      if Available>0 then
+        NumberBar(offscreen,xTotal,yTotal+StatDown,Phrases.Lookup('UNITKNOWN'),Available,MainTexture);
       end
-    end
-  else if Kind=dkEnemyModel then
-    begin
-    if Destroyed>0 then
-      NumberBar(offscreen,xStat,yTotal+88,Phrases.Lookup('UNITDESTROYED'),Destroyed,MainTexture);
-    if Available>0 then
-      NumberBar(offscreen,xStat,yTotal+107,Phrases.Lookup('UNITKNOWN'),Available,MainTexture);
-    end
+    end;
   end;
+
+offscreen.Canvas.Font.Assign(UniFont[ftNormal]);
+case Kind of
+  dkOwnModel,dkEnemyModel: yCaption:=yView+46;
+  dkEnemyUnit,dkOwnUnit: yCaption:=yView+54;
+  dkEnemyCityDefense,dkEnemyCity: yCaption:=79;
+  end;
+RisedTextOut(offscreen.Canvas, (ClientWidth-BiColorTextWidth(offscreen.Canvas,caption)) div 2, yCaption, caption);
 end; {OffscreenPaint}
 
 procedure TUnitStatDlg.ModelBoxChange(Sender: TObject);
@@ -467,6 +637,11 @@ else
   ConscriptsBtn.ButtonIndex:=29;
   ConscriptsBtn.Hint:=Phrases.Lookup('BTN_ALLOWCONSCRIPTS');
   end
+end;
+
+procedure TUnitStatDlg.HelpBtnClick(Sender: TObject);
+begin
+HelpDlg.ShowNewContent(wmPersistent, hkModel, 0)
 end;
 
 end.

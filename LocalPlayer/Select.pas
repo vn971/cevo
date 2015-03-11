@@ -51,6 +51,8 @@ type
     procedure ShowNewContent_MilReport(NewMode, p: integer);
     procedure EcoChange;
     procedure TechChange;
+    procedure AddCity;
+    procedure RemoveUnit;
 
   private
     Kind: TListKind;
@@ -60,7 +62,7 @@ type
     Lines, FirstShrinkedLine: array[0..MaxLayer-1] of integer;
     code: array[0..MaxLayer-1,0..4095] of integer;
     Column: array[0..nPl-1] of integer;
-    Closable: boolean;
+    Closable,MultiPage: boolean;
     ScienceNationDot: TBitmap;
     procedure InitLines;
     procedure line(ca: TCanvas; l: integer; NonText, lit: boolean);
@@ -90,7 +92,7 @@ CityScreen, Help, UnitStat, Tribes, Inp;
 {$R *.DFM}
 
 const
-CityNameSpace=112;
+CityNameSpace=127;
 
 MustChooseKind=[kTribe,kStealTech,kGov];
 
@@ -100,7 +102,7 @@ begin
 inherited;
 Canvas.Font.Assign(UniFont[ftNormal]);
 CreatePVSB(sb,Handle,2,361,2+422);
-InitButtons(self);
+InitButtons();
 Kind:=kMission;
 Layer0Btn.Hint:=Phrases.Lookup('BTN_IMPRS');
 Layer1Btn.Hint:=Phrases.Lookup('BTN_WONDERS');
@@ -169,6 +171,13 @@ else if Kind=kEModels then
 if s<>'' then
   LoweredTextOut(Canvas, -1, MainTexture,
     (ClientWidth-BiColorTextWidth(Canvas,s)) div 2, 31, s);
+if not MultiPage and (Kind in [kProject,kAdvance,kFarAdvance])
+  and not Phrases2FallenBackToEnglish then
+  begin
+  s:=Phrases2.Lookup('SHIFTCLICK');
+  LoweredTextOut(Canvas, -2, MainTexture,
+    (ClientWidth-BiColorTextWidth(Canvas,s)) div 2, ClientHeight-29, s);
+  end
 end;
 
 procedure TListDlg.line(ca: TCanvas; l: integer; NonText, lit: boolean);
@@ -213,11 +222,12 @@ procedure TListDlg.line(ca: TCanvas; l: integer; NonText, lit: boolean);
   end;
 
 var
-icon,ofs,x,y,y0,lix,i,j,TextColor,Available,Cost,first,test,FutureCount:integer;
-CityReport: TCityReport;
-CityInfo: TCityInfo;
+icon,ofs,x,y,y0,lix,i,j,TextColor,Available,first,test,FutureCount,
+  growth,TrueFood,TrueProd:integer;
+CityReport: TCityReportNew;
 mox: ^TModelInfo;
 s,number: string;
+CanGrow: boolean;
 begin
 lix:=code[Layer,sb.si.npos+l];
 y0:=2+(l+1)*LineDistance;
@@ -227,7 +237,7 @@ else {if FirstShrinkedLine[Layer]<Lines[Layer] then} ofs:=33;
 
 if Kind in [kCities,kCityEvents] then with MyCity[lix] do
   begin
-  x:=104; y:=y0;
+  x:=104-76; y:=y0;
   if ca=Canvas then
     begin x:=x+SideFrame; y:=y+TitleHeight end;
   if lit then TextColor:=MainTexture.clLitText else TextColor:=-1;
@@ -235,6 +245,19 @@ if Kind in [kCities,kCityEvents] then with MyCity[lix] do
   while BiColorTextWidth(ca,s)>CityNameSpace do
     delete(s,length(s),1);
   ReplaceText(x+15,y,TextColor,s);
+
+  if NonText then with offscreen.canvas do
+    begin // city size
+    brush.color:=$000000;
+    fillrect(rect(x-4-11,y+1,x-4+13,y+21));
+    brush.color:=$FFFFFF;
+    fillrect(rect(x-4-12,y,x-4+12,y+20));
+    brush.style:=bsClear;
+    font.color:=$000000;
+    s:=inttostr(MyCity[lix].Size);
+    TextOut(x-4-textwidth(s) div 2, y, s);
+    end;
+
   if Kind=kCityEvents then
     begin
     first:=-1;
@@ -247,15 +270,15 @@ if Kind in [kCities,kCityEvents] then with MyCity[lix] do
       test:=1;
       while test<CityEventPriority[first] do
         begin inc(i); inc(test,test) end;
-      s:=Phrases.Lookup('CITYEVENTS',i);
+      s:=CityEventName(i);
 {      if CityEventPriority[first]=chNoGrowthWarning then
         if Built[imAqueduct]=0 then
           s:=Format(s,[Phrases.Lookup('IMPROVEMENTS',imAqueduct)])
         else begin s:=Format(s,[Phrases.Lookup('IMPROVEMENTS',imSewer)]); i:=17 end;}
-      ReplaceText(x+(CityNameSpace+40+18+8),y,TextColor,s);
+      ReplaceText(x+(CityNameSpace+4+40+18+8),y,TextColor,s);
       if NonText then
         begin
-        Sprite(offscreen,HGrSystem,105+CityNameSpace+40,y0+1,18,18,
+        Sprite(offscreen,HGrSystem,105-76+CityNameSpace+4+40,y0+1,18,18,
           1+i mod 3 *19,1+i div 3 *19);
         x:=InnerWidth-26;
         for j:=nCityEventPriority-1 downto first+1 do
@@ -278,67 +301,83 @@ if Kind in [kCities,kCityEvents] then with MyCity[lix] do
   else
     begin
     CityReport.HypoTiles:=-1;
-    CityReport.HypoTax:=-1;
-    CityReport.HypoLux:=-1;
-    Server(sGetCityReport,me,lix,CityReport);
+    CityReport.HypoTaxRate:=-1;
+    CityReport.HypoLuxuryRate:=-1;
+    Server(sGetCityReportNew,me,lix,CityReport);
+    TrueFood:=Food;
+    TrueProd:=Prod;
+    if supervising then
+      begin // normalize city from after-turn state
+      dec(TrueFood,CityReport.FoodSurplus);
+      if TrueFood<0 then
+        TrueFood:=0; // shouldn't happen
+      dec(TrueProd,CityReport.Production);
+      if TrueProd<0 then
+        TrueProd:=0; // shouldn't happen
+      end;
+
     s:=''; // disorder info
     if Flags and chCaptured<>0 then
       s:=Phrases.Lookup('CITYEVENTS',14)
-    else if CityReport.Working-CityReport.Happy>Size div 2 then
+    else if CityReport.HappinessBalance<0 then
       s:=Phrases.Lookup('CITYEVENTS',0);
     if s<>'' then
       begin {disorder}
       if NonText then
         begin
-        DarkGradient(offscreen.Canvas,99+31+CityNameSpace,y0+1,131,3);
+        DarkGradient(offscreen.Canvas,99+31+CityNameSpace+4,y0+2,131,3);
         ca.Font.Assign(UniFont[ftSmall]);
-        RisedTextout(offscreen.canvas,103+CityNameSpace+31,y0,s);
+        RisedTextout(offscreen.canvas,103+CityNameSpace+4+31,y0+1,s);
         ca.Font.Assign(UniFont[ftNormal]);
         end
       end
     else
       begin
-      s:=IntToStr(CityReport.FoodRep-CityReport.Eaten);
-      ReplaceText(x+(CityNameSpace+48)-BiColorTextWidth(ca,s),y,TextColor,s);
+{      s:=IntToStr(CityReport.FoodSurplus);
+      ReplaceText(x+(CityNameSpace+4+48)-BiColorTextWidth(ca,s),y,TextColor,s);}
       s:=IntToStr(CityReport.Science);
-      ReplaceText(x+(CityNameSpace+96)-BiColorTextWidth(ca,s),y,TextColor,s);
-      s:=IntToStr(CityReport.ProdRep);
-      ReplaceText(x+(CityNameSpace+144)-BiColorTextWidth(ca,s),y,TextColor,s);
+      ReplaceText(x+CityNameSpace+4+370+48-BiColorTextWidth(ca,s),y,TextColor,s);
+      s:=IntToStr(CityReport.Production);
+      ReplaceText(x+CityNameSpace+4+132-BiColorTextWidth(ca,s),y,TextColor,s);
       if NonText then
         begin
-        Sprite(offscreen,HGrSystem,105+CityNameSpace+48,y+6,10,10,66,115);
-        Sprite(offscreen,HGrSystem,105+CityNameSpace+96,y+6,10,10,77,126);
-        Sprite(offscreen,HGrSystem,105+CityNameSpace+144,y+6,10,10,88,115);
+        //Sprite(offscreen,HGrSystem,x+CityNameSpace+4+333+1,y+6,10,10,66,115);
+        Sprite(offscreen,HGrSystem,x+CityNameSpace+4+370+48+1,y+6,10,10,77,126);
+        Sprite(offscreen,HGrSystem,x+CityNameSpace+4+132+1,y+6,10,10,88,115);
         end
       end;
     s:=IntToStr(CityTaxBalance(lix, CityReport));
-    ReplaceText(x+(CityNameSpace+192)-BiColorTextWidth(ca,s),y,TextColor,s);
-    if Project and (cpImp+cpIndex)<>cpImp+imTrGoods then
-      begin
-      Cost:=CityReport.ProdCost;
-      ReplaceText(x+(CityNameSpace+304),y,TextColor,Format('%d/%d',[Prod,Cost]));
-      end;
+    ReplaceText(x+CityNameSpace+4+370-BiColorTextWidth(ca,s),y,TextColor,s);
+    //if Project and (cpImp+cpIndex)<>cpImp+imTrGoods then
+    //  ReplaceText(x+CityNameSpace+4+333+1,y,TextColor,Format('%d/%d',[TrueProd,CityReport.ProjectCost]));
     if NonText then
       begin
-      Sprite(offscreen,HGrSystem,105+CityNameSpace+192,y+6,10,10,132,115);
-      if Project<>cpImp+imTrGoods then
-        DisplayProject(ofs+(104+CityNameSpace+206),y0-17,Project);
-      end
-    end;
+      Sprite(offscreen,HGrSystem,x+CityNameSpace+4+370+1,y+6,10,10,132,115);
 
-  if NonText then
-    begin // paint city picture
-    CityInfo.Loc:=Loc;
-    CityInfo.Owner:=me;
-    CityInfo.Size:=Size;
-    CityInfo.Flags:=0;
-    if Built[imPalace]=1 then inc(CityInfo.Flags,ciCapital);
-    if (Built[imWalls]=1) or (MyMap[Loc] and fGrWall<>0) then
-      inc(CityInfo.Flags,ciWalled);
-    offscreen.Canvas.Font.Assign(UniFont[ftSmall]);
-    NoMap.SetOutput(offscreen);
-    NoMap.PaintCity(ofs+8,y0-15,CityInfo);
-    offscreen.Canvas.Font.Assign(UniFont[ftNormal]);
+      // food progress
+      CanGrow:=(Size<MaxCitySize) and (MyRO.Government<>gFuture)
+        and (CityReport.FoodSurplus>0)
+        and ((Size<NeedAqueductSize)
+          or (Built[imAqueduct]=1) and (Size<NeedSewerSize)
+          or (Built[imSewer]=1));
+      PaintRelativeProgressBar(offscreen.canvas,1,x+15+CityNameSpace+4,y+7,68,TrueFood,
+        CutCityFoodSurplus(CityReport.FoodSurplus,
+        (MyRO.Government<>gAnarchy) and (Flags and chCaptured=0),
+        MyRO.Government,Size),CityReport.Storage,CanGrow,MainTexture);
+
+      if Project<>cpImp+imTrGoods then
+        begin
+        DisplayProject(ofs+104-76+x-28+CityNameSpace+4+206-60,y0-15,Project);
+
+        // production progress
+        growth:=CityReport.Production;
+        if (growth<0) or (MyRO.Government=gAnarchy)
+          or (Flags and chCaptured<>0) then
+          growth:=0;
+        PaintRelativeProgressBar(offscreen.canvas,4,x+CityNameSpace+4+304-60+9,y+7,68,
+          TrueProd,growth,CityReport.ProjectCost,true,MainTexture);
+        end;
+      end
     end;
   end
 else if Kind in [kModels,kEModels] then
@@ -411,7 +450,11 @@ else
         begin
         s:=Phrases.Lookup('IMPROVEMENTS',lix and cpIndex);
         if (Imp[lix and cpIndex].Kind in [ikNatLocal,ikNatGlobal])
-          and (MyRO.NatBuilt[lix and cpIndex]>0) then
+            and (MyRO.NatBuilt[lix and cpIndex]>0)
+          or (lix and cpIndex in [imPower,imHydro,imNuclear])
+            and (MyCity[cixProject].Built[imPower]
+              +MyCity[cixProject].Built[imHydro]
+              +MyCity[cixProject].Built[imNuclear]>0) then
           s:=Format(Phrases.Lookup('NATEXISTS'),[s]);
         end;
       if NonText then DisplayProject(8+ofs,y0-15,lix);
@@ -802,6 +845,16 @@ required: array[0..nAdv-1] of integer;
         begin swap:=code[0,i]; code[0,i]:=code[0,j]; code[0,j]:=swap end;
   end;
 
+  procedure SortCities;
+  var
+  i,j,swap: integer;
+  begin
+  for i:=0 to Lines[0]-2 do
+    for j:=i+1 to Lines[0]-1 do
+      if CityName(MyCity[code[0,i]].ID)>CityName(MyCity[code[0,j]].ID) then
+        begin swap:=code[0,i]; code[0,i]:=code[0,j]; code[0,j]:=swap end;
+  end;
+
   function ModelSortValue(const mi: TModelInfo; MixPlayers: boolean = false): integer;
   begin
   result:=(mi.Domain+1) shl 28 -mi.mix;
@@ -990,6 +1043,7 @@ case Kind of
     if ClientMode<scContact then
       for i:=0 to MyRO.nCity-1 do if MyCity[i].Loc>=0 then
         begin code[0,Lines[0]]:=i; inc(Lines[0]) end;
+    SortCities;
     FirstShrinkedLine[0]:=0
     end;
   kCityEvents:
@@ -997,6 +1051,7 @@ case Kind of
     for i:=0 to MyRO.nCity-1 do
       if (MyCity[i].Loc>=0) and (MyCity[i].Flags and CityRepMask<>0) then
         begin code[0,Lines[0]]:=i; inc(Lines[0]) end;
+    SortCities;
     FirstShrinkedLine[0]:=0
     end;
 {  kChooseECity:
@@ -1184,18 +1239,27 @@ end;
 procedure TListDlg.FormShow(Sender: TObject);
 var
 i: integer;
-MultiPage: boolean;
 begin
 result:=-1;
 Closable:=false;
 
-if Kind=kTribe then LineDistance:=21 // looks ugly with scrollbar
-else LineDistance:=24;
+if Kind=kTribe then
+  begin
+  LineDistance:=21; // looks ugly with scrollbar
+  MaxLines:=(hMainTexture-(24+TitleHeight+NarrowFrame)) div LineDistance -1;
+  end
+else
+  begin
+  LineDistance:=24;
+  MaxLines:=(hMainTexture-(24+TitleHeight+WideFrame)) div LineDistance -1;
+  end;
 InitLines;
 
 MultiPage:=false;
 for i:=1 to MaxLayer-1 do if Lines[i]>0 then MultiPage:=true;
-WideBottom:=MultiPage or (Kind=kScience);
+WideBottom:=MultiPage or (Kind=kScience)
+  or not Phrases2FallenBackToEnglish
+    and (Kind in [kProject,kAdvance,kFarAdvance]);
 if (Kind=kAdvance) and (MyData.FarTech<>adNone)
   or (Kind=kModels) or (Kind=kEModels) then
   TitleHeight:=WideFrame+20
@@ -1205,7 +1269,6 @@ DispLines:=Lines[0];
 for i:=0 to MaxLayer-1 do if Lines[i]>DispLines then DispLines:=Lines[i];
 if WideBottom then
   begin
-  MaxLines:=(hMainTexture-(24+TitleHeight+WideFrame)) div LineDistance -1;
   if DispLines>MaxLines then
     DispLines:=MaxLines;
   InnerHeight:=LineDistance*(DispLines+1)+24;
@@ -1213,7 +1276,6 @@ if WideBottom then
   end
 else
   begin
-  MaxLines:=(hMainTexture-(24+TitleHeight+NarrowFrame)) div LineDistance -1;
   if DispLines>MaxLines then
     DispLines:=MaxLines;
   InnerHeight:=LineDistance*(DispLines+1)+24;
@@ -1224,7 +1286,7 @@ assert(ClientHeight<=hMainTexture);
 TechNameSpace:=224;
 case Kind of
   kGov: InnerWidth:=272;
-  kCities, kCityEvents: InnerWidth:=496+CityNameSpace;
+  kCities, kCityEvents: InnerWidth:=640-18;
   kTribe:
     if Lines[0]>MaxLines then InnerWidth:=280+GetSystemMetrics(SM_CXVSCROLL)
     else InnerWidth:=280;
@@ -1258,6 +1320,8 @@ if WindowMode=wmModal then
     Left:=(Screen.Width-800)*3 div 8+130
   else Left:=(Screen.Width-Width) div 2;
   Top:=(Screen.Height-Height) div 2;
+  if Kind=kProject then
+    Top:=Top+48;
   end;
 
 Layer0Btn.Visible:= MultiPage and (Lines[0]>0);
@@ -1347,8 +1411,10 @@ if Kind=kAdvance then // show focus button?
         and (Server(sSetResearch-sExecute,me,i,nil^)<rExecuted) then
         ShowFocus:=true;
     end;
-ToggleBtn.Visible:= (Kind=kCities) or (Kind=kAdvance) and ShowFocus
-  or (Kind=kModels) or (Kind=kEModels);
+ToggleBtn.Visible:= (Kind=kCities) and not supervising
+  or (Kind=kAdvance) and ShowFocus
+  or (Kind=kModels)
+  or (Kind=kEModels);
 CloseBtn.Visible:= not(Kind in MustChooseKind);
 
 inherited ShowNewContent(NewMode, forceclose);
@@ -1415,7 +1481,7 @@ case Kind of
     end;
   kModels, kEModels:
     begin
-    while Popup.Items.Count>0 do Popup.Items.Delete(0);
+    EmptyMenu(Popup.Items);
     if G.Difficulty[me]>0 then
       begin
       m:=TMenuItem.Create(Popup);
@@ -1466,6 +1532,21 @@ if Visible and (Kind=kScience) then
   FormShow(nil);
   Invalidate;
   end;
+end;
+
+procedure TListDlg.AddCity;
+begin
+if Visible and (Kind=kCities) then
+  begin
+  FormShow(nil);
+  Invalidate;
+  end;
+end;
+
+procedure TListDlg.RemoveUnit;
+begin
+if ListDlg.Visible and (Kind=kModels) then
+  SmartUpdateContent;
 end;
 
 end.

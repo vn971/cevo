@@ -11,7 +11,7 @@ uses
 
 type
 TCityPicture=record
-  xShield,yShield,xf,yf:integer;
+  xShield,yShield:integer;
   end;
 TModelPicture=record
   HGr,pix,xShield,yShield:integer;
@@ -43,7 +43,6 @@ protected
   CityLine0,nCityLines: integer;
   Name: array['a'..'z'] of string;
   Script: tstringlist;
-  procedure FindPosition(HGr,x,y: integer; Mark: TColor; var xp,yp: integer);
   end;
 
 var
@@ -57,6 +56,7 @@ function ModelCode(const ModelInfo: TModelInfo): integer;
 procedure FindStdModelPicture(code: integer; var pix: integer;
   var Name: string);
 function GetTribeInfo(FileName: string; var Name: string; var Color: TColor): boolean;
+procedure FindPosition(HGr,x,y,xmax,ymax: integer; Mark: TColor; var xp,yp: integer);
 
 
 implementation
@@ -82,7 +82,7 @@ nPictureList: integer;
 procedure Init;
 begin
 StdUnitScript:=tstringlist.Create;
-StdUnitScript.LoadFromFile(HomeDir+'Tribes\StdUnits.txt');
+StdUnitScript.LoadFromFile(LocalizedFilePath('Tribes\StdUnits.txt'));
 nPictureList:=0;
 PictureList:=nil;
 end;
@@ -108,7 +108,16 @@ with ModelInfo do
     mkSelfDeveloped, mkEnemyDeveloped:
       case Domain of {age determination}
         dGround:
-          if Attack<Defense*4 then
+          if (Attack>=Defense*4)
+            or (Attack>0) and (MaxUpgrade<10)
+              and (Cap and (1 shl (mcArtillery-mcFirstNonCap))<>0) then
+            begin
+            result:=170;
+            if MaxUpgrade>=12 then inc(result,3)
+            else if (MaxUpgrade>=10) or (Weight>7) then inc(result,2)
+            else if MaxUpgrade>=4 then inc(result,1)
+            end
+          else
             begin
             result:=100;
             if MaxUpgrade>=12 then inc(result,6)
@@ -120,13 +129,6 @@ with ModelInfo do
             if Speed>=250 then
               if (result>=105) and (Attack<=Defense) then result:=110
               else inc(result,30)
-            end
-          else
-            begin
-            result:=170;
-            if MaxUpgrade>=12 then inc(result,3)
-            else if (MaxUpgrade>=10) or (Weight>7) then inc(result,2)
-            else if MaxUpgrade>=4 then inc(result,1)
             end;
         dSea:
           begin
@@ -200,7 +202,7 @@ begin
 Name:='';
 Color:=$FFFFFF;
 found:=0;
-AssignFile(TribeScript,HomeDir+'Tribes\'+FileName+'.tribe.txt');
+AssignFile(TribeScript,LocalizedFilePath('Tribes\'+FileName+'.tribe.txt'));
 Reset(TribeScript);
 while not EOF(TribeScript) do
   begin
@@ -231,7 +233,7 @@ begin
 inherited Create;
 for variant:='a' to 'z' do Name[variant]:='';
 Script:=tstringlist.Create;
-Script.LoadFromFile(HomeDir+'Tribes\'+FileName+'.tribe.txt');
+Script.LoadFromFile(LocalizedFilePath('Tribes\'+FileName+'.tribe.txt'));
 CityLine0:=0;
 nCityLines:=0;
 for line:=0 to Script.Count-1 do
@@ -265,14 +267,14 @@ Script.Free;
 inherited Destroy;
 end;
 
-procedure TTribe.FindPosition(HGr,x,y: integer; Mark: TColor;
+procedure FindPosition(HGr,x,y,xmax,ymax: integer; Mark: TColor;
   var xp,yp: integer);
 begin
 xp:=0;
-while (xp<63) and (GrExt[HGr].Data.Canvas.Pixels[x+1+xp,y]<>Mark) do
+while (xp<xmax) and (GrExt[HGr].Data.Canvas.Pixels[x+1+xp,y]<>Mark) do
   inc(xp);
 yp:=0;
-while (yp<47) and (GrExt[HGr].Data.Canvas.Pixels[x,y+1+yp]<>Mark) do
+while (yp<ymax) and (GrExt[HGr].Data.Canvas.Pixels[x,y+1+yp]<>Mark) do
   inc(yp);
 end;
 
@@ -351,12 +353,22 @@ with Script do
     Item:=Get;
     cpix:=GetNum;
     // init city graphics
-    cHGr:=LoadGraphicSet(Item);
-    for x:=0 to 3 do with CityPicture[x] do
+    if age<2 then
       begin
-      FindPosition(cHGr,x*65,cpix*49,$00FFFF,xShield,yShield);
-      FindPosition(cHGr,x*65,cpix*49,$FFFFFF,xf,yf);
-      end;
+      if CompareText(Item,'stdcities')=0 then
+        case cpix of
+          3: cpix:=0;
+          6: begin cpix:=0; Item:='Nation2'; end
+          end;
+      cHGr:=LoadGraphicSet(Item);
+      for x:=0 to 3 do with CityPicture[x] do
+        begin
+        FindPosition(cHGr,x*65,cpix*49,63,47,$00FFFF,xShield,yShield);
+        //FindPosition(cHGr,x*65,cpix*49,$FFFFFF,xf,yf);
+        end
+      end
+    else cHGr:=-1;
+
     {$IFNDEF SCR}
     Get;
     GetNum;
@@ -366,8 +378,7 @@ with Script do
       begin
       faceHGr:=LoadGraphicSet(Item);
       facepix:=GetNum;
-      if (TrueColor=1)
-        and (GrExt[faceHGr].Data.Canvas.Pixels[facepix mod 10*65,facepix div 10*49+48]=$00FFFF) then
+      if GrExt[faceHGr].Data.Canvas.Pixels[facepix mod 10*65,facepix div 10*49+48]=$00FFFF then
         begin // generate shield picture
         GrExt[faceHGr].Data.Canvas.Pixels[facepix mod 10*65,facepix div 10*49+48]:=$000000;
         gray:=$B8B8B8;
@@ -444,7 +455,7 @@ with Info do
     end;
 
   with ModelPicture[mix] do
-    FindPosition(HGr,pix mod 10 *65,pix div 10 *49,$FFFFFF,xShield,yShield);
+    FindPosition(HGr,pix mod 10 *65,pix div 10 *49,63,47,$FFFFFF,xShield,yShield);
   end;
 end;
 

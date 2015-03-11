@@ -6,12 +6,12 @@ unit GameServer;
 interface
 
 uses
-Protocol, Database; 
+Protocol, Database;
 
 const
-Version=$010102;
+Version=$010200;
 FirstAICompatibleVersion=$000D00;
-FirstBookCompatibleVersion=$010100;
+FirstBookCompatibleVersion=$010103;
 
 // notifications
 ntCreateWorld=0; ntInitModule=$100; ntInitLocalHuman=$1FF;
@@ -25,6 +25,7 @@ ntEndInfo=$6FC; ntBackOn=$6FD; ntBackOff=$6FE; ntLoadError=$6FF;
 ntStartDone=$700; ntStartGo=$701; ntStartGoRefresh=$702;
 ntStartGoRefreshMaps=$703;
 ntChangeClient=$800; ntNextPlayer=$810;
+ntDeinitModule=$900;
 
 // module flags
 fMultiple=$10000000; fDotNet=$20000000; fUsed=$40000000;
@@ -55,6 +56,7 @@ Difficulty: array[0..nPl-1]of integer absolute Database.Difficulty; {difficulty}
 
 // READ ONLY
 DotNetClient: TClientCall;
+bixBeginner, // AI to use for beginner level
 nBrain: integer; {number of brains available}
 Brain: array[-1..maxBrain-1] of TBrainInfo; {available brains}
 NotifyMessage: string;
@@ -66,7 +68,7 @@ procedure StartNewGame(const Path, FileName, Map: string; Newlx, Newly,
   NewLandMass, NewMaxTurn: integer);
 function LoadGame(const Path, FileName: string; Turn: integer; MovieMode: boolean): boolean;
 procedure EditMap(const Map: string; Newlx, Newly, NewLandMass: integer);
-procedure DirectHelp(StartHelp: boolean);
+procedure DirectHelp(Command: integer);
 
 procedure ChangeClient;
 procedure NextPlayer;
@@ -97,7 +99,7 @@ SpyMission,
 ZOCTile,
 CCCommand,
 CCPlayer: integer;
-DebugMap: pointer;
+DebugMap: array[0..nPl-1] of pointer;
 ExeInfo: TSearchRec;
 Stat: array[0..nStat-1, 0..nPl-1] of ^TChart;
 AutoSaveState: TCmdListState;
@@ -112,6 +114,7 @@ SavedData: array[0..nPl-1] of pointer;
 LogFileName, SavePath, {name of file for saving the current game}
 MapFileName, // name of map to use, empty for random
 AICredits: string;
+AIInfo: array[0..nPl-1] of string;
 Notify: TNotifyFunction;
 PerfFreq, LastClientTime: int64;
 {$IFOPT O-}HandoverStack: array[0..31] of Cardinal;{$ENDIF}
@@ -132,13 +135,15 @@ if ((Mode<>moMovie) or (p=0)) then
   HandoverStack[nHandoverStack]:=p;
   HandoverStack[nHandoverStack+1]:=Command;
   inc(nHandoverStack,2);
-  {$ENDIF}
+  Brain[bix[p]].Client(Command,p,Data);
+  dec(nHandoverStack,2);
+  {$ELSE}
   try
     Brain[bix[p]].Client(Command,p,Data);
   except
     Notify(ntException+bix[p]);
     end;
-  {$IFOPT O-}dec(nHandoverStack,2);{$ENDIF}
+  {$ENDIF}
   end
 end;
 
@@ -150,13 +155,15 @@ if ((Mode<>moMovie) or (bix=GameServer.bix[0])) then
   HandoverStack[nHandoverStack]:=bix;
   HandoverStack[nHandoverStack+1]:=Command;
   inc(nHandoverStack,2);
-  {$ENDIF}
+  Brain[bix].Client(Command,-1,Data);
+  dec(nHandoverStack,2);
+  {$ELSE}
   try
     Brain[bix].Client(Command,-1,Data);
   except
     Notify(ntException+bix);
     end;
-  {$IFOPT O-}dec(nHandoverStack,2);{$ENDIF}
+  {$ENDIF}
   end
 end;
 
@@ -186,6 +193,7 @@ Brain[bixRandom].FileName:=':Random';
 Brain[bixRandom].Flags:=fMultiple;
 Brain[bixRandom].Initialized:=false;
 nBrain:=bixFirstAI;
+bixBeginner:=bixFirstAI;
 if FindFirst(HomeDir+'*.ai.txt',$21,f)=0 then
   repeat
     with Brain[nBrain] do
@@ -207,6 +215,8 @@ if FindFirst(HomeDir+'*.ai.txt',$21,f)=0 then
         if Copy(s,1,5)='#NAME' then Name:=Copy(s,7,255)
         else if Copy(s,1,10)='#.NET' then
           Flags:=Flags or fDotNet
+        else if Copy(s,1,9)='#BEGINNER' then
+          bixBeginner:=nBrain
         else if Copy(s,1,5)='#PATH' then
           DLLName:=HomeDir+trim(Copy(s,7,255))
         else if Copy(s,1,12)='#GAMEVERSION' then
@@ -610,6 +620,7 @@ BrainUsed:=[];
 for p:=0 to nPl-1 do
   if (bix[p]>=0) and ((Mode<>moMovie) or (p=0)) then
     begin {initiate selected control module}
+    AIInfo[p]:=Brain[bix[p]].Name+#0;
     InitBrain(bix[p]);
     if Mode=moPlaying then
       begin // new game, this data version is original
@@ -650,7 +661,8 @@ GWinner:=0;
 GColdWarStart:=-ColdWarTurns-1;
 uixSelectedTransport:=-1;
 SpyMission:=smSabotageProd;
-DebugMap:=nil;
+for p1:=0 to nPl-1 do
+  DebugMap[p1]:=nil;
 
 GTurn:=0;
 for i:=0 to 27 do with GWonder[i] do
@@ -683,13 +695,20 @@ for p:=0 to nPl-1 do if 1 shl p and (GAlive or GWatching)<>0 then with RW[p] do
   else begin Data:=nil; SavedData[p]:=nil end;
   nBattleHistory:=0;
   BattleHistory:=nil;
-  if bix[p]=bixTerm then
+  {if bix[p]=bixTerm then
     begin
     GetMem(BorderHelper,MapSize);
     FillChar(BorderHelper^,MapSize,0);
     end
-  else BorderHelper:=nil;
+  else} BorderHelper:=nil;
   for i:=0 to nStat-1 do GetMem(Stat[i,p],4*(MaxTurn+1));
+  if Brain[bix[p]].Flags and fDotNet<>0 then
+    begin
+    GetMem(RW[p].DefaultDebugMap, MapSize*4);
+    FillChar(RW[p].DefaultDebugMap^, MapSize*4, 0);
+    DebugMap[p]:=RW[p].DefaultDebugMap;
+    end
+  else RW[p].DefaultDebugMap:=nil;
 
   {!!!for i:=0 to nShipPart-1 do GShip[p].Parts[i]:=random((3-i)*2);{}
   end;
@@ -716,8 +735,8 @@ for p:=0 to nPl-1 do if 1 shl p and (GAlive or GWatching)<>0 then
   Inform(p);
 
 pTurn:=-1;
-if Mode<moMovie then Notify(ntInitPlayers)
-else Notify(ntEndInfo);
+if bix[0]<>bixNoTerm then
+  Notify(ntInitLocalHuman);
 Game.lx:=lx; Game.ly:=ly; Game.LandMass:=LandMass; Game.MaxTurn:=MaxTurn;
 move(Difficulty,Game.Difficulty,SizeOf(Difficulty));
 //GameEx.lx:=lx; GameEx.ly:=ly; GameEx.LandMass:=LandMass;
@@ -727,30 +746,28 @@ AICredits:='';
 for i:=0 to nBrain-1 do if Brain[i].Initialized then
   if i in BrainUsed then
     begin
-{    if Brain[i].Flags and fBroadcast<>0 then
+    if i>=bixFirstAI then
+      Notify(ntInitPlayers);
+    for p:=0 to nPl-1 do
       begin
-      GameEx.Controlled:=0;
-      for p:=0 to nPl-1 do if bix[p]=i then
-        GameEx.Controlled:=GameEx.Controlled or (1 shl p);
-      if Mode<moPlaying then CallClient(i, cLoadGameEx, GameEx)
-      else CallClient(i, cNewGameEx, GameEx)
-      end
-    else}
-      begin
-      for p:=0 to nPl-1 do if bix[p]=i then Game.RO[p]:=@RW[p]
+      if bix[p]=i then
+        Game.RO[p]:=@RW[p]
       else Game.RO[p]:=nil;
-      if Brain[i].Flags and fDotNet>0 then
-        begin
-        path:=Brain[i].DLLName;
-        move(path[1], Game.AssemblyPath, Length(path));
-        Game.AssemblyPath[Length(path)]:=#0;
-        end
-      else Game.AssemblyPath[0]:=#0;
-      case Mode of
-        moLoading, moLoading_Fast: CallClient(i, cLoadGame, Game);
-        moMovie: CallClient(i, cMovie, Game);
-        moPlaying: CallClient(i, cNewGame, Game);
-        end;
+      if (i=bixTerm) and (Difficulty[0]=0) and (bix[p]>=0) then
+        Game.SuperVisorRO[p]:=@RW[p]
+      else Game.SuperVisorRO[p]:=nil;
+      end;
+    if Brain[i].Flags and fDotNet>0 then
+      begin
+      path:=Brain[i].DLLName;
+      move(path[1], Game.AssemblyPath, Length(path));
+      Game.AssemblyPath[Length(path)]:=#0;
+      end
+    else Game.AssemblyPath[0]:=#0;
+    case Mode of
+      moLoading, moLoading_Fast: CallClient(i, cLoadGame, Game);
+      moMovie: CallClient(i, cMovie, Game);
+      moPlaying: CallClient(i, cNewGame, Game);
       end;
     if (i>=bixFirstAI) and (Brain[i].Credits<>'') then
       if AICredits='' then AICredits:=Brain[i].Credits
@@ -789,6 +806,9 @@ CheckBorders(-1);
 AutoSaveExists:=false;
 pDipActive:=-1;
 pTurn:=0;
+
+if Mode>=moMovie then
+  Notify(ntEndInfo);
 end;{StartGame}
 
 procedure EndGame;
@@ -800,9 +820,11 @@ for p1:=0 to nPl-1 do if bix[p1]>=0 then
   begin
   for i:=0 to nStat-1 do FreeMem(Stat[i,p1]);
   if RW[p1].BattleHistory<>nil then FreeMem(RW[p1].BattleHistory);
-  if RW[p1].BorderHelper<>nil then FreeMem(RW[p1].BorderHelper);
+  {if RW[p1].BorderHelper<>nil then FreeMem(RW[p1].BorderHelper);}
   FreeMem(RW[p1].Data);
   FreeMem(SavedData[p1]);
+  if RW[p1].DefaultDebugMap<>nil then
+    FreeMem(RW[p1].DefaultDebugMap);
   end;
 UnitProcessing.ReleaseGame;
 CityProcessing.ReleaseGame;
@@ -1099,13 +1121,13 @@ Inform(pTurn);
 ChangeClientWhenDone(cResume,0,nil^,0);
 end; //LoadGame
 
-procedure InsertTerritoryUpdateCommand;
+procedure InsertTerritoryUpdateCommands;
 var
 p1,Command,Subject: integer;
 Data: pointer;
 FormerCLState: TCmdListState;
 begin
-if CL.Progress<1000 then
+while CL.Progress<1000 do
   begin
   FormerCLState:=CL.State;
   CL.Get(Command, p1, Subject, Data);
@@ -1114,7 +1136,11 @@ if CL.Progress<1000 then
     IntServer(Command, p1, Subject, Data^);
     {$IFDEF TEXTLOG}WriteLn(TextLog,'AfterTurn - ExpandTerritory');{$ENDIF}
     end
-  else CL.State:=FormerCLState;
+  else
+    begin
+    CL.State:=FormerCLState;
+    break
+    end
   end;
 {$IFOPT O-}InvalidTreatyMap:=0;{$ENDIF}
 end;
@@ -1155,11 +1181,10 @@ Inform(pTurn);
 ChangeClientWhenDone(cTurn,0,nil^,0)
 end;
 
-procedure DirectHelp(StartHelp: boolean);
+procedure DirectHelp(Command: integer);
 begin
 InitBrain(bixTerm);
-if StartHelp then Brain[bixTerm].Client(cStartHelp,-1,nil^)
-else Brain[bixTerm].Client(cHelpOnly,-1,nil^);
+Brain[bixTerm].Client(Command,-1,nil^);
 AICredits:=#0;
 end;
 
@@ -2010,12 +2035,12 @@ with RW[p].Un[uix] do
       RW[MoveInfo.Defender].Un[MoveInfo.Duix].mix,
       MoveInfo.EndHealth<=0, MoveInfo.EndHealthDef<=0);
 
-  if RW[p].Treaty[MoveInfo.Defender]=trCeaseFire then
+{  if RW[p].Treaty[MoveInfo.Defender]=trCeaseFire then
     begin
     if Mode>=moMovie then
       CallPlayer(cShowCancelTreaty,MoveInfo.Defender,p);
     CancelTreaty(p,MoveInfo.Defender)
-    end;
+    end;}
   if Mode>=moMovie then {show attack in interface modules}
     for p1:=0 to nPl-1 do
       if (1 shl p1 and GWatching<>0)
@@ -2037,7 +2062,7 @@ with RW[p].Un[uix] do
     ((MoveInfo.MoveType=mtAttack) and (MoveInfo.EndHealthDef<=0)
     or (MoveInfo.MoveType=mtBombard) and (BombardmentDestroysCity or (RW[MoveInfo.Defender].City[MoveInfo.Dcix].Size>2))) then
     case PModel.Domain of
-      dGround: LoseCityPop:= (PModel.Cap[mcLongRange]>0)
+      dGround: LoseCityPop:= (PModel.Cap[mcArtillery]>0)
         or (RW[MoveInfo.Defender].City[MoveInfo.Dcix].Built[imWalls]=0)
         and (Continent[ToLoc]<>GrWallContinent[MoveInfo.Defender]);
       dSea: LoseCityPop:= RW[MoveInfo.Defender].City[MoveInfo.Dcix].Built[imCoastalFort]=0;
@@ -2232,7 +2257,7 @@ function Server(Command,Player,Subject:integer;var Data): integer; stdcall;
     if Offer.Price[i] and $FFFF0000=Cardinal(PriceType) then inc(result);
   end;
 
-  procedure UpdateBorderHelper;
+{  procedure UpdateBorderHelper;
   var
   x, y, Loc, Loc1, dx, dy, ObserveMask: integer;
   begin
@@ -2260,7 +2285,7 @@ function Server(Command,Player,Subject:integer;var Data): integer; stdcall;
         end
       end
     end
-  end;
+  end;}
 
 const
 ptSelect=0; ptTrGoods=1; ptUn=2; ptCaravan=3; ptImp=4; ptWonder=6;
@@ -2294,9 +2319,16 @@ Adjacent: TVicinity8Loc;
 Radius: TVicinity21Loc;
 ShowShipChange: TShowShipChange;
 ShowNegoData: TShowNegoData;
-logged,ok,HasShipChanged,AllHumansDead:boolean;
+logged,ok,HasShipChanged,AllHumansDead,OfferFullySupported:boolean;
 
 begin {>>>server}
+if Command=sTurn then
+  begin
+  p2:=-1;
+  for p1:=0 to nPl-1 do if (p1<>Player) and (1 shl p1 and GWatching<>0) then
+    CallPlayer(cShowTurnChange,p1,p2);
+  end;
+
 assert(MapSize=lx*ly);
 assert(Command and (sctMask or sExecute)<>sctInternal or sExecute); // not for internal commands
 if (Command<0) or (Command>=$10000) then
@@ -2309,7 +2341,7 @@ if (Player<0) or (Player>=nPl)
 
 if (1 shl Player and (GAlive or GWatching)=0) and
   not ((Command=sTurn) or (Command=sBreak) or (Command=sResign)
-  or (Command=sGetAICredits) or (Command=sGetVersion)
+  or (Command=sGetAIInfo) or (Command=sGetAICredits) or (Command=sGetVersion)
   or (Command and $FF0F=sGetChart)) then
   begin
   PutMessage(1 shl 16+1, Format('NOT Alive: %d',[Player]));
@@ -2322,8 +2354,10 @@ result:=eOK;
 // check if command allowed now
 if (Mode=moPlaying)
   and not ((Command>=cClientEx) or (Command=sMessage) or (Command=sSetDebugMap)
-  or (Command=sGetAICredits) or (Command=sGetVersion)
+  or (Command=sGetDebugMap)
+  or (Command=sGetAIInfo) or (Command=sGetAICredits) or (Command=sGetVersion)
   or (Command=sGetTechCost) or (Command=sGetDefender)
+  or (Command=sGetUnitReport)
   or (Command=sGetCityReport) or (Command=sGetCityTileInfo)
   or (Command=sGetCity) or (Command=sGetEnemyCityReport)
   or (Command=sGetEnemyCityAreaInfo) or (Command=sGetCityReportNew)
@@ -2373,18 +2407,21 @@ case Command of
     Brain[bix[0]].Client(cDebugMessage,Subject,Data);
 
   sSetDebugMap:
-    DebugMap:=@Data;
+    DebugMap[Player]:=@Data;
 
   sGetDebugMap:
-    pointer(Data):=DebugMap;
+    pointer(Data):=DebugMap[Subject];
 
-  sChangeSuperView:
+  {sChangeSuperView:
     if Difficulty[Player]=0 then
       begin
       for i:=0 to nBrain-1 do if Brain[i].Initialized then
         CallClient(i, cShowSuperView, Subject)
       end
-    else result:=eInvalid;
+    else result:=eInvalid;}
+
+  sRefreshDebugMap:
+    Brain[bix[0]].Client(cRefreshDebugMap,-1,Player);
 
   sGetChart..sGetChart+(nStat-1) shl 4:
     if (Subject>=0) and (Subject<nPl) and (bix[Subject]>=0) then
@@ -2407,6 +2444,10 @@ case Command of
 
   sGetTechCost:
     integer(Data):=TechCost(Player);
+
+  sGetAIInfo:
+    if AIInfo[Subject]='' then pchar(Data):=nil
+    else pchar(Data):=@AIInfo[Subject][1];
 
   sGetAICredits:
     if AICredits='' then pchar(Data):=nil
@@ -2497,20 +2538,20 @@ case Command of
   sGetUnitReport:
     if (Subject<0) or (Subject>=RW[Player].nUn)
       or (RW[Player].Un[Subject].Loc<0) then
-      begin result:=eInvalid; exit end
+      result:=eInvalid
     else GetUnitReport(Player, Subject, TUnitReport(Data));
 
   sGetMoveAdvice:
     if (Subject<0) or (Subject>=RW[Player].nUn)
       or (RW[Player].Un[Subject].Loc<0) then
-      begin result:=eInvalid; exit end
+      result:=eInvalid
     else result:=GetMoveAdvice(Player,Subject, TMoveAdviceData(Data));
 
   sGetPlaneReturn:
     if (Subject<0) or (Subject>=RW[Player].nUn)
       or (RW[Player].Un[Subject].Loc<0)
       or (RW[Player].Model[RW[Player].Un[Subject].mix].Domain<>dAir) then
-      begin result:=eInvalid; exit end
+      result:=eInvalid
     else
       begin
       if CanPlaneReturn(Player,Subject, TPlaneReturnData(Data)) then result:=eOK
@@ -2682,8 +2723,8 @@ case Command of
         begin
         AfterTurn;
         if Mode<moPlaying then
-          InsertTerritoryUpdateCommand;
-        if bix[pTurn]=bixTerm then UpdateBorderHelper;
+          InsertTerritoryUpdateCommands;
+        //if bix[pTurn]=bixTerm then UpdateBorderHelper;
         end;
 
       repeat
@@ -2737,7 +2778,12 @@ case Command of
         begin
         if (Command=sBreak) or (Command=sResign) then Notify(ntBackOn);
         for i:=0 to nBrain-1 do if Brain[i].Initialized then
+          begin
+          if i>=bixFirstAI then
+            Notify(ntDeinitModule+i);
           CallClient(i, cBreakGame, nil^);
+          end;
+        Notify(ntEndInfo);
         if (Command=sBreak) or (Command=sReload) then
           begin
           LogCityTileChanges;
@@ -2980,22 +3026,45 @@ case Command of
 
         if (Command>=sExecute) and (result>=rExecuted) then
           begin
-          if (GTestFlags and tfUncover<>0) or (Difficulty[0]=0) then
-            with ShowNegoData do
-              begin // display negotiation in log window
-              pSender:=pDipActive;
-              pTarget:=p1;
-              Action:=Command;
-              Offer:=TOffer(Data);
-              Brain[bix[0]].Client(cShowNego,1 shl 16+3,ShowNegoData);
-              end;
-          LastOffer:=TOffer(Data);
-          // show offered things to receiver
-          for i:=0 to LastOffer.nDeliver-1 do
-            ShowPrice(pDipActive,p1,LastOffer.Price[i]);
-          pDipActive:=p1;
-          assert(Mode=moPlaying);
-          ChangeClientWhenDone(scDipOffer,pDipActive,LastOffer,SizeOf(LastOffer));
+          OfferFullySupported:= (TOffer(Data).nDeliver<=2)
+            and (TOffer(Data).nCost<=2); // >2 no more allowed
+          for i:=0 to TOffer(Data).nDeliver+TOffer(Data).nCost-1 do
+            begin
+            if TOffer(Data).Price[i] and opMask=opTribute then
+              OfferFullySupported:=false; // tribute no more part of the game
+            if (TOffer(Data).Price[i] and opMask=opTreaty)
+              and (TOffer(Data).Price[i]-opTreaty<=RW[pDipActive].Treaty[p1]) then
+              OfferFullySupported:=false; // agreed treaty end no more part of the game
+            if TOffer(Data).Price[i]=opTreaty+trCeaseFire then
+              OfferFullySupported:=false; // ceasefire no more part of the game
+            end;
+          if not OfferFullySupported then
+            begin
+            // some elements have been removed from the game -
+            // automatically respond will null-offer
+            LastOffer.nDeliver:=0;
+            LastOffer.nCost:=0;
+            ChangeClientWhenDone(scDipOffer,pDipActive,LastOffer,SizeOf(LastOffer));
+            end
+          else
+            begin
+            if (GTestFlags and tfUncover<>0) or (Difficulty[0]=0) then
+              with ShowNegoData do
+                begin // display negotiation in log window
+                pSender:=pDipActive;
+                pTarget:=p1;
+                Action:=Command;
+                Offer:=TOffer(Data);
+                Brain[bix[0]].Client(cShowNego,1 shl 16+3,ShowNegoData);
+                end;
+            LastOffer:=TOffer(Data);
+            // show offered things to receiver
+            for i:=0 to LastOffer.nDeliver-1 do
+              ShowPrice(pDipActive,p1,LastOffer.Price[i]);
+            pDipActive:=p1;
+            assert(Mode=moPlaying);
+            ChangeClientWhenDone(scDipOffer,pDipActive,LastOffer,SizeOf(LastOffer));
+            end
           end
         end
     else result:=eInvalid;
@@ -3273,12 +3342,19 @@ case Command of
             case Subject of
               mcSub:
                 begin
-                Cap[mcLongRange]:=0;
+                if ServerVersion[Player]>=$010103 then
+                  Cap[mcSeaTrans]:=0;
+                Cap[mcArtillery]:=0;
                 Cap[mcCarrier]:=0;
                 if Cap[mcDefense]>2 then Cap[mcDefense]:=2
                 end;
+              mcSeaTrans:
+                begin
+                if ServerVersion[Player]>=$010103 then
+                  Cap[mcSub]:=0;
+                end;
               mcCarrier: Cap[mcSub]:=0;
-              mcLongRange: Cap[mcSub]:=0;
+              mcArtillery: Cap[mcSub]:=0;
               mcAlpine:
                 begin Cap[mcOver]:=0; Cap[mcMob]:=0; end;
               mcOver: Cap[mcAlpine]:=0;

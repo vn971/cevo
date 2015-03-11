@@ -5,10 +5,10 @@ unit Term;
 interface
 
 uses
-  Protocol,Tribes,PVSB,ClientTools,ScreenTools,BaseWin,ButtonBase,
+  Protocol,Tribes,PVSB,ClientTools,ScreenTools,BaseWin,Messg,ButtonBase,
 
   Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms,Menus,ExtCtrls,
-  ButtonA,ButtonB, ButtonC, EOTButton;
+  ButtonA,ButtonB, ButtonC, EOTButton, Area;
 
 const
 WM_EOT=WM_USER;
@@ -16,7 +16,7 @@ WM_EOT=WM_USER;
 pltsNormal=0; pltsBlink=1;
 
 type
-  TMainScreen = class(TForm)
+  TMainScreen = class(TDrawDlg)
     Timer1:TTimer;
     GamePopup: TPopupMenu;
     UnitPopup:TPopupMenu;
@@ -35,7 +35,6 @@ type
     mResign: TMenuItem;
     mOptions: TMenuItem;
     mEnMoves: TMenuItem;
-    mFullScreen: TMenuItem;
     mWaitTurn: TMenuItem;
     mRep: TMenuItem;
     mFort: TMenuItem;
@@ -101,8 +100,6 @@ type
     mRecover: TMenuItem;
     MapBtn0: TButtonC;
     MapBtn1: TButtonC;
-    MapBtn2: TButtonC;
-    MapBtn3: TButtonC;
     MapBtn4: TButtonC;
     MapBtn5: TButtonC;
     EditPopup: TPopupMenu;
@@ -149,6 +146,22 @@ type
     mAlEffectiveMovesOnly: TMenuItem;
     mAlNoMoves: TMenuItem;
     N9: TMenuItem;
+    mViewpoint: TMenuItem;
+    mTileSize: TMenuItem;
+    mNormalTiles: TMenuItem;
+    mSmallTiles: TMenuItem;
+    N11: TMenuItem;
+    MenuArea: TArea;
+    TreasuryArea: TArea;
+    ResearchArea: TArea;
+    ManagementArea: TArea;
+    mTechTree: TMenuItem;
+    MovieSpeed1Btn: TButtonB;
+    MovieSpeed2Btn: TButtonB;
+    MovieSpeed3Btn: TButtonB;
+    MovieSpeed4Btn: TButtonB;
+    N12: TMenuItem;
+    mRep14: TMenuItem;
     procedure FormCreate(Sender:TObject);
     procedure FormDestroy(Sender:TObject);
     procedure Timer1Timer(Sender:TObject);
@@ -193,9 +206,16 @@ type
     procedure mSoundOnClick(Sender: TObject);
     procedure mSoundOnAltClick(Sender: TObject);
     procedure UnitInfoBtnClick(Sender: TObject);
+    procedure ViewpointClick(Sender: TObject);
+    procedure DebugMapClick(Sender: TObject);
+    procedure mSmallTilesClick(Sender: TObject);
+    procedure mNormalTilesClick(Sender: TObject);
+    procedure GrWallBtnDownChanged(Sender: TObject);
+    procedure BareBtnDownChanged(Sender: TObject);
+    procedure MovieSpeedBtnClick(Sender: TObject);
 
   public
-    procedure CreateParams (var p: TCreateParams); override;
+    procedure CreateParams(var p: TCreateParams); override;
     procedure Client(Command,NewPlayer:integer;var Data);
     procedure SetAIName(p: integer; Name: string);
     function ZoomToCity(Loc: integer; NextUnitOnClose: boolean = false;
@@ -206,18 +226,19 @@ type
     function OfferCall(var Offer: TOffer): integer;
     procedure UpdateViews(UpdateCityScreen: boolean = false);
     function ContactRefused(p: integer; Item: String): boolean;
-    procedure SetAdviceLoc(Loc: integer; AvoidRect: TRect);
 
   private
-    xw,yw,xwd,ywd,xwMini,ywMini,xRightPanel,xMini,yMini,ywmax,TroopLoc,TrCnt,TrRow,
-      MapWidth,MapHeight,BlinkTime,BrushLoc,EditLoc,xMouse,yMouse: integer;
+    xw,yw,xwd,ywd,xwMini,ywMini,xMidPanel,xRightPanel,xTroop,xTerrain,xMini,
+      yMini,ywmax,ywcenter,TroopLoc,TrCnt,TrRow,TrPitch,MapWidth,MapOffset,
+      MapHeight,BlinkTime,BrushLoc,EditLoc,xMouse,yMouse: integer;
     BrushType: Cardinal;
-    trix:array[0..23] of integer;
+    trix:array[0..63] of integer;
     AILogo: array[0..nPl-1] of TBitmap;
     Mini,Panel,TopBar: TBitmap;
     sb:TPVScrollbar;
     Closable,RepaintOnResize,Tracking,TurnComplete,Edited,GoOnPhase,
-      HaveStrategyAdvice: boolean;
+      HaveStrategyAdvice, FirstMovieTurn: boolean;
+    procedure ArrangeMidPanel;
     procedure MainOffscreenPaint;
     procedure MiniPaint;
     procedure PaintAll;
@@ -232,10 +253,11 @@ type
     procedure PaintLoc(Loc: integer; Radius: integer = 0);
     procedure PaintLoc_BeforeMove(FromLoc: integer);
     procedure PaintLocTemp(Loc: integer; Style: integer = pltsNormal);
+    procedure PaintBufferToScreen(xMap,yMap,width,height: integer);
     procedure PaintDestination;
     procedure SetUnFocus(uix:integer);
     function MoveUnit(dx,dy:integer; Options: integer = 0): integer;
-    procedure MoveToLoc(Loc: integer);
+    procedure MoveToLoc(Loc: integer; CheckSuicide: boolean);
     procedure MoveOnScreen(ShowMove: TShowMove; Step0,Step1,nStep: integer;
       Restore: boolean = true);
     procedure FocusOnLoc(Loc:integer; Options: integer = 0);
@@ -244,13 +266,18 @@ type
     function IsPanelPixel(x,y: integer): boolean;
     procedure InitPopup(Popup: TPopupMenu);
     procedure SetMapOptions;
+    procedure CheckMovieSpeedBtnState;
     procedure CheckTerrainBtnVisible;
     procedure RememberPeaceViolation;
-    procedure SmartInvalidate(Left,Top,Rigth,Bottom: integer);
-    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
+    procedure SetDebugMap(p: integer);
+    procedure SetViewpoint(p: integer);
+    function LocationOfScreenPixel(x,y: integer): integer;
+    procedure SetTileSize(x,y: integer);
+    procedure RectInvalidate(Left,Top,Rigth,Bottom: integer);
+    procedure SmartRectInvalidate(Left,Top,Rigth,Bottom: integer);
+    procedure SaveSettings;
     procedure OnScroll(var m:TMessage); message WM_VSCROLL;
     procedure OnEOT(var Msg:TMessage); message WM_EOT;
-    procedure AdviceBtnClick;
   end;
 
 var
@@ -273,16 +300,17 @@ TPriceSet=Set of $00..$FF;
 
 const
 crImpDrag=2;
+crFlatHand=3;
 
 xxu=32; yyu=24; // half of unit slot size x/y
 yyu_anchor=32;
-xxc=32; yyc=24; // half of city slot size x/y
-yyc_anchor=32;
+xxc=32; yyc=16; // 1/2 of city slot size in x, 1/2 of ground tile size in y (=1/3 of slot)
 
 // layout
 TopBarHeight=41;
 PanelHeight=168;
-MidPanelHeight=104; // should be same as BaseWin.yUnused
+MidPanelHeight=120; // TopBarHeight+MidPanelHeight should be same as BaseWin.yUnused
+MapCenterUp=(MidPanelHeight-TopBarHeight) div 2;
 
 nCityType=4;
 
@@ -304,7 +332,7 @@ usPersistent=usStay or usGoto or usEnhance or usRecover or integer($FFFF0000);
 msObsolete=$1; msAllowConscripts=$2;
 
 {additional city happened flags}
-chTypeDel=$8000;
+chTypeDel=$8000; chAllImpsMade=$4000;
 
 adNone=$801; adFar=$802; adNexus=$803;
 
@@ -314,13 +342,17 @@ SpecialModelPictureCode: array[0..nSpecialModel-1] of integer=
 pixSlaves=0; pixNoSlaves=1; // index of slaves in StdUnits
 
 // icons.bmp properties
-xSizeBig=56; ySizeBig=40; xSizeSmall=36; ySizeSmall=20;
+xSizeSmall=36; ySizeSmall=20;
 SystemIconLines=2; // lines of system icons in icons.bmp before improvements
 
-nCityEventPriority=15;
+// save options apart from what's defined by SaveOption
+soTellAI=30;
+soExtraMask=$40000000;
+
+nCityEventPriority=16;
 CityEventPriority: array[0..nCityEventPriority-1] of integer=
-(chDisorder,chImprovementLost,chUnitLost,chProduction,chOldWonder,
-chNoSettlerProd,chPopDecrease,chProductionSabotaged,
+(chDisorder,chImprovementLost,chUnitLost,chAllImpsMade,chProduction,
+chOldWonder,chNoSettlerProd,chPopDecrease,chProductionSabotaged,
 chNoGrowthWarning,chPollution,chTypeDel,chFounded,chSiege,chAfterCapture,
 chPopIncrease);
 
@@ -345,12 +377,12 @@ MyData: ^TPersistentData;
 AdvIcon:array[0..nAdv-1] of integer; {icons displayed with the technologies}
 xxt,yyt, // half of tile size x/y
   GameMode,ClientMode,Age,UnFocus,OptionChecked,MapOptionChecked,nLostArmy,
-  ScienceSum,TaxSum,SoundPreloadDone,MarkCityLoc,HGrTerrain: integer;
+  ScienceSum,TaxSum,SoundPreloadDone,MarkCityLoc,HGrTerrain,HGrCities,
+  MovieSpeed: integer;
 CityRepMask: cardinal;
 ReceivedOffer: TOffer;
-Paper: TTexture;
-Buffer,BigImp,SmallImp: TBitmap;
-FullScreen,BlinkON,DestinationMarkON,StartRunning,StayOnTop_Ensured: boolean;
+Buffer,SmallImp: TBitmap;
+BlinkON,DestinationMarkON,StartRunning,StayOnTop_Ensured,supervising: boolean;
 UnusedTribeFiles, TribeNames: tstringlist;
 TribeOriginal: array[0..nPl-1] of boolean;
 LostArmy: array[0..nPl*nMmax-1] of integer;
@@ -360,6 +392,7 @@ DipMem: array[0..nPl-1] of record
   DeliveredPrices, ReceivedPrices: TPriceSet;
   end;
 
+function CityEventName(i: integer): string;
 function RoughCredibility(Credibility: integer): integer;
 
 function InitEnemyModel(emix: integer): boolean;
@@ -374,8 +407,9 @@ procedure HelpOnTerrain(Loc, NewMode: integer);
 implementation
 
 uses
-  Directories,IsoEngine,CityScreen,Draft,Messg,MessgEx,Select,CityType,Help,UnitStat,
-  Diplomacy,Inp,log,Diagram,NatStat,Wonders,Enhance,Nego,Battle,Advisor,Rates,
+  Directories,IsoEngine,CityScreen,Draft,MessgEx,Select,CityType,Help,
+  UnitStat,Diplomacy,Inp,log,Diagram,NatStat,Wonders,Enhance,Nego,Battle,Rates,
+  TechTree,
 
   Registry,ShellAPI;
 
@@ -402,12 +436,12 @@ nBrushTypes=26;
 BrushTypes: array[0..nBrushTypes-1] of Cardinal=
 (fPrefStartPos,fStartPos,
 fShore,fGrass,fTundra,fPrairie,fDesert,fSwamp,fForest,fHills,fMountains,fArctic,
-fRiver,fDeadLands,fDeadLands or fCobalt,fDeadLands or fUranium,
-fDeadLands or fMercury,
-fRoad,fRR,fCanal,tiIrrigation,tiFarm,tiMine,tiFort,tiBase,fPoll);
+fDeadLands,fDeadLands or fCobalt,fDeadLands or fUranium,
+fDeadLands or fMercury,fRiver,
+fRoad,fRR,fCanal,tiIrrigation,tiFarm,tiMine,fPoll,tiFort,tiBase);
 
 // MoveUnit options:
-muAutoNoWait=$0001; muAutoNext=$0002;
+muAutoNoWait=$0001; muAutoNext=$0002; muNoSuicideCheck=$0004;
 
 // ProcessRect options:
 prPaint=$0001; prAutoBounds=$0002; prInvalidate=$0004;
@@ -415,11 +449,11 @@ prPaint=$0001; prAutoBounds=$0002; prInvalidate=$0004;
 // FocusOnLoc options:
 flRepaintPanel=$0001; flImmUpdate=$0002;
 
-nSaveOption=23;
+nSaveOption=22;
 
 var
 Jump: array[0..nPl-1] of integer;
-pTurn,pLogo,UnStartLoc,xMidPanel,xTroop,ToldSlavery: integer;
+pTurn,pLogo,UnStartLoc,ToldSlavery: integer;
 PerfFreq: int64;
 SmallScreen, GameOK, MapValid, skipped, idle: boolean;
 
@@ -431,6 +465,15 @@ CurrentMoveInfo: record
   DoShow,IsAlly: boolean;
   end;
 
+
+function CityEventName(i: integer): string;
+begin
+if i=14 then // chAllImpsMade
+  if not Phrases2FallenBackToEnglish then
+    result:=Phrases2.Lookup('CITYEVENT_ALLIMPSMADE')
+  else result:=Phrases.Lookup('CITYEVENTS',1)
+else result:=Phrases.Lookup('CITYEVENTS',i);
+end;
 
 procedure InitSmallImp;
 const
@@ -614,6 +657,7 @@ end;
 procedure CheckToldNoReturn(uix: integer);
 // check whether aircraft survived low-fuel warning
 begin
+assert(not supervising);
 with MyUn[uix] do
   if (Status and usToldNoReturn<>0)
     and ((MyMap[Loc] and fCity<>0) or (MyMap[Loc] and fTerImp=tiBase)
@@ -623,7 +667,7 @@ end;
 
 function CreateTribe(p:integer; FileName:string; Original: boolean): boolean;
 begin
-if not FileExists (HomeDir+'Tribes\'+FileName+'.tribe.txt') then
+if not FileExists(LocalizedFilePath('Tribes\'+FileName+'.tribe.txt')) then
   begin result:=false; exit end;
 
 TribeOriginal[p]:=Original;
@@ -646,7 +690,7 @@ procedure TellNewContacts;
 var
 p1: integer;
 begin
-if G.Difficulty[me]>0 then
+if not supervising then
   for p1:=0 to nPl-1 do
     if (p1<>me) and (1 shl p1 and MyData.ToldContact=0)
       and (1 shl p1 and MyRO.Alive<>0) and (MyRO.Treaty[p1]>trNoContact) then
@@ -658,8 +702,11 @@ end;
 
 procedure TellNewModels;
 var
+mix: integer;
 ModelNameInfo: TModelNameInfo;
 begin
+if supervising then
+  exit;
 with Tribe[me] do while MyData.ToldModels<MyRO.nModel do
   begin {new Unit class available}
   if (ModelPicture[MyData.ToldModels].HGr>0)
@@ -700,6 +747,12 @@ with Tribe[me] do while MyData.ToldModels<MyRO.nModel do
         me,0,ModelNameInfo);
       end
     end;
+  if MyModel[MyData.ToldModels].kind=mkSettler then
+    begin // engineers make settlers obsolete
+    for mix:=0 to MyData.ToldModels-1 do
+      if MyModel[mix].Kind=mkSettler then
+        MyModel[mix].Status:=MyModel[mix].Status or msObsolete;
+    end;
   inc(MyData.ToldModels)
   end;
 end;
@@ -708,19 +761,19 @@ procedure PaintZoomedTile(dst: TBitmap; x,y,Loc: integer);
 
   procedure TSprite(xDst, yDst, xSrc, ySrc: integer);
   begin
-  Sprite(dst, HGrTerrain, x+xDst, y+yDst, xxt*2, yyt*2, 1+xSrc*(xxt*2+1),
-    1+yyt+ySrc*(yyt*3+1));
+  Sprite(dst, HGrTerrain, x+xDst, y+yDst, xxt*2, yyt*3, 1+xSrc*(xxt*2+1),
+    1+ySrc*(yyt*3+1));
   end;
 
   procedure TSprite4(xSrc, ySrc: integer);
   begin
-  Sprite(dst, HGrTerrain, x+xxt, y, xxt*2, yyt*2, 1+xSrc*(xxt*2+1),
+  Sprite(dst, HGrTerrain, x+xxt, y+yyt+2, xxt*2, yyt*2-2, 1+xSrc*(xxt*2+1),
+    3+yyt+ySrc*(yyt*3+1));
+  Sprite(dst, HGrTerrain, x+4, y+2*yyt, xxt*2-4, yyt*2, 5+xSrc*(xxt*2+1),
     1+yyt+ySrc*(yyt*3+1));
-  Sprite(dst, HGrTerrain, x, y+yyt, xxt*2, yyt*2, 1+xSrc*(xxt*2+1),
+  Sprite(dst, HGrTerrain, x+xxt*2, y+2*yyt, xxt*2-4, yyt*2, 1+xSrc*(xxt*2+1),
     1+yyt+ySrc*(yyt*3+1));
-  Sprite(dst, HGrTerrain, x+xxt*2, y+yyt, xxt*2, yyt*2, 1+xSrc*(xxt*2+1),
-    1+yyt+ySrc*(yyt*3+1));
-  Sprite(dst, HGrTerrain, x+xxt, y+yyt*2, xxt*2, yyt*2, 1+xSrc*(xxt*2+1),
+  Sprite(dst, HGrTerrain, x+xxt, y+yyt*3, xxt*2, yyt*2-2, 1+xSrc*(xxt*2+1),
     1+yyt+ySrc*(yyt*3+1));
   end;
 
@@ -762,12 +815,12 @@ case Tile and fTerImp of
   tiIrrigation:
     begin
     TSprite(xxt,0,0,12);
-    TSprite((xxt*2),yyt,0,12);
+    TSprite(xxt*2,yyt,0,12);
     end;
   tiFarm:
     begin
     TSprite(xxt,0,1,12);
-    TSprite((xxt*2),yyt,1,12);
+    TSprite(xxt*2,yyt,1,12);
     end
   end;
 
@@ -779,8 +832,10 @@ if Tile and fRiver<>0 then
   end;
 if Tile and fCanal<>0 then
   begin
-  TSprite(xxt, 0, 2, 11);
-  TSprite(xxt, 0, 6, 11);
+  TSprite(xxt, 0, 7, 11);
+  TSprite(xxt, 0, 3, 11);
+  TSprite(xxt*2,yyt,7,11);
+  TSprite(xxt*2,yyt,3,11);
   end;
 if Tile and fRR<>0 then
   begin
@@ -818,7 +873,7 @@ else if Tile and fDeadLands<>0 then
 // other improvements
 case Tile and fTerImp of
   tiMine: TSprite(xxt, 0, 2, 12);
-  tiFort: TSprite(xxt, 0, 3, 12);
+  tiFort: begin TSprite(xxt, 0, 7, 12); TSprite(xxt, 0, 3, 12); end;
   tiBase: TSprite(xxt, 0, 4, 12);
   end;
 end;
@@ -905,7 +960,7 @@ if result>=rExecuted then
   if G.RO[DipMem[me].pContact]<>nil then
     begin // close windows for next player
     for i:=0 to Screen.FormCount-1 do
-      if Screen.Forms[i].Visible and (Screen.Forms[i] is TBaseDlg) then
+      if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
         Screen.Forms[i].Close;
     end
   else
@@ -930,7 +985,7 @@ if result>=rExecuted then
   if G.RO[DipMem[me].pContact]<>nil then
     begin // close windows for next player
     for i:=0 to Screen.FormCount-1 do
-      if Screen.Forms[i].Visible and (Screen.Forms[i] is TBaseDlg) then
+      if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
         Screen.Forms[i].Close;
     end
   else
@@ -945,6 +1000,7 @@ procedure TMainScreen.SetUnFocus(uix:integer);
 var
 Loc0: integer;
 begin
+assert(not ((uix>=0) and supervising));
 if uix<>UnFocus then
   begin
   DestinationMarkON:=false;
@@ -977,11 +1033,32 @@ if UnFocus>=0 then
   begin
   mox:=@MyModel[MyUn[UnFocus].mix];
   Tile:=MyMap[MyUn[UnFocus].Loc];
-  TerrainBtn.Visible:= (Tile and (fCity or fDeadLands)=0)
-    and (MyUn[UnFocus].Master<0)
+  TerrainBtn.Visible:= (Tile and fCity=0) and (MyUn[UnFocus].Master<0)
     and ((mox.Kind=mkSettler) or (mox.Kind=mkSlaves) and (MyRO.Wonder[woPyramids].EffectiveOwner>=0));
   end
 else TerrainBtn.Visible:=false;
+end;
+
+procedure TMainScreen.CheckMovieSpeedBtnState;
+begin
+if GameMode=cMovie then
+  begin
+  MovieSpeed1Btn.Down:= MovieSpeed=1;
+  MovieSpeed1Btn.Visible:=true;
+  MovieSpeed2Btn.Down:= MovieSpeed=2;
+  MovieSpeed2Btn.Visible:=true;
+  MovieSpeed3Btn.Down:= MovieSpeed=3;
+  MovieSpeed3Btn.Visible:=true;
+  MovieSpeed4Btn.Down:= MovieSpeed=4;
+  MovieSpeed4Btn.Visible:=true;
+  end
+else
+  begin
+  MovieSpeed1Btn.Visible:=false;
+  MovieSpeed2Btn.Visible:=false;
+  MovieSpeed3Btn.Visible:=false;
+  MovieSpeed4Btn.Visible:=false;
+  end
 end;
 
 procedure TMainScreen.SetMapOptions;
@@ -991,8 +1068,6 @@ if ClientMode=cEditMap then
   IsoEngine.Options:=IsoEngine.Options or (1 shl moEditMode);
 if mLocCodes.Checked then
   IsoEngine.Options:=IsoEngine.Options or (1 shl moLocCodes);
-if mDebugMap.Checked then
-  IsoEngine.Options:=IsoEngine.Options or (1 shl moDebugMap);
 end;
 
 procedure TMainScreen.UpdateViews(UpdateCityScreen: boolean);
@@ -1016,7 +1091,7 @@ else
   begin
   if AILogo[p]=nil then
     AILogo[p]:=TBitmap.Create;
-  if not LoadGraphicFile(AILogo[p], Name, gfNoError) then
+  if not LoadGraphicFile(AILogo[p], HomeDir+Name, gfNoError) then
     begin AILogo[p].free; AILogo[p]:=nil end
   end
 end;
@@ -1073,9 +1148,18 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
   SearchRec: TSearchRec;
   Color: TColor;
   Name: string;
+  ok: boolean;
   begin
   UnusedTribeFiles.Clear;
-  if FindFirst(HomeDir+'Tribes\*.tribe.txt',faArchive+faReadOnly,SearchRec)=0 then
+  ok:= FindFirst(DataDir+'Localization\'+'Tribes\*.tribe.txt',
+    faArchive+faReadOnly,SearchRec)=0;
+  if not ok then
+    begin
+    FindClose(SearchRec);
+    ok:= FindFirst(HomeDir+'Tribes\*.tribe.txt',
+      faArchive+faReadOnly,SearchRec)=0;
+    end;
+  if ok then
     repeat
       SearchRec.Name:=Copy(SearchRec.Name,1,Length(SearchRec.Name)-10);
       if GetTribeInfo(SearchRec.Name,Name,Color) then
@@ -1121,12 +1205,15 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
         begin
         OpenSound:='SHIP_BUILT';
         MessgText:=Tribe[Ship1Owner].TPhrase('SHIPBUILT');
+        IconKind:=mikShip;
+        IconIndex:=Ship1Owner;
         end;
 
       scrDestruction:
         begin
         OpenSound:='SHIP_DESTROYED';
         MessgText:=Tribe[Ship1Owner].TPhrase('SHIPDESTROYED');
+        IconKind:=mikImp;
         end;
 
       scrTrade:
@@ -1148,26 +1235,31 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
         else //if Ship2Plus then
           MessgText:=Tribe[Ship2Owner].TPhrase('SHIPUNITRADE1')
             +' '+Tribe[Ship1Owner].TPhrase('SHIPUNITRADE2');
+        IconKind:=mikImp;
         end;
 
       scrCapture:
         begin
         OpenSound:='SHIP_CAPTURED';
         MessgText:=Tribe[Ship2Owner].TPhrase('SHIPCAPTURE1')
-          +' '+Tribe[Ship1Owner].TPhrase('SHIPCAPTURE2')
+          +' '+Tribe[Ship1Owner].TPhrase('SHIPCAPTURE2');
+        IconKind:=mikShip;
+        IconIndex:=Ship2Owner;
         end
       end;
 
-    MostCost:=0;
-    for i:=0 to nShipPart-1 do
+    if IconKind=mikImp then
       begin
-      TestCost:=abs(Ship1Change[i])*Imp[imShipComp+i].Cost;
-      if TestCost>MostCost then
-        begin MostCost:=TestCost; IconIndex:=imShipComp+i end
+      MostCost:=0;
+      for i:=0 to nShipPart-1 do
+        begin
+        TestCost:=abs(Ship1Change[i])*Imp[imShipComp+i].Cost;
+        if TestCost>MostCost then
+          begin MostCost:=TestCost; IconIndex:=imShipComp+i end
+        end;
       end;
 
     Kind:=mkOk;
-    IconKind:=mikImp;
     ShowModal;
     end;
   end;
@@ -1209,14 +1301,13 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
 
   for x:=0 to 11 do for y:=0 to 1 do
     MiniColors[x,y]:=GrExt[HGrSystem].Data.Canvas.Pixels[66+x,67+y];
-  HGrTerrain:=LoadGraphicSet(Format('Terrain%dx%d',[xxt*2,yyt*2]));
   IsoEngine.Init(InitEnemyModel);
+  if not IsoEngine.ApplyTileSize(xxt,yyt) and ((xxt<>48) or (yyt<>24)) then
+    ApplyTileSize(48,24); // non-default tile size is missing a file, switch to default
   MainMap:=TIsoMap.Create;
   MainMap.SetOutput(offscreen);
 
   HGrStdUnits:=LoadGraphicSet('StdUnits');
-  BigImp:=TBitmap.Create;
-  LoadGraphicFile(BigImp, 'Graphics\Icons');
   SmallImp:=TBitmap.Create;
   SmallImp.PixelFormat:=pf24bit;
   InitSmallImp;
@@ -1234,14 +1325,14 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
 
   procedure SoundPreload(Check: integer);
   const
-  nStartBlock=26;
+  nStartBlock=27;
   StartBlock: array[0..nStartBlock-1] of string=
   ('INVALID','TURNEND','DISBAND','CHEAT','MSG_DEFAULT','WARNING_DISORDER',
   'WARNING_FAMINE','WARNING_LOWSUPPORT','WARNING_LOWFUNDS','MOVE_MOUNTAIN',
   'MOVE_LOAD','MOVE_UNLOAD','MOVE_DIE','NOMOVE_TIME','NOMOVE_DOMAIN',
   'NOMOVE_DEFAULT','CITY_SELLIMP','CITY_REBUILDIMP','CITY_BUYPROJECT',
   'CITY_UTILIZE','NEWMODEL_0','NEWADVANCE_0','AGE_0','REVOLUTION','NEWGOV',
-  'CITY_INVALIDTYPE');
+  'CITY_INVALIDTYPE','MSG_GAMEOVER');
 
   nWonderBlock=6;
   WonderBlock: array[0..nWonderBlock-1] of string=
@@ -1296,12 +1387,8 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
     end;
   if Check and sbTurn<>0 then
     begin
-    if MyRO.Happened and phGameEnd<>0 then
-      begin
-      PreparePlay('MSG_GAMEOVER');
-      if MyRO.Happened and phShipComplete<>0 then
-        PreparePlay('MSG_YOUWIN');
-      end;
+    if MyRO.Happened and phShipComplete<>0 then
+      PreparePlay('MSG_YOUWIN');
     if MyData.ToldAlive<>MyRO.Alive then PreparePlay('MSG_EXTINCT');
     for cix:=0 to MyRO.nCity-1 do with MyCity[cix] do
       if (Loc>=0) and (Flags and CityRepMask<>0) then
@@ -1329,11 +1416,11 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
   (Adv:adComputers;Icon:imResLab),(Adv:adSpaceFlight;Icon:woMIR));
   var
   Domain,p1,i,ad,uix,cix,MoveOptions,MoveResult,Loc1,Dist,NewAgeCenterTo,
-    Bankrupt,ShipMore,Winners,NewGovAvailable:integer;
+    Bankrupt,ShipMore,Winners,NewGovAvailable,dx,dy:integer;
   MoveAdviceData: TMoveAdviceData;
   Picture: TModelPictureInfo;
   s, Item, Item2: string;
-  UpdatePanel, OwnWonder, ok, Stop, ShowCityList, WondersOnly: boolean;
+  UpdatePanel, OwnWonder, ok, Stop, ShowCityList, WondersOnly,AllowCityScreen: boolean;
   begin
   if IsMultiPlayerGame and (p<>me) then
     begin
@@ -1363,7 +1450,7 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
     Invalidate;
 
     s:=TurnToString(G.RO[0].Turn);
-    if G.Difficulty[NewPlayer]=0 then
+    if supervising then
       SimpleMessage(Format(Phrases.Lookup('SUPERTURN'),[s]))
     else SimpleMessage(Format(Tribe[NewPlayer].TPhrase('TURN'),[s]));
     end;
@@ -1371,36 +1458,44 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
     Controls[i].visible:=true;
 
   ItsMeAgain(p);
-  MyData:=MyRO.Data;
-  if G.Difficulty[me]>0 then
+  MyData:=G.RO[p].Data;
+  if not supervising then
     SoundPreload(sbAll);
+  if (me=0) and ((MyRO.Turn=0) or (ClientMode=cResume)) then
+    Invalidate; // colorize empty space
 
-  if G.Difficulty[me]>0 then
+  if not supervising then
     begin
-    if MyRO.Happened and phGameEnd<>0 then
+{    if MyRO.Happened and phGameEnd<>0 then
       begin
       Age:=3;
       SetMainTextureByAge(-1);
       end
-    else
+    else}
       begin
       Age:=GetAge(me);
-      SetMainTextureByAge(Age);
+      if SetMainTextureByAge(Age) then
+        EOT.Invalidate; // has visible background parts in its bounds
       end;
 //    age:=MyRO.Turn mod 4; //!!!
-    if ClientMode<scContact then EOT.ButtonIndex:=eotGray
-    else EOT.ButtonIndex:=eotBlinkOff; // back to negotiation
+    if ClientMode=cMovieTurn then
+      EOT.ButtonIndex:=eotCancel
+    else if ClientMode<scContact then
+      EOT.ButtonIndex:=eotGray
+    else EOT.ButtonIndex:=eotBackToNego;
     end
   else
     begin
     Age:=0;
     SetMainTextureByAge(-1);
-    InitTexture(Paper,'Paper',0);
-    EOT.ButtonIndex:=eotBlinkOn;
+    if ClientMode=cMovieTurn then
+      EOT.ButtonIndex:=eotCancel
+    else EOT.ButtonIndex:=eotBlinkOn;
     end;
   InitCityMark(MainTexture);
   CityDlg.CheckAge;
   NatStatDlg.CheckAge;
+  UnitStatDlg.CheckAge;
   HelpDlg.Difficulty:=G.Difficulty[me];
 
   UnFocus:=-1;
@@ -1427,7 +1522,7 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
           end
     end;
 
-  if ClientMode=cTurn then
+  if not supervising and (ClientMode=cTurn) then
     begin
     for cix:=0 to MyRO.nCity-1 do
       if (MyCity[cix].Loc>=0)
@@ -1444,7 +1539,6 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
     UnitInfoBtn.Visible:=false;
     UnitBtn.Visible:=false;
     TerrainBtn.Visible:=false;
-    EOT.ButtonIndex:=eotCancel;
     EOT.Hint:=Phrases.Lookup('BTN_STOP');
     EOT.Visible:=true;
     end
@@ -1453,7 +1547,7 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
     UnitInfoBtn.Visible:= UnFocus>=0;
     UnitBtn.Visible:= UnFocus>=0;
     CheckTerrainBtnVisible;
-    TurnComplete:= G.Difficulty[me]=0; {supervisor}
+    TurnComplete:=supervising;
     EOT.Hint:=Phrases.Lookup('BTN_ENDTURN');
     EOT.Visible:= Server(sTurn-sExecute,me,0,nil^)>=rExecuted;
     end
@@ -1468,28 +1562,34 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
   SetTroopLoc(-1);
   MapValid:=false;
   NewAgeCenterTo:=0;
-  if ((MyRO.Turn=0) and (G.Difficulty[me]>0) or IsMultiPlayerGame
+  if ((MyRO.Turn=0) and not supervising or IsMultiPlayerGame
     or (ClientMode=cResume)) and (MyRO.nCity>0) then
     begin
     Loc1:=MyCity[0].Loc;
     if (ClientMode=cTurn) and (MyRO.Turn=0) then
       begin // move city out of center to not be covered by welcome screen
+      dx:=MapWidth div (xxt*5);
+      if dx>5 then
+        dx:=5;
+      dy:=MapHeight div (yyt*5);
+      if dy>5 then
+        dy:=5;
       if Loc1>=G.lx*G.ly div 2 then
         begin
         NewAgeCenterTo:=-1;
-        Loc1:=dLoc(Loc1,-(MapWidth div (33*6)), -(MapHeight div (16*6)))
+        Loc1:=dLoc(Loc1,-dx,-dy)
         end
       else
         begin
         NewAgeCenterTo:=1;
-        Loc1:=dLoc(Loc1,-(MapWidth div (33*6)), MapHeight div (16*6));
+        Loc1:=dLoc(Loc1,-dx,dy);
         end
       end;
     Centre(Loc1)
     end;
 
   for i:=0 to Screen.FormCount-1 do
-    if Screen.Forms[i] is TBaseDlg then
+    if Screen.Forms[i] is TBufferedDrawDlg then
       Screen.Forms[i].Enabled:=true;
 
   if ClientMode<>cResume then
@@ -1500,7 +1600,7 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
       // first turn after anarchy -- don't show despotism palace!
     Update;
     for i:=0 to Screen.FormCount-1 do
-      if (Screen.Forms[i].Visible) and (Screen.Forms[i] is TBaseDlg) then
+      if (Screen.Forms[i].Visible) and (Screen.Forms[i] is TBufferedDrawDlg) then
         begin
         if @Screen.Forms[i].OnShow<>nil then
           Screen.Forms[i].OnShow(nil);
@@ -1515,8 +1615,8 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
           begin
           OpenSound:='MSG_GAMEOVER';
           MessgText:=Tribe[me].TPhrase('GAMEOVER');
-          IconKind:=mikImp;
-          IconIndex:=21;
+          IconKind:=mikBigIcon;
+          IconIndex:=8;
           end
         else if MyRO.Happened and phShipComplete<>0 then
           begin
@@ -1542,8 +1642,8 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
             MessgText:=Tribe[me].TPhrase('MYSPACESHIP');
             if s<>'' then
               MessgText:=MessgText+'\'+Format(Phrases.Lookup('SHAREDWIN'),[s]);
-            IconKind:=mikImp;
-            IconIndex:=27;
+            IconKind:=mikBigIcon;
+            IconIndex:=9;
             end
           else
             begin
@@ -1552,16 +1652,15 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
             MessgText:='';
             for p1:=0 to nPl-1 do if Winners and (1 shl p1)<>0 then
               MessgText:=MessgText+Tribe[p1].TPhrase('SPACESHIP1');
-            MessgText:=MessgText+Phrases.Lookup('SPACESHIP2');
-            IconKind:=mikImp;
-            IconIndex:=23;
+            MessgText:=MessgText+'\'+Phrases.Lookup('SPACESHIP2');
+            IconKind:=mikEnemyShipComplete;
             end
           end
         else {if MyRO.Happened and fTimeUp<>0 then}
           begin
           assert(me=0);
           OpenSound:='MSG_GAMEOVER';
-          if G.Difficulty[me]>0 then MessgText:=Tribe[me].TPhrase('TIMEUP')
+          if not supervising then MessgText:=Tribe[me].TPhrase('TIMEUP')
           else MessgText:=Phrases.Lookup('TIMEUPSUPER');
           IconKind:=mikImp;
           IconIndex:=22;
@@ -1572,15 +1671,13 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
           begin
           p1:=0;
           while (p1<nPl-1) and (Winners and (1 shl p1)=0) do inc(p1);
-          if MyRO.Happened and phShipComplete<>0 then
-            DiaDlg.ShowNewContent_Ship(wmModal,p1)
-          else if MyRO.Turn>=2 then
+          if MyRO.Happened and phShipComplete=0 then
             DiaDlg.ShowNewContent_Charts(wmModal);
           end;
         TurnComplete:=true;
         exit;
         end;
-    if (G.Difficulty[me]>0) and (1 shl me and MyRO.Alive=0) then
+    if not supervising and (1 shl me and MyRO.Alive=0) then
       begin TurnComplete:=true; exit; end;
 
     if (ClientMode=cContinue) and (DipMem[me].SentCommand and $FF0F=scContact) then
@@ -1589,13 +1686,27 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
         ContactRefused(DipMem[me].pContact, 'FRREJECTED')
       else SoundMessage(Tribe[DipMem[me].pContact].TPhrase('FRREJECTED'),'NEGO_REJECTED');
 
-    if (G.Difficulty[me]>0) and (Age>MyData.ToldAge)
+    if not supervising and (Age>MyData.ToldAge)
       and ((Age>0) or (ClientMode<>cMovieTurn)) then with MessgExDlg do
       begin
-      s:=Tribe[me].TPhrase('AGE'+char(48+Age));
       if Age=0 then
-        MessgText:=Format(s,[TurnToString(MyRO.Turn),CityName(MyCity[0].ID)])
-      else MessgText:=Format(s,[TurnToString(MyRO.Turn)]);
+        begin
+        if Phrases2FallenBackToEnglish then
+          begin
+          s:=Tribe[me].TPhrase('AGE0');
+          MessgText:=Format(s,[TurnToString(MyRO.Turn),CityName(MyCity[0].ID)])
+          end
+        else
+          begin
+          s:=Tribe[me].TString(Phrases2.Lookup('AGE0'));
+          MessgText:=Format(s,[TurnToString(MyRO.Turn)]);
+          end
+        end
+      else
+        begin
+        s:=Tribe[me].TPhrase('AGE'+char(48+Age));
+        MessgText:=Format(s,[TurnToString(MyRO.Turn)]);
+        end;
       IconKind:=mikAge;
       IconIndex:=Age;
       {if age=0 then} Kind:=mkOK
@@ -1624,13 +1735,12 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
             IconIndex:=21;
             ShowModal;
             end;
-      if (ClientMode<>cMovieTurn) and (G.Difficulty[me]>0) and (MyRO.Turn>=2) then
+      if (ClientMode<>cMovieTurn) and not supervising then
         DiaDlg.ShowNewContent_Charts(wmModal);
-      MyData.ToldAlive:=MyRO.Alive;
       end;
 
     // tell changes of own credibility
-    if G.Difficulty[me]>0 then
+    if not supervising then
       begin
       if RoughCredibility(MyRO.Credibility)
         <>RoughCredibility(MyData.ToldOwnCredibility) then
@@ -1732,7 +1842,6 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
             ShowModal;
             end;
       end;
-    move(MyRO.Wonder,MyData.ToldWonders,SizeOf(MyData.ToldWonders));
 
     if MyRO.Turn=MyData.ColdWarStart+ColdWarTurns then
       begin
@@ -1742,6 +1851,8 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
 
     TellNewModels;
     end; // ClientMode<>cResume
+  MyData.ToldAlive:=MyRO.Alive;
+  move(MyRO.Wonder,MyData.ToldWonders,SizeOf(MyData.ToldWonders));
 
   NewGovAvailable:=-1;
   if ClientMode<>cResume then
@@ -1789,7 +1900,7 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
       end;
     end; // ClientMode=cTurn
 
-  if (ClientMode=cTurn) or (ClientMode=cMovieTurn) then
+  if not supervising and ((ClientMode=cTurn) or (ClientMode=cMovieTurn)) then
     for cix:=0 to MyRO.nCity-1 do with MyCity[cix] do
       Status:=Status and not csToldBombard;
 
@@ -1816,11 +1927,17 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
             IconIndex:=Project0 and cpIndex;
             ShowModal;
             end;
-          if ClientMode=cTurn then
+          if not supervising and (ClientMode=cTurn) then
             begin
+            AllowCityScreen:=true;
             if (Status and 7<>0) and (Project and (cpImp+cpIndex)=cpImp+imTrGoods) then
               if (MyData.ImpOrder[Status and 7-1,0]>=0) then
-                AutoBuild(cix,MyData.ImpOrder[Status and 7-1])
+                begin
+                if AutoBuild(cix,MyData.ImpOrder[Status and 7-1]) then
+                  AllowCityScreen:=false
+                else if Flags and chProduction<>0 then
+                  Flags:=(Flags and not chProduction) or chAllImpsMade
+                end
               else Flags:=Flags or chTypeDel;
             if (Size>=NeedAqueductSize) and (MyRO.Tech[Imp[imAqueduct].Preq]<tsApplicable)
               or (Size>=NeedSewerSize) and (MyRO.Tech[Imp[imSewer].Preq]<tsApplicable) then
@@ -1830,8 +1947,9 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
             else if Status and csToldDelay=0 then
               Status:=Status or csToldDelay
             else Flags:=Flags and not chNoSettlerProd;
-            if Flags and CityRepMask<>0 then
-              if mRepScreens.Checked then
+            if mRepScreens.Checked then
+              begin
+              if (Flags and CityRepMask<>0) and AllowCityScreen then
                 begin {show what happened in cities}
                 SetTroopLoc(MyCity[cix].Loc);
                 MarkCityLoc:=MyCity[cix].Loc;
@@ -1840,8 +1958,12 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
                 CityDlg.ShowNewContent(wmModal, MyCity[cix].Loc, Flags and CityRepMask);
                 UpdatePanel:=true;
                 end
-              else {if mRepList.Checked then}
+              end
+            else {if mRepList.Checked then}
+              begin
+              if Flags and CityRepMask<>0 then
                 ShowCityList:=true
+              end
             end
           end; {city loop}
     end; // ClientMode=cTurn
@@ -1888,74 +2010,75 @@ procedure TMainScreen.Client(Command,NewPlayer:integer;var Data);
     if UpdatePanel then UpdateViews;
     Application.ProcessMessages;
 
-    for uix:=0 to MyRO.nUn-1 do with MyUn[uix] do if Loc>=0 then
-      begin
-      if Flags and unWithdrawn<>0 then Status:=0;
-      if Health=100 then
-        Status:=Status and not usRecover;
-      if (Master>=0) or UnitExhausted(uix) then
-        Status:=Status and not usWaiting
-      else Status:=Status or usWaiting;
-      CheckToldNoReturn(uix);
-      if Status and usGoto<>0 then
-        begin {continue multi-turn goto}
-        SetUnFocus(uix);
-        SetTroopLoc(Loc);
-        FocusOnLoc(TroopLoc,flRepaintPanel or flImmUpdate);
-        if Status shr 16=$7FFF then
-          MoveResult:=GetMoveAdvice(UnFocus,maNextCity,MoveAdviceData)
-        else MoveResult:=GetMoveAdvice(UnFocus,Status shr 16,MoveAdviceData);
-        if MoveResult>=rExecuted then
-          begin // !!! Shinkansen
-          MoveResult:=eOK;
-          ok:=true;
-          for i:=0 to MoveAdviceData.nStep-1 do
-            begin
-            Loc1:=dLoc(Loc,MoveAdviceData.dx[i],MoveAdviceData.dy[i]);
-            if (MyMap[Loc1] and (fCity or fOwned)=fCity) // don't capture cities during auto move
-              or (MyMap[Loc1] and (fUnit or fOwned)=fUnit) then // don't attack during auto move
-              begin ok:=false; Break end
-            else
+    if not supervising then
+      for uix:=0 to MyRO.nUn-1 do with MyUn[uix] do if Loc>=0 then
+        begin
+        if Flags and unWithdrawn<>0 then Status:=0;
+        if Health=100 then
+          Status:=Status and not usRecover;
+        if (Master>=0) or UnitExhausted(uix) then
+          Status:=Status and not usWaiting
+        else Status:=Status or usWaiting;
+        CheckToldNoReturn(uix);
+        if Status and usGoto<>0 then
+          begin {continue multi-turn goto}
+          SetUnFocus(uix);
+          SetTroopLoc(Loc);
+          FocusOnLoc(TroopLoc,flRepaintPanel or flImmUpdate);
+          if Status shr 16=$7FFF then
+            MoveResult:=GetMoveAdvice(UnFocus,maNextCity,MoveAdviceData)
+          else MoveResult:=GetMoveAdvice(UnFocus,Status shr 16,MoveAdviceData);
+          if MoveResult>=rExecuted then
+            begin // !!! Shinkansen
+            MoveResult:=eOK;
+            ok:=true;
+            for i:=0 to MoveAdviceData.nStep-1 do
               begin
-              if (Loc1=MoveAdviceData.ToLoc) or (MoveAdviceData.ToLoc=maNextCity)
-                and (MyMap[dLoc(Loc,MoveAdviceData.dx[i],MoveAdviceData.dy[i])] and fCity<>0) then
-                MoveOptions:=muAutoNoWait
-              else MoveOptions:=0;
-              MoveResult:=MoveUnit(MoveAdviceData.dx[i],MoveAdviceData.dy[i],MoveOptions);
-              if (MoveResult<rExecuted) or (MoveResult=eEnemySpotted) then
-                begin ok:=false; Break end;
-              end
+              Loc1:=dLoc(Loc,MoveAdviceData.dx[i],MoveAdviceData.dy[i]);
+              if (MyMap[Loc1] and (fCity or fOwned)=fCity) // don't capture cities during auto move
+                or (MyMap[Loc1] and (fUnit or fOwned)=fUnit) then // don't attack during auto move
+                begin ok:=false; Break end
+              else
+                begin
+                if (Loc1=MoveAdviceData.ToLoc) or (MoveAdviceData.ToLoc=maNextCity)
+                  and (MyMap[dLoc(Loc,MoveAdviceData.dx[i],MoveAdviceData.dy[i])] and fCity<>0) then
+                  MoveOptions:=muAutoNoWait
+                else MoveOptions:=0;
+                MoveResult:=MoveUnit(MoveAdviceData.dx[i],MoveAdviceData.dy[i],MoveOptions);
+                if (MoveResult<rExecuted) or (MoveResult=eEnemySpotted) then
+                  begin ok:=false; Break end;
+                end
+              end;
+            Stop:=not ok or (Loc=MoveAdviceData.ToLoc)
+              or (MoveAdviceData.ToLoc=maNextCity) and (MyMap[Loc] and fCity<>0)
+            end
+          else
+            begin
+            MoveResult:=eOK;
+            Stop:=true;
             end;
-          Stop:=not ok or (Loc=MoveAdviceData.ToLoc)
-            or (MoveAdviceData.ToLoc=maNextCity) and (MyMap[Loc] and fCity<>0)
-          end
-        else
-          begin
-          MoveResult:=eOK;
-          Stop:=true;
+
+          if MoveResult<>eDied then
+            if Stop then Status:=Status and ($FFFF-usGoto)
+            else Status:=Status and not usWaiting;
           end;
 
-        if MoveResult<>eDied then
-          if Stop then Status:=Status and ($FFFF-usGoto)
-          else Status:=Status and not usWaiting;
+        if Status and (usEnhance or usGoto)=usEnhance then
+          // continue terrain enhancement
+          begin
+          MoveResult:=ProcessEnhancement(uix,MyData.EnhancementJobs);
+          if MoveResult<>eDied then
+            if MoveResult=eJobDone then Status:=Status and not usEnhance
+            else Status:=Status and not usWaiting;
+          end
         end;
-
-      if Status and (usEnhance or usGoto)=usEnhance then
-        // continue terrain enhancement
-        begin
-        MoveResult:=ProcessEnhancement(uix,MyData.EnhancementJobs);
-        if MoveResult<>eDied then
-          if MoveResult=eJobDone then Status:=Status and not usEnhance
-          else Status:=Status and not usWaiting;
-        end
-      end;
     end; // ClientMode=cTurn
 
   HaveStrategyAdvice:= false;
-//    (GameMode<>cMovie) and (G.Difficulty[me]>0)
+//    (GameMode<>cMovie) and not supervising
 //    and AdvisorDlg.HaveStrategyAdvice;
   GoOnPhase:=true;
-  if (G.Difficulty[me]=0) or (GameMode=cMovie) then
+  if supervising or (GameMode=cMovie) then
     begin SetTroopLoc(-1); PaintAll end {supervisor}
 {  else if (ClientMode=cTurn) and (MyRO.Turn=0) then
     begin
@@ -1989,6 +2112,13 @@ mi: TModelInfo;
 SkipTurn,IsAlpine,IsTreatyDeal: boolean;
 
 begin {>>>client}
+case command of
+  cTurn,cResume,cContinue,cMovieTurn,scContact,scDipStart..scDipBreak:
+    begin
+    supervising:= G.Difficulty[NewPlayer]=0;
+    ArrangeMidPanel;
+    end
+  end;  
 case Command of
   cDebugMessage:
     LogDlg.Add(NewPlayer, G.RO[0].Turn, pchar(@Data));
@@ -2030,7 +2160,7 @@ case Command of
   cInitModule:
     begin
     Server:=TInitModuleData(Data).Server;
-    AdvisorDlg.Init;
+    //AdvisorDlg.Init;
     InitModule;
     TInitModuleData(Data).DataSize:=SizeOf(TPersistentData);
     TInitModuleData(Data).Flags:=aiThreaded;
@@ -2038,34 +2168,33 @@ case Command of
 
   cReleaseModule:
     begin
-    BigImp.Free;
     SmallImp.Free;
     UnusedTribeFiles.Free;
     TribeNames.Free;
     MainMap.Free;
     IsoEngine.Done;
-    AdvisorDlg.DeInit;
+    //AdvisorDlg.DeInit;
     end;
 
-  cHelpOnly,cStartHelp:
+  cHelpOnly,cStartHelp,cStartCredits:
     begin
     Age:=0;
-    InitTexture(Paper,'Paper',0);
-    InitTexture(HelpDlg.Texture,'Paper',0);
+    if Command=cHelpOnly then
+      SetMainTextureByAge(-1);
     Tribes.Init;
     HelpDlg.UserLeft:=(Screen.Width-HelpDlg.Width) div 2;
     HelpDlg.UserTop:=(Screen.Height-HelpDlg.Height) div 2;
     HelpDlg.Difficulty:=0;
-    if Command=cHelpOnly then
-      HelpDlg.ShowNewContent(wmModal, hkMisc, miscMain)
-    else HelpDlg.ShowNewContent(wmModal, hkText, HelpDlg.TextIndex('START'));
+    if Command=cStartCredits then
+      HelpDlg.ShowNewContent(wmModal, hkMisc, miscCredits)
+    else HelpDlg.ShowNewContent(wmModal, hkMisc, miscMain);
     Tribes.Done;
     end;
 
   cNewGame,cLoadGame,cMovie,cNewMap:
     begin
-    if (Command=cNewGame) or (Command=cLoadGame) then
-      AdvisorDlg.NewGame(Data);
+    {if (Command=cNewGame) or (Command=cLoadGame) then
+      AdvisorDlg.NewGame(Data);}
     GenerateNames:=mNames.Checked;
     GameOK:=true;
     G:=TNewGameData(Data);
@@ -2073,6 +2202,7 @@ case Command of
     pLogo:=-1;
     ClientMode:=-1;
     SetMapOptions;
+    IsoEngine.pDebugMap:=-1;
     idle:=false;
     FillChar(Jump,SizeOf(Jump),0);
     if StartRunning then Jump[0]:=999999;
@@ -2108,14 +2238,17 @@ case Command of
     ListDlg.UserTop:=TopBarHeight+8;
     HelpDlg.UserLeft:=Screen.Width-HelpDlg.Width-8;
     HelpDlg.UserTop:=TopBarHeight+8;
+    UnitStatDlg.UserLeft:=397;
+    UnitStatDlg.UserTop:=TopBarHeight+64;
     DiaDlg.UserLeft:=(Screen.Width-DiaDlg.Width) div 2;
     DiaDlg.UserTop:=(Screen.Height-DiaDlg.Height) div 2;
     NatStatDlg.UserLeft:=Screen.Width-NatStatDlg.Width-8;
     NatStatDlg.UserTop:=Screen.Height-PanelHeight-NatStatDlg.Height-8;
+    if NatStatDlg.UserTop<8 then
+      NatStatDlg.UserTop:=8;
 
     Age:=0;
-    InitTexture(Paper,'Paper',0);
-    InitTexture(HelpDlg.Texture,'Paper',0);
+    MovieSpeed:=1;
     LogDlg.mSlot.Visible:=true;
     LogDlg.Host:=self;
     HelpDlg.ClearHistory;
@@ -2127,6 +2260,12 @@ case Command of
     ToldSlavery:=-1;
     RepaintOnResize:=false;
     Closable:=false;
+    FirstMovieTurn:=true;
+
+    MenuArea.Visible:= GameMode<>cMovie;
+    TreasuryArea.Visible:= GameMode<cMovie;
+    ResearchArea.Visible:= GameMode<cMovie;
+    ManagementArea.Visible:= GameMode<cMovie;
     end;
 
   cGetReady,cReplay: if NewPlayer=0 then
@@ -2183,9 +2322,10 @@ case Command of
 
   cBreakGame:
     begin
+    SaveSettings;
     CityDlg.CloseAction:=None;
     for i:=0 to Screen.FormCount-1 do
-      if Screen.Forms[i].Visible and (Screen.Forms[i] is TBaseDlg) then
+      if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
         Screen.Forms[i].Close;
     if LogDlg.Visible then LogDlg.Close;
     LogDlg.List.Clear;
@@ -2196,18 +2336,20 @@ case Command of
     UnitInfoBtn.Visible:=false;
     UnitBtn.Visible:=false;
     TerrainBtn.Visible:=false;
+    MovieSpeed1Btn.Visible:=false;
+    MovieSpeed2Btn.Visible:=false;
+    MovieSpeed3Btn.Visible:=false;
+    MovieSpeed4Btn.Visible:=false;
     EOT.Visible:=false;
     for i:=0 to ControlCount-1 do if Controls[i] is TButtonC then
       Controls[i].visible:=false;
     InitPVSB(sb,0,1);
-    MapBtn6.ButtonIndex:=2; // don't keep bare terrain state
-    MapOptionChecked:=MapOptionChecked and not (1 shl 6);
     for p1:=0 to nPl-1 do if Tribe[p1]<>nil then Tribe[p1].Free;
     Tribes.Done;
     RepaintOnResize:=false;
     Closable:=true; Close;
-    if (GameMode=cNewGame) or (GameMode=cLoadGame) then
-      AdvisorDlg.BreakGame;
+    {if (GameMode=cNewGame) or (GameMode=cLoadGame) then
+      AdvisorDlg.BreakGame;}
     end;
 
   cShowGame:
@@ -2228,7 +2370,7 @@ case Command of
     Show;
     Update;
     RepaintOnResize:=true;
-    xw:=0; yw:=ywmax div 2 and not 1;
+    xw:=0; yw:=ywcenter;
     if not StayOnTop_Ensured then
       begin
       StayOnTop_Ensured:=true;
@@ -2250,13 +2392,16 @@ case Command of
 
   cShowTurnChange:
     begin
-    pLogo:=integer(data);
-    if G.RO[pLogo]=nil then
+    if integer(data)>=0 then
       begin
-      if AILogo[pLogo]<>nil then
-        BitBlt(Canvas.Handle, xRightPanel-(16+64), ClientHeight-PanelHeight, 64,64,
-          AILogo[pLogo].Canvas.Handle,0,0,SRCCOPY);
-      end
+      pLogo:=integer(data);
+      if G.RO[pLogo]=nil then
+        begin
+        if AILogo[pLogo]<>nil then
+          BitBlt(Canvas.Handle, (xRightPanel+10)-(16+64), ClientHeight-PanelHeight, 64,64,
+            AILogo[pLogo].Canvas.Handle,0,0,SRCCOPY);
+        end
+      end  
     end;
 
   cTurn,cResume,cContinue:
@@ -2288,7 +2433,7 @@ case Command of
       if SkipTurn then
         begin
         ItsMeAgain(NewPlayer);
-        MyData:=MyRO.Data;
+        MyData:=G.RO[NewPlayer].Data;
         SetTroopLoc(-1);
         MiniPaint;
         InitAllEnemyModels; // necessary for correct replay
@@ -2315,13 +2460,23 @@ case Command of
 
   cMovieTurn:
     begin
-    Application.ProcessMessages;
     ClientMode:=Command;
     pTurn:=NewPlayer;
     pLogo:=-1;
     skipped:=false; // always show my moves during my turn
     idle:=true;
+    if FirstMovieTurn then
+      begin
+      CheckMovieSpeedBtnState;
+      FirstMovieTurn:=false;
+      end;
     InitTurn(NewPlayer);
+    Application.ProcessMessages;
+    if MovieSpeed=4 then
+      begin
+      Sleep(75); // this break will ensure speed of fast forward does not depend on cpu speed
+      Application.ProcessMessages;
+      end
     end;
 
   cMovieEndTurn:
@@ -2339,11 +2494,16 @@ case Command of
     begin
     ClientMode:=cEditMap;
     SetMapOptions;
+    IsoEngine.pDebugMap:=-1;
     ItsMeAgain(0);
     MyData:=nil;
     UnitInfoBtn.Visible:=false;
     UnitBtn.Visible:=false;
     TerrainBtn.Visible:=false;
+    MovieSpeed1Btn.Visible:=false;
+    MovieSpeed2Btn.Visible:=false;
+    MovieSpeed3Btn.Visible:=false;
+    MovieSpeed4Btn.Visible:=false;
     EOT.Visible:=false;
     HelpDlg.Difficulty:=0;
     BrushType:=fGrass;
@@ -2353,9 +2513,9 @@ case Command of
     MarkCityLoc:=-1;
     Tracking:=false;
     TurnComplete:=false;
-    SetTroopLoc(-1);
     MapValid:=false;
-    PaintAll;
+    FormResize(nil); // calculate geometrics and paint all
+    SetTroopLoc(-1);
     idle:=true
     end;
 
@@ -2460,7 +2620,8 @@ case Command of
   cShowEndContact: EndNego;
 
   cShowUnitChanged,cShowCityChanged,cShowAfterMove,cShowAfterAttack:
-    if idle and (NewPlayer=me) or not idle and not skipped then
+    if (idle and (NewPlayer=me) or not idle and not skipped)
+      and not ((GameMode=cMovie) and (MovieSpeed=4)) then
       begin
       assert(NewPlayer=me);
       if not idle or (GameMode=cMovie) then
@@ -2512,8 +2673,9 @@ case Command of
       end;
 
   cShowMoving,cShowCapturing:
-    if idle and (NewPlayer=me)
-      or not idle and not skipped and (TShowMove(Data).emix<>$FFFF) then
+    if (idle and (NewPlayer=me)
+      or not idle and not skipped and (TShowMove(Data).emix<>$FFFF))
+      and not ((GameMode=cMovie) and (MovieSpeed=4)) then
       begin
       assert(NewPlayer=me);
       if not idle or (GameMode=cMovie) then
@@ -2532,9 +2694,18 @@ case Command of
             or (Command=cShowCapturing);
           if CurrentMoveInfo.DoShow then
             begin
-            if mVeryFastMoves.Checked then AnimationSpeed:=4
-            else if mFastMoves.Checked then AnimationSpeed:=8
-            else AnimationSpeed:=16;
+            if GameMode=cMovie then
+              begin
+              if MovieSpeed=3 then AnimationSpeed:=4
+              else if MovieSpeed=2 then AnimationSpeed:=8
+              else AnimationSpeed:=16;
+              end
+            else
+              begin
+              if mVeryFastMoves.Checked then AnimationSpeed:=4
+              else if mFastMoves.Checked then AnimationSpeed:=8
+              else AnimationSpeed:=16;
+              end;
             with MyModel[mix] do
               begin
               if (Kind=mkDiplomat) or (Domain=dAir)
@@ -2558,7 +2729,9 @@ case Command of
         else
           begin
           CurrentMoveInfo.IsAlly:= MyRO.Treaty[Owner]=trAlliance;
-          if CurrentMoveInfo.IsAlly then
+          if GameMode=cMovie then
+            CurrentMoveInfo.DoShow:=true
+          else if CurrentMoveInfo.IsAlly then
             CurrentMoveInfo.DoShow:=not mAlNoMoves.Checked
               and not(mAlEffectiveMovesOnly.Checked and (Command<>cShowCapturing))
           else CurrentMoveInfo.DoShow:=not mEnNoMoves.Checked
@@ -2604,6 +2777,12 @@ case Command of
               else AnimationSpeed:=16;
               CurrentMoveInfo.AfterMovePaintRadius:=0; // enemy unit, nothing discovered
               end;
+            if GameMode=cMovie then
+              begin
+              if MovieSpeed=3 then AnimationSpeed:=4
+              else if MovieSpeed=2 then AnimationSpeed:=8
+              else AnimationSpeed:=16;
+              end;
             ShowMoveDomain:=MyRO.EnemyModel[emix].Domain;
             IsAlpine:= MyRO.EnemyModel[emix].Cap and (1 shl (mcAlpine-mcFirstNonCap))<>0;
             end
@@ -2643,8 +2822,9 @@ case Command of
       end;
 
   cShowAttacking:
-    if idle and (NewPlayer=me)
-      or not idle and not skipped and (TShowMove(Data).emix<>$FFFF) then
+    if (idle and (NewPlayer=me)
+      or not idle and not skipped and (TShowMove(Data).emix<>$FFFF))
+      and not ((GameMode=cMovie) and (MovieSpeed=4)) then
       begin
       assert(NewPlayer=me);
       if not idle or (GameMode=cMovie) then
@@ -2675,7 +2855,8 @@ case Command of
               dec(cix);
             if MyCity[cix].Status and csToldBombard=0 then
               begin
-              MyCity[cix].Status:=MyCity[cix].Status or csToldBombard;
+              if not supervising then
+                MyCity[cix].Status:=MyCity[cix].Status or csToldBombard;
               s:=CityName(MyCity[cix].ID);
               SoundMessageEx(Format(Tribe[Owner].TPhrase('BOMBARD'),[s]),'');
               Update; // remove message box from screen
@@ -2745,6 +2926,16 @@ case Command of
       ShowModal;
       end;
 
+  cRefreshDebugMap:
+    begin
+    if integer(data)=IsoEngine.pDebugMap then
+      begin
+      MapValid:=false;
+      MainOffscreenPaint;
+      Update;
+      end
+    end;
+
   else if Command>=cClientEx then case Command and $FFF0 of
 
     cSetTribe: with TTribeInfo(Data) do
@@ -2786,7 +2977,7 @@ begin
 inherited;
 
 // define which menu settings to save
-SaveOption[0]:=mFullScreen.Tag;
+SaveOption[0]:=mAlEffectiveMovesOnly.Tag;
 SaveOption[1]:=mEnMoves.Tag;
 SaveOption[2]:=mEnAttacks.Tag;
 SaveOption[3]:=mEnNoMoves.Tag;
@@ -2808,15 +2999,14 @@ SaveOption[18]:=mScrollOff.Tag;
 SaveOption[19]:=mAlSlowMoves.Tag;
 SaveOption[20]:=mAlFastMoves.Tag;
 SaveOption[21]:=mAlNoMoves.Tag;
-SaveOption[22]:=mAlEffectiveMovesOnly.Tag;
 DefaultOptionChecked:= 1 shl 1 + 1 shl 7 + 1 shl 10 + 1 shl 12 + 1 shl 14 + 1 shl 18 + 1 shl 19;
 
 Reg:=TRegistry.Create;
 doinit:=true;
-if Reg.KeyExists('SOFTWARE\cevo\RegVer8') then
+if Reg.KeyExists('SOFTWARE\cevo\RegVer9') then
   begin
   doinit:=false;
-  Reg.OpenKey('SOFTWARE\cevo\RegVer8',false);
+  Reg.OpenKey('SOFTWARE\cevo\RegVer9',false);
   try
     xxt:=Reg.ReadInteger('TileWidth') div 2;
     yyt:=Reg.ReadInteger('TileHeight') div 2;
@@ -2833,14 +3023,13 @@ if Reg.KeyExists('SOFTWARE\cevo\RegVer8') then
 Reg.Free;
 if doinit then
   begin
-  xxt:=33;
-  yyt:=16;
+  xxt:=48;
+  yyt:=24;
   OptionChecked:=DefaultOptionChecked;
   MapOptionChecked:=1 shl moCityNames;
   CityRepMask:=cardinal(not chPopIncrease and not chNoGrowthWarning and not chCaptured);
   end;
 
-FullScreen:= 1 shl 0 and OptionChecked=0;
 if FullScreen then
   begin
   p.Style:=$87000000;
@@ -2858,6 +3047,9 @@ var
 i,j: integer;
 begin
 Screen.Cursors[crImpDrag]:=LoadCursor(HInstance,'DRAG');
+Screen.Cursors[crFlatHand]:=LoadCursor(HInstance,'FLATHAND');
+
+// tag-controlled language
 for i:=0 to ComponentCount-1 do
   if Components[i].Tag and $FF<>0 then
     if Components[i] is TMenuItem then
@@ -2872,119 +3064,136 @@ for i:=0 to ComponentCount-1 do
       begin
       TButtonBase(Components[i]).Hint:=
         Phrases.Lookup('CONTROLS',-1+Components[i].Tag and $FF);
-      if Components[i] is TButtonC then
+      if (Components[i] is TButtonC) and (TButtonC(Components[i]).ButtonIndex<>1) then
         TButtonC(Components[i]).ButtonIndex:=
           MapOptionChecked shr (Components[i].Tag shr 8) and 1 +2
       end;
 
+// non-tag-controlled language
+mTechTree.Caption:=Phrases2.Lookup('MENU_ADVTREE');
+mViewpoint.Caption:=Phrases2.Lookup('MENU_VIEWPOINT');
+if not Phrases2FallenBackToEnglish then
+  begin
+  MenuArea.Hint:=Phrases2.Lookup('BTN_MENU');
+  TreasuryArea.Hint:=Phrases2.Lookup('TIP_TREASURY');
+  ResearchArea.Hint:=Phrases.Lookup('SCIENCE');
+  ManagementArea.Hint:=Phrases2.Lookup('BTN_MANAGE');
+  end;
 for i:=0 to mRep.Count-1 do
   begin
   j:=mRep[i].Tag shr 8;
-  mRep[i].Caption:=Phrases.Lookup('CITYEVENTS',j);
+  mRep[i].Caption:=CityEventName(j);
   mRep[i].Checked:= CityRepMask and (1 shl j)<>0;
   end;
-
-mFullScreen.Checked:=not FullScreen;
 
 Mini:=TBitmap.Create;
 Mini.PixelFormat:=pf24bit;
 Panel:=TBitmap.Create;
-if TrueColor=1 then
-  Panel.PixelFormat:=pf24bit;
+Panel.PixelFormat:=pf24bit;
 Panel.Canvas.Font.Assign(UniFont[ftSmall]);
 Panel.Canvas.Brush.Style:=bsClear;
 TopBar:=TBitmap.Create;
-if TrueColor=1 then
-  TopBar.PixelFormat:=pf24bit;
+TopBar.PixelFormat:=pf24bit;
 TopBar.Canvas.Font.Assign(UniFont[ftNormal]);
 TopBar.Canvas.Brush.Style:=bsClear;
 Buffer:=TBitmap.Create;
-if TrueColor=1 then
-  Buffer.PixelFormat:=pf24bit;
-Buffer.Width:=2*lxmax;Buffer.Height:=lymax;
+Buffer.PixelFormat:=pf24bit;
+if 2*lxmax>3*xSizeBig then
+  Buffer.Width:=2*lxmax
+else Buffer.Width:=3*xSizeBig;
+if lymax>3*ySizeBig then
+  Buffer.Height:=lymax
+else Buffer.Height:=3*ySizeBig;
 Buffer.Canvas.Font.Assign(UniFont[ftSmall]);
 for i:=0 to nPl-1 do AILogo[i]:=nil;
 Canvas.Font.Assign(UniFont[ftSmall]);
-InitButtons(self);
+InitButtons();
 EOT.Template:=Templates;
 end;
 
 procedure TMainScreen.FormDestroy(Sender:TObject);
 var
-i,j: integer;
-Reg: TRegistry;
+i: integer;
 begin
-OptionChecked:=0;
-for i:=0 to ComponentCount-1 do if Components[i] is TMenuItem then
-  for j:=0 to nSaveOption-1 do
-    if TMenuItem(Components[i]).Checked
-      and (TMenuItem(Components[i]).Tag=SaveOption[j]) then
-      inc(OptionChecked,1 shl j);
-
-Reg:=TRegistry.Create;
-Reg.OpenKey('SOFTWARE\cevo\RegVer8',true);
-Reg.WriteInteger('TileWidth',xxt*2);
-Reg.WriteInteger('TileHeight',yyt*2);
-Reg.WriteInteger('OptionChecked', OptionChecked);
-Reg.WriteInteger('MapOptionChecked', MapOptionChecked);
-Reg.WriteInteger('CityReport',integer(CityRepMask));
-Reg.closekey;
-Reg.Free;
-
 Mini.Free;Buffer.Free;Panel.Free;
 for i:=0 to nPl-1 do if AILogo[i]<>nil then
   AILogo[i].Free;
 end;
 
-procedure TMainScreen.OnEraseBkgnd(var m:TMessage);
-begin
-end;
-
 procedure TMainScreen.FormResize(Sender:TObject);
 var
-MiniFrame: integer;
+MiniFrame,MaxMapWidth: integer;
 begin
 SmallScreen:= ClientWidth<1024;
-MapWidth:=ClientWidth; MapHeight:=ClientHeight-TopBarHeight-PanelHeight+overlap;
+MaxMapWidth:=(G.lx*2-3)*xxt; // avoide the same tile being visible left and right
+if ClientWidth<=MaxMapWidth then
+  begin
+  MapWidth:=ClientWidth;
+  MapOffset:=0;
+  end
+else
+  begin
+  MapWidth:=MaxMapWidth;
+  MapOffset:=(ClientWidth-MapWidth) div 2;
+  end;
+MapHeight:=ClientHeight-TopBarHeight-PanelHeight+overlap;
 Panel.Width:=ClientWidth; Panel.Height:=PanelHeight;
 TopBar.Width:=ClientWidth; TopBar.Height:=TopBarHeight;
 MiniFrame:=(lxmax_xxx-G.ly) div 2;
-xMidPanel:=(G.lx+MiniFrame)*2+8;
-xRightPanel:=ClientWidth-LeftPanelWidth;
-if SmallScreen then
-  xTroop:=xRightPanel-3*66-GetSystemMetrics(SM_CXVSCROLL)-19-4
-else xTroop:=ClientWidth div 2 +73;
+xMidPanel:=(G.lx+MiniFrame)*2+1;
+xRightPanel:=ClientWidth-LeftPanelWidth-10;
+if ClientMode=cEditMap then
+  TrPitch:=2*xxt
+else TrPitch:=66;
 xMini:=MiniFrame-5; yMini:=(PanelHeight-26-lxmax_xxx) div 2+MiniFrame;
 ywmax:=(G.ly-MapHeight div yyt+1) and not 1;
-if ywmax<=0 then yw:=ywmax div 2 and not 1
+ywcenter:=-((MapHeight-yyt*(G.ly-1)) div (4*yyt))*2; // only for ywmax<=0
+if ywmax<=0 then yw:=ywcenter
 else if yw<0 then yw:=0
 else if yw>ywmax then yw:=ywmax;
-TrRow:=(xRightPanel-xTroop-GetSystemMetrics(SM_CXVSCROLL)-19) div 66;
 UnitInfoBtn.Top:=ClientHeight-29;
-UnitInfoBtn.Left:=xMidPanel+99;
+UnitInfoBtn.Left:=xMidPanel+7+99;
 UnitBtn.Top:=ClientHeight-29;
-UnitBtn.Left:=xMidPanel+99+31;
+UnitBtn.Left:=xMidPanel+7+99+31;
 TerrainBtn.Top:=ClientHeight-29;
-TerrainBtn.Left:=xMidPanel+99+62;
+TerrainBtn.Left:=xMidPanel+7+99+62;
+MovieSpeed1Btn.Top:=ClientHeight-91;
+MovieSpeed1Btn.Left:=ClientWidth div 2-62;
+MovieSpeed2Btn.Top:=ClientHeight-91;
+MovieSpeed2Btn.Left:=ClientWidth div 2-62+29;
+MovieSpeed3Btn.Top:=ClientHeight-91;
+MovieSpeed3Btn.Left:=ClientWidth div 2-62+2*29;
+MovieSpeed4Btn.Top:=ClientHeight-91;
+MovieSpeed4Btn.Left:=ClientWidth div 2-62+3*29+12;
 EOT.Top:=ClientHeight-64;
 EOT.Left:=ClientWidth-62;
-SetWindowPos(sb.h,0,xRightPanel-14-GetSystemMetrics(SM_CXVSCROLL),
+SetWindowPos(sb.h,0,xRightPanel+10-14-GetSystemMetrics(SM_CXVSCROLL),
   ClientHeight-MidPanelHeight+8,0,0,SWP_NOSIZE or SWP_NOZORDER);
-MapBtn0.Left:=xMini+G.lx-52;
+MapBtn0.Left:=xMini+G.lx-44;
 MapBtn0.Top:=ClientHeight-15;
-MapBtn1.Left:=xMini+G.lx-36;
+MapBtn1.Left:=xMini+G.lx-28;
 MapBtn1.Top:=ClientHeight-15;
-MapBtn2.Left:=xMini+G.lx-20;
+{MapBtn2.Left:=xMini+G.lx-20;
 MapBtn2.Top:=ClientHeight-15;
 MapBtn3.Left:=xMini+G.lx-4;
-MapBtn3.Top:=ClientHeight-15;
-MapBtn4.Left:=xMini+G.lx+12;
-MapBtn4.Top:=ClientHeight-15;
-MapBtn5.Left:=xMini+G.lx+28;
+MapBtn3.Top:=ClientHeight-15;}
+MapBtn5.Left:=xMini+G.lx-12;
 MapBtn5.Top:=ClientHeight-15;
-MapBtn6.Left:=xMini+G.lx+44;
+MapBtn4.Left:=xMini+G.lx+20;
+MapBtn4.Top:=ClientHeight-15;
+MapBtn6.Left:=xMini+G.lx+36;
 MapBtn6.Top:=ClientHeight-15;
-if RepaintOnResize then begin MapValid:=false; PaintAll end
+TreasuryArea.Left:=ClientWidth div 2-172;
+ResearchArea.Left:=ClientWidth div 2;
+ManagementArea.Left:=ClientWidth-xPalace;
+ManagementArea.Top:=TopBarHeight+MapHeight-overlap+yPalace;
+ArrangeMidPanel;
+if RepaintOnResize then
+  begin
+  RectInvalidate(0,TopBarHeight,ClientWidth,TopBarHeight+MapHeight);
+  MapValid:=false;
+  PaintAll
+  end
 end;
 
 procedure TMainScreen.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -3007,7 +3216,10 @@ end;
 procedure TMainScreen.EOTClick(Sender:TObject);
 begin
 if GameMode=cMovie then
+  begin
+  MessgExDlg.CancelMovie;
   Server(sBreak,me,0,nil^)
+  end
 else if ClientMode<0 then
   skipped:=true
 else if ClientMode>=scContact then
@@ -3015,6 +3227,26 @@ else if ClientMode>=scContact then
 else if Jump[pTurn]>0 then
   begin Jump[pTurn]:=0; StartRunning:=false end
 else EndTurn
+end;
+
+// set xTerrain, xTroop, and TrRow
+procedure TMainScreen.ArrangeMidPanel;
+begin
+if ClientMode=cEditMap then
+  xTroop:=xMidPanel+15
+else
+  begin
+  if supervising then
+    xTerrain:=xMidPanel+2*xxt+14
+  else if ClientWidth<1280 then
+    xTerrain:=ClientWidth div 2+(1280-ClientWidth) div 3
+  else xTerrain:=ClientWidth div 2;
+  xTroop:=xTerrain+2*xxt+12;
+  if SmallScreen and not supervising then
+    xTroop:=xRightPanel+10-3*66-GetSystemMetrics(SM_CXVSCROLL)-19-4;
+    // not perfect but we assume almost no one is still playing on a 800x600 screen 
+  end;
+TrRow:=(xRightPanel+10-xTroop-GetSystemMetrics(SM_CXVSCROLL)-19) div TrPitch;
 end;
 
 function TMainScreen.EndTurn(WasSkipped: boolean): boolean;
@@ -3052,6 +3284,14 @@ begin
 result:=false;
 if ClientMode>=scDipOffer then exit;
 
+if supervising and (me<>0) then
+  begin
+  for i:=0 to Screen.FormCount-1 do
+    if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
+      Screen.Forms[i].Close; // close windows
+  ItsMeAgain(0);
+  end;
+
 CityOptimizer_EndOfTurn;
 
 if not WasSkipped then // check warnings
@@ -3088,7 +3328,8 @@ if not WasSkipped then // check warnings
         end
       end;
 
-  if (MyRO.TestFlags and tfImmImprove=0) and (MyRO.Government<>gAnarchy)
+  if not supervising and (MyRO.TestFlags and tfImmImprove=0)
+    and (MyRO.Government<>gAnarchy)
     and (MyRO.Money+TaxSum<0) and (MyRO.TaxRate<100) then // low funds!
     with MessgExDlg do
       begin
@@ -3180,7 +3421,7 @@ CityDlg.CloseAction:=None;
 if IsMultiPlayerGame then
   begin // close windows for next player
   for i:=0 to Screen.FormCount-1 do
-    if Screen.Forms[i].Visible and (Screen.Forms[i] is TBaseDlg) then
+    if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
       Screen.Forms[i].Close;
   end
 else
@@ -3189,7 +3430,7 @@ else
   if UnitStatDlg.Visible then UnitStatDlg.Close;
   end;
 for i:=0 to Screen.FormCount-1 do
-  if Screen.Forms[i].Visible and (Screen.Forms[i] is TBaseDlg) then
+  if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
     Screen.Forms[i].Enabled:=false;
 
 if Server(sTurn,pTurn,0,nil^)>=rExecuted then
@@ -3252,7 +3493,7 @@ if Options and prPaint<>0 then
   MainMap.Paint(xs,ys,x0+G.lx*y0,nx,ny,-1,-1);
   end;
 if Options and prInvalidate<>0 then
-  SmartInvalidate(xs,TopBarHeight+ys,xs+xl,TopBarHeight+ys+yl)
+  RectInvalidate(MapOffset+xs,TopBarHeight+ys,MapOffset+xs+xl,TopBarHeight+ys+yl)
 end;
 
 procedure TMainScreen.PaintLoc(Loc: integer; Radius: integer = 0);
@@ -3272,48 +3513,55 @@ end;
 
 procedure TMainScreen.PaintLocTemp(Loc, Style: integer);
 var
-y0,x0: integer;
-xs,ys,xl,yl: integer;
+y0,x0,xMap,yMap: integer;
 begin
 if not MapValid then exit;
 Buffer.Canvas.Font.Assign(UniFont[ftSmall]);
 y0:=Loc div G.lx;
 x0:=Loc mod G.lx;
-xl:=1*xxt+xxt;
-yl:=1*yyt+yyt*2;
-xs:=(x0-xw)*(xxt*2)+y0 and 1*xxt-G.lx*(xxt*2);
-// |xs+xl/2-MapWidth/2| -> min
-while abs(2*(xs+G.lx*(xxt*2))+xl-MapWidth)<abs(2*xs+xl-MapWidth) do
-  inc(xs,G.lx*(xxt*2));
-ys:=(y0-yw)*yyt-yyt;
-if xs+xl>MapWidth then xl:=MapWidth-xs;
-if ys+yl>MapHeight then yl:=MapHeight-ys;
-if (xl<=0) or (yl<=0) then exit;
+xMap:=(x0-xw)*(xxt*2)+y0 and 1*xxt-G.lx*(xxt*2);
+// |xMap+xxt-MapWidth/2| -> min
+while abs(2*(xMap+G.lx*(xxt*2))+2*xxt-MapWidth)<abs(2*xMap+2*xxt-MapWidth) do
+  inc(xMap,G.lx*(xxt*2));
+yMap:=(y0-yw)*yyt-yyt;
 NoMap.SetOutput(Buffer);
+NoMap.SetPaintBounds(0,0,2*xxt,3*yyt);
 NoMap.Paint(0,0,Loc,1,1,-1,-1,Style=pltsBlink);
-if ys+yl>MapHeight-overlap then // panel window
-  if xs+xl<xMidPanel-7 then yl:=MapHeight-overlap-ys
-  else if xs<xMidPanel-7 then
-    begin
-    if MapHeight-overlap-ys>0 then
-      BitBlt(Canvas.Handle,xs,TopBarHeight+ys,xMidPanel-7-xs,MapHeight-overlap-ys,Buffer.Canvas.Handle,0,0,SRCCOPY);
-    BitBlt(Canvas.Handle,xMidPanel-7,TopBarHeight+ys,xs+xl-(xMidPanel-7),yl,Buffer.Canvas.Handle,xMidPanel-7-xs,0,SRCCOPY);
-    exit
-    end
-  else if xs+xl<xRightPanel-10 then //ok
-  else if xs<xRightPanel-10 then
-    begin
-    BitBlt(Canvas.Handle,xs,TopBarHeight+ys,xRightPanel-10-xs,yl,Buffer.Canvas.Handle,0,0,SRCCOPY);
-    if MapHeight-overlap-ys>0 then
-      BitBlt(Canvas.Handle,xRightPanel-10,TopBarHeight+ys,xs+xl-(xRightPanel-10),MapHeight-overlap-ys,
-        Buffer.Canvas.Handle,xRightPanel-10-xs,0,SRCCOPY);
-    exit
-    end
-  else yl:=MapHeight-overlap-ys;
-if (yl<=0) or (yl+ys<=0) then exit;
-if ys<0 then
-  BitBlt(Canvas.Handle,xs,TopBarHeight,xl,yl+ys,Buffer.Canvas.Handle,0,-ys,SRCCOPY)
-else BitBlt(Canvas.Handle,xs,TopBarHeight+ys,xl,yl,Buffer.Canvas.Handle,0,0,SRCCOPY);
+PaintBufferToScreen(xMap,yMap,2*xxt,3*yyt);
+end;
+
+// paint content of buffer directly to screen instead of offscreen
+// panel protusions are added
+// NoMap must be set to buffer and bounds before
+procedure TMainScreen.PaintBufferToScreen(xMap,yMap,width,height: integer);
+begin
+if xMap+width>MapWidth then
+  width:=MapWidth-xMap;
+if yMap+height>MapHeight then
+  height:=MapHeight-yMap;
+if (width<=0) or (height<=0) or (width+xMap<=0) or (height+yMap<=0) then
+  exit;
+
+NoMap.BitBlt(Panel,-xMap-MapOffset,-yMap+MapHeight-overlap,xMidPanel,overlap,
+  0,0,SRCCOPY);
+NoMap.BitBlt(Panel,-xMap-MapOffset+xRightPanel,-yMap+MapHeight-overlap,
+  Panel.Width-xRightPanel,overlap,xRightPanel,0,SRCCOPY);
+if yMap<0 then
+  begin
+  if xMap<0 then
+    BitBlt(Canvas.Handle,MapOffset,TopBarHeight,width+xMap,height+yMap,
+      Buffer.Canvas.Handle,-xMap,-yMap,SRCCOPY)
+  else BitBlt(Canvas.Handle,xMap+MapOffset,TopBarHeight,width,height+yMap,
+    Buffer.Canvas.Handle,0,-yMap,SRCCOPY)
+  end
+else
+  begin
+  if xMap<0 then
+    BitBlt(Canvas.Handle,MapOffset,TopBarHeight+yMap,width+xMap,height,
+      Buffer.Canvas.Handle,-xMap,0,SRCCOPY)
+  else BitBlt(Canvas.Handle,xMap+MapOffset,TopBarHeight+yMap,width,height,
+    Buffer.Canvas.Handle,0,0,SRCCOPY);
+  end
 end;
 
 procedure TMainScreen.PaintLoc_BeforeMove(FromLoc: integer);
@@ -3366,7 +3614,7 @@ for y:=0 to G.ly-1 do
     Loc:=x+G.lx*y;
     for i:=0 to 1 do
       begin
-      xm:=((x-xwMini)*2+i+y and 1-hw+G.lx*3) mod (G.lx*2);
+      xm:=((x-xwMini)*2+i+y and 1-hw+G.lx*5) mod (G.lx*2);
       cm:=MiniColors[MyMap[Loc] and fTerrain,i];
       if ClientMode=cEditMap then
         begin
@@ -3481,7 +3729,7 @@ else
     else if yw>ywd then
       begin
       if DoInvalidate then
-        SmartInvalidate(0,TopBarHeight+MapHeight-overlap-(yw-ywd)*yyt,MapWidth,
+        RectInvalidate(MapOffset,TopBarHeight+MapHeight-overlap-(yw-ywd)*yyt,MapOffset+MapWidth,
           TopBarHeight+MapHeight-overlap)
       else ProcessRect(xw,(ywd+MapHeight div (yyt*2) *2),MapWidth div xxt,
         yw-ywd+1,ProcessOptions);
@@ -3500,11 +3748,11 @@ else
           MapHeight div yyt,ProcessOptions);
     end;
   if not FastScrolling then
-    SmartInvalidate(0,TopBarHeight,MapWidth,TopBarHeight+MapHeight-overlap);
-  SmartInvalidate(xMidPanel-7,TopBarHeight+MapHeight-overlap,xRightPanel-10,TopBarHeight+MapHeight)
+    RectInvalidate(MapOffset,TopBarHeight,MapOffset+MapWidth,TopBarHeight+MapHeight-overlap);
+  RectInvalidate(xMidPanel,TopBarHeight+MapHeight-overlap,xRightPanel,TopBarHeight+MapHeight)
   end;
-if (xwd<>xw) or (ywd<>yw) then
-  Server(sChangeSuperView,me,yw*G.lx+xw,nil^);
+//if (xwd<>xw) or (ywd<>yw) then
+//  Server(sChangeSuperView,me,yw*G.lx+xw,nil^); // for synchronizing client side viewer, not used currently
 xwd:=xw;ywd:=yw;
 MapValid:=true;
 end;
@@ -3523,7 +3771,7 @@ MainOffscreenPaint;
 xwMini:=xw; ywMini:=yw;
 MiniPaint;
 CopyMiniToPanel;
-SmartInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,xMini+2+G.lx*2,
+RectInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,xMini+2+G.lx*2,
   TopBarHeight+MapHeight-overlap+yMini+2+G.ly);
 end;
 
@@ -3545,30 +3793,6 @@ end;
 
 procedure TMainScreen.PanelPaint;
 
-  procedure MakeBlue(x,y,w,h: integer);
-  type
-  TLine=array[0..99999,0..2] of Byte;
-  PLine=^TLine;
-
-    procedure BlueLine(line: PLine; length: integer);
-    var
-    i: integer;
-    begin
-    for i:=0 to length-1 do
-      begin
-      line[i,0]:=line[i,0] div 2;
-      line[i,1]:=line[i,1] div 2;
-      line[i,2]:=line[i,2] div 2;
-      end
-    end;
-
-  var
-  i: integer;
-  begin
-  for i:=0 to h-1 do
-    BlueLine(@(PLine(Panel.ScanLine[y+i])[x]),w)
-  end;
-
   function MovementToString(var Un: TUn): string;
   begin
   result:=ScreenTools.MovementToString(Un.Movement);
@@ -3580,8 +3804,10 @@ procedure TMainScreen.PanelPaint;
   end;
 
 var
-i,uix,uixDefender,x,xSrc,ySrc,CostFactor,Count,mixShow,
-  xTreasurySection,xResearchSection,yTile,JobFocus,Tile: integer;
+i,uix,uixDefender,x,xSrc,ySrc,xSrcBase,ySrcBase,CostFactor,Count,mixShow,
+  xTreasurySection,xResearchSection,JobFocus,TrueMoney,
+  TrueResearch: integer;
+Tile: cardinal;
 s: string;
 unx:TUn;
 UnitInfo: TUnitInfo;
@@ -3590,34 +3816,34 @@ Prio: boolean;
 begin
 with Panel.Canvas do
   begin
-  Fill(Panel.Canvas,0,3,xMidPanel-10,PanelHeight-3,
-    wMainTexture-(xMidPanel-10),hMainTexture-PanelHeight);
-  Fill(Panel.Canvas,xRightPanel-7,3,Panel.Width-xRightPanel+7,PanelHeight-3,
-    -(xRightPanel-7),hMainTexture-PanelHeight);
-  FillLarge(Panel.Canvas,xMidPanel-9,PanelHeight-MidPanelHeight,xRightPanel-8,PanelHeight,
+  Fill(Panel.Canvas,0,3,xMidPanel+7-10,PanelHeight-3,
+    wMainTexture-(xMidPanel+7-10),hMainTexture-PanelHeight);
+  Fill(Panel.Canvas,xRightPanel+10-7,3,Panel.Width-xRightPanel-10+7,PanelHeight-3,
+    -(xRightPanel+10-7),hMainTexture-PanelHeight);
+  FillLarge(Panel.Canvas,xMidPanel-2,PanelHeight-MidPanelHeight,xRightPanel+2,PanelHeight,
     ClientWidth div 2);
 
   Brush.Style:=bsClear;
   Pen.Color:=$000000;
-  MoveTo(0,0);LineTo(xMidPanel-8,0); LineTo(xMidPanel-8,PanelHeight-MidPanelHeight);
-  LineTo(xRightPanel-10,PanelHeight-MidPanelHeight); LineTo(xRightPanel-10,0);
+  MoveTo(0,0);LineTo(xMidPanel+7-8,0); LineTo(xMidPanel+7-8,PanelHeight-MidPanelHeight);
+  LineTo(xRightPanel,PanelHeight-MidPanelHeight); LineTo(xRightPanel,0);
   LineTo(ClientWidth,0);
   Pen.Color:=MainTexture.clBevelLight;
-  MoveTo(xMidPanel-9,PanelHeight-MidPanelHeight+2);
-  LineTo(xRightPanel-8,PanelHeight-MidPanelHeight+2);
+  MoveTo(xMidPanel+7-9,PanelHeight-MidPanelHeight+2);
+  LineTo(xRightPanel+10-8,PanelHeight-MidPanelHeight+2);
   Pen.Color:=MainTexture.clBevelLight;
-  MoveTo(0,1);LineTo(xMidPanel-9,1); Pen.Color:=MainTexture.clBevelShade;
-  LineTo(xMidPanel-9,PanelHeight-MidPanelHeight+1); Pen.Color:=MainTexture.clBevelLight;
-  LineTo(xRightPanel-9,PanelHeight-MidPanelHeight+1); Pen.Color:=MainTexture.clBevelLight;
-  LineTo(xRightPanel-9,1); LineTo(ClientWidth,1);
-  MoveTo(ClientWidth,2); LineTo(xRightPanel-8,2); LineTo(xRightPanel-8,PanelHeight);
-  MoveTo(0,2);LineTo(xMidPanel-10,2); Pen.Color:=MainTexture.clBevelShade;
-  LineTo(xMidPanel-10,PanelHeight);
-  Corner(Panel.Canvas,xMidPanel-16,1,1,MainTexture);
-  Corner(Panel.Canvas,xRightPanel-9,1,0,MainTexture);
+  MoveTo(0,1);LineTo(xMidPanel+7-9,1); Pen.Color:=MainTexture.clBevelShade;
+  LineTo(xMidPanel+7-9,PanelHeight-MidPanelHeight+1); Pen.Color:=MainTexture.clBevelLight;
+  LineTo(xRightPanel+10-9,PanelHeight-MidPanelHeight+1); Pen.Color:=MainTexture.clBevelLight;
+  LineTo(xRightPanel+10-9,1); LineTo(ClientWidth,1);
+  MoveTo(ClientWidth,2); LineTo(xRightPanel+10-8,2); LineTo(xRightPanel+10-8,PanelHeight);
+  MoveTo(0,2);LineTo(xMidPanel+7-10,2); Pen.Color:=MainTexture.clBevelShade;
+  LineTo(xMidPanel+7-10,PanelHeight);
+  Corner(Panel.Canvas,xMidPanel+7-16,1,1,MainTexture);
+  Corner(Panel.Canvas,xRightPanel+10-9,1,0,MainTexture);
   if ClientMode<>cEditMap then
     begin
-    if G.Difficulty[me]=0 then
+    if supervising then
       begin
       Frame(Panel.Canvas, ClientWidth-xPalace-1, yPalace-1,
         ClientWidth-xPalace+xSizeBig, yPalace+ySizeBig, $B0B0B0, $FFFFFF);
@@ -3633,27 +3859,36 @@ with Panel.Canvas do
       {(GameMode<>cMovie) and (MyRO.Government<>gAnarchy)});
     end;
 
-  Frame(Panel.Canvas,xMini+1,yMini+1,xMini+2+G.lx*2,yMini+2+G.ly,$B0B0B0,$FFFFFF);
-  RFrame(Panel.Canvas,xMini,yMini,xMini+3+G.lx*2,yMini+3+G.ly,$FFFFFF,$B0B0B0);
-
+  if GameMode=cMovie then
+    Frame(Panel.Canvas,xMini+1,yMini+1,xMini+2+G.lx*2,yMini+2+G.ly,$000000,$000000)
+  else
+    begin
+    Frame(Panel.Canvas,xMini+1,yMini+1,xMini+2+G.lx*2,yMini+2+G.ly,$B0B0B0,$FFFFFF);
+    RFrame(Panel.Canvas,xMini,yMini,xMini+3+G.lx*2,yMini+3+G.ly,$FFFFFF,$B0B0B0);
+    end;
   CopyMiniToPanel;
   if ClientMode<>cEditMap then // MapBtn icons
-    for i:=0 to 6 do Dump(Panel,HGrSystem,xMini+G.lx-50+16*i,
-      PanelHeight-26,8,8,121+i*9,61);
+    for i:=0 to 5 do if i<>3 then
+      Dump(Panel,HGrSystem,xMini+G.lx-42+16*i,PanelHeight-26,8,8,121+i*9,61);
 
   if ClientMode=cEditMap then
     begin
-    for i:=0 to 23 do trix[i]:=-1;
+    for i:=0 to TrRow-1 do trix[i]:=-1;
     Count:=0;
     for i:=0 to nBrushTypes-1 do
       begin // display terrain types
       if (Count>=TrRow*sb.si.npos) and (Count<TrRow*(sb.si.npos+1)) then
         begin
         trix[Count-TrRow*sb.si.npos]:=BrushTypes[i];
-        x:=(Count-TrRow*sb.si.npos)*66;
+        x:=(Count-TrRow*sb.si.npos)*TrPitch;
+        xSrcBase:=-1;
         case BrushTypes[i] of
           0..8: begin xSrc:=BrushTypes[i]; ySrc:=0 end;
-          9..30: begin xSrc:=7; ySrc:=2*integer(BrushTypes[i])-14 end;
+          9..30:
+            begin
+            xSrcBase:=2; ySrcBase:=2;
+            xSrc:=0; ySrc:=2*integer(BrushTypes[i])-15
+            end;
           fRiver: begin xSrc:=7; ySrc:=14 end;
           fRoad: begin xSrc:=0; ySrc:=9 end;
           fRR: begin xSrc:=0; ySrc:=10 end;
@@ -3662,24 +3897,27 @@ with Panel.Canvas do
           fDeadLands,fDeadLands or fCobalt,fDeadLands or fUranium,
             fDeadLands or fMercury:
             begin
-            Sprite(Panel,HGrTerrain,xTroop+2+x,yTroop+9,xxt*2,yyt*2,
-              1+6*(xxt*2+1),1+yyt+2*(yyt*3+1));
-            xSrc:=8;
-            ySrc:=12+BrushTypes[i] shr 25;
+            xSrcBase:=6; ySrcBase:=2;
+            xSrc:=8; ySrc:=12+BrushTypes[i] shr 25;
             end;
-          tiIrrigation, tiFarm, tiMine, tiFort, tiBase:
+          tiIrrigation, tiFarm, tiMine, tiBase:
             begin xSrc:=BrushTypes[i] shr 12-1; ySrc:=12 end;
+          tiFort:
+            begin xSrc:=3; ySrc:=12; xSrcBase:=7; ySrcBase:=12 end;
           fPrefStartPos: begin xSrc:=0; ySrc:=1 end;
           fStartPos: begin xSrc:=0; ySrc:=2 end;
           end;
-        Sprite(Panel,HGrTerrain,xTroop+2+x,yTroop+9,xxt*2,yyt*2,
-          1+xSrc*(xxt*2+1),1+yyt+ySrc*(yyt*3+1));
+        if xSrcBase>=0 then
+          Sprite(Panel,HGrTerrain,xTroop+2+x,yTroop+9-yyt,xxt*2,yyt*3,
+            1+xSrcBase*(xxt*2+1),1+ySrcBase*(yyt*3+1));
+        Sprite(Panel,HGrTerrain,xTroop+2+x,yTroop+9-yyt,xxt*2,yyt*3,
+          1+xSrc*(xxt*2+1),1+ySrc*(yyt*3+1));
         if BrushTypes[i]=BrushType then
           begin
-          Frame(Panel.Canvas,xTroop+2+x,yTroop+7,xTroop+66+x,
-            yTroop+43,$000000,$000000);
-          Frame(Panel.Canvas,xTroop+1+x,yTroop+6,xTroop+65+x,
-            yTroop+42,MainTexture.clMark,MainTexture.clMark);
+          Frame(Panel.Canvas,xTroop+2+x,yTroop+7-yyt div 2,xTroop+2*xxt+x,
+            yTroop+2*yyt+11,$000000,$000000);
+          Frame(Panel.Canvas,xTroop+1+x,yTroop+6-yyt div 2,xTroop+2*xxt-1+x,
+            yTroop+2*yyt+10,MainTexture.clMark,MainTexture.clMark);
           end
         end;
       inc(Count)
@@ -3717,45 +3955,7 @@ with Panel.Canvas do
       end;
     LoweredTextOut(Panel.Canvas,-1,MainTexture,xTroop+1,PanelHeight-19,s);
     end
-  else if TroopLoc<0 then
-    begin
-(*    if Idle and TurnComplete and not mWaitTurn.Checked then
-      begin
-      // count '\' first
-      s:=Phrases.Lookup('ENDTURN');
-      n:=0;
-      repeat
-        p:=pos('\',s);
-        if p=0 then
-          break;
-        delete(s,1,p);
-        inc(n);
-      until false;
-
-      Panel.Canvas.Font.Assign(UniFont[ftNormal]);
-      s:=Phrases.Lookup('ENDTURN');
-      i:=0;
-      repeat
-        p:=pos('\',s);
-        if p=0 then
-          s1:=s
-        else s1:=copy(s,1,p-1);
-        LoweredTextOut(Panel.Canvas,-1,MainTexture,
-          xRightPanel-36-BiColorTextWidth(Panel.Canvas,s1),
-          PanelHeight-MidPanelHeight div 2+(2*i-n)*10-10,s1);
-        if p=0 then
-          break;
-        delete(s,1,p);
-        inc(i);
-      until false;
-      Panel.Canvas.Font.Assign(UniFont[ftSmall]);
-
-      ImageOp_BCC(panel,Templates,xRightPanel-28,
-        PanelHeight-MidPanelHeight div 2-20,114,148,14,41,MainTexture.clTextLight,
-        MainTexture.clTextShade);
-      end*)
-    end
-  else
+  else if TroopLoc>=0 then
     begin
     Brush.Style:=bsClear;
     if UnFocus>=0 then with MyUn[UnFocus],MyModel[mix] do
@@ -3764,39 +3964,43 @@ with Panel.Canvas do
         mixShow:=-1 // building site
       else mixShow:=mix;
       with Tribe[me].ModelPicture[mixShow] do
-        Sprite(Panel,HGr,xMidPanel+12,yTroop+1,64,48,
+        begin
+        Sprite(Panel,HGr,xMidPanel+7+12,yTroop+1,64,48,
           pix mod 10 *65+1,pix div 10 *49+1);
+        if MyUn[UnFocus].Flags and unFortified<>0 then
+          Sprite(Panel,HGrStdUnits,xMidPanel+7+12,yTroop+1,xxu*2,yyu*2,1+6*(xxu*2+1),1);
+        end;
 
-      MakeBlue(xMidPanel+12+10,yTroop-13,44,12);
+      MakeBlue(Panel,xMidPanel+7+12+10,yTroop-13,44,12);
       s:=MovementToString(MyUn[UnFocus]);
-      RisedTextOut(Panel.Canvas,xMidPanel+12+32-BiColorTextWidth(Panel.Canvas,s) div 2,
+      RisedTextOut(Panel.Canvas,xMidPanel+7+12+32-BiColorTextWidth(Panel.Canvas,s) div 2,
         yTroop-16,s);
 
       s:=IntToStr(Health)+'%';
-      LightGradient(Panel.Canvas,xMidPanel+12+7,PanelHeight-22,(Health+1) div 2,
+      LightGradient(Panel.Canvas,xMidPanel+7+12+7,PanelHeight-22,(Health+1) div 2,
         (ColorOfHealth(Health) and $FEFEFE shr 2)*3);
       if Health<100 then
-        LightGradient(Panel.Canvas,xMidPanel+12+7+(Health+1) div 2,
+        LightGradient(Panel.Canvas,xMidPanel+7+12+7+(Health+1) div 2,
           PanelHeight-22,50-(Health+1) div 2,$000000);
-      RisedTextOut(Panel.Canvas,xMidPanel+12+32-BiColorTextWidth(Panel.Canvas,s) div 2,
+      RisedTextOut(Panel.Canvas,xMidPanel+7+12+32-BiColorTextWidth(Panel.Canvas,s) div 2,
         PanelHeight-23,s);
 
-      FrameImage(Panel.Canvas,GrExt[HGrSystem].Data,xMidPanel+xUnitText,yTroop+15,12,14,
+      FrameImage(Panel.Canvas,GrExt[HGrSystem].Data,xMidPanel+7+xUnitText,yTroop+15,12,14,
         121+Exp div ExpCost *13,28);
       if Job=jCity then s:=Tribe[me].ModelName[-1]
       else s:=Tribe[me].ModelName[mix];
       if Home>=0 then
         begin
-        LoweredTextOut(Panel.Canvas,-1,MainTexture,xMidPanel+xUnitText+18,yTroop+5,s);
-        LoweredTextOut(Panel.Canvas,-1,MainTexture,xMidPanel+xUnitText+18,yTroop+21,
+        LoweredTextOut(Panel.Canvas,-1,MainTexture,xMidPanel+7+xUnitText+18,yTroop+5,s);
+        LoweredTextOut(Panel.Canvas,-1,MainTexture,xMidPanel+7+xUnitText+18,yTroop+21,
           '('+CityName(MyCity[Home].ID)+')');
         end
-      else LoweredTextOut(Panel.Canvas,-1,MainTexture,xMidPanel+xUnitText+18,yTroop+13,s);
+      else LoweredTextOut(Panel.Canvas,-1,MainTexture,xMidPanel+7+xUnitText+18,yTroop+13,s);
       end;
 
     if (UnFocus>=0) and (MyUn[UnFocus].Loc<>TroopLoc) then
       begin // divide panel
-      if SmallScreen then
+      if SmallScreen and not supervising then
         x:=xTroop-8
       else x:=xTroop-152;
       Pen.Color:=MainTexture.clBevelShade;
@@ -3828,7 +4032,7 @@ with Panel.Canvas do
                   begin
                   trix[Count-TrRow*sb.si.npos]:=uix;
                   MakeUnitInfo(me,unx,UnitInfo);
-                  x:=(Count-TrRow*sb.si.npos)*66;
+                  x:=(Count-TrRow*sb.si.npos)*TrPitch;
                   if uix=UnFocus then
                     begin
                     Frame(Panel.Canvas,xTroop+4+x,yTroop+3,xTroop+64+x,
@@ -3851,10 +4055,13 @@ with Panel.Canvas do
                     Sprite(Panel, HGrSystem, xTroop+2+60-20+x, yTroop+35,
                       20, 20, 81, 25);
 
-                  MakeBlue(xTroop+2+10+x,yTroop-13,44,12);
-                  s:=MovementToString(unx);
-                  RisedTextOut(Panel.Canvas,xTroop+x+34-BiColorTextWidth(Panel.Canvas,s) div 2,
-                    yTroop-16,s);
+                  if not supervising then
+                    begin
+                    MakeBlue(Panel,xTroop+2+10+x,yTroop-13,44,12);
+                    s:=MovementToString(unx);
+                    RisedTextOut(Panel.Canvas,xTroop+x+34-BiColorTextWidth(Panel.Canvas,s) div 2,
+                      yTroop-16,s);
+                    end
                   end;
                 inc(Count)
                 end;
@@ -3871,29 +4078,27 @@ with Panel.Canvas do
           if (i>=TrRow*sb.si.npos) and (i<TrRow*(sb.si.npos+1)) then
             begin // display enemy units
             trix[i-TrRow*sb.si.npos]:=i;
-            x:=(i-TrRow*sb.si.npos)*66;
+            x:=(i-TrRow*sb.si.npos)*TrPitch;
             NoMap.SetOutput(Panel);
             NoMap.PaintUnit(xTroop+2+x,yTroop+1,MyRO.EnemyUn[MyRO.nEnemyUn+i],0);
             end;
         end;
       end;
-    if not SmallScreen then
+    if not SmallScreen or supervising then
       begin // show terrain and improvements
+      PaintZoomedTile(Panel, xTerrain-xxt*2, 110-yyt*3, TroopLoc);
       if (UnFocus>=0) and (MyUn[UnFocus].Job<>jNone) then
         begin
         JobFocus:=MyUn[UnFocus].Job;
         Server(sGetJobProgress, me, MyUn[UnFocus].Loc, JobProgressData);
-        MakeBlue(xTroop-138,yTroop-17,130,31);
-        PaintProgressBar(Panel.Canvas,3,xTroop-134,yTroop+3,
-          JobProgressData[JobFocus].Done*56 div JobProgressData[JobFocus].Required,
-          JobProgressData[JobFocus].NextTurnPlus*56 div JobProgressData[JobFocus].Required,
-          56,MainTexture);
+        MakeBlue(Panel,xTerrain-72,148-17,144,31);
+        PaintRelativeProgressBar(Panel.Canvas,3,xTerrain-68,148+3,63,
+          JobProgressData[JobFocus].Done,
+          JobProgressData[JobFocus].NextTurnPlus,
+          JobProgressData[JobFocus].Required,true,MainTexture);
         s:=Format('%s/%s',[ScreenTools.MovementToString(JobProgressData[JobFocus].Done),
           ScreenTools.MovementToString(JobProgressData[JobFocus].Required)]);
-        RisedTextOut(Panel.Canvas,xTroop-138+71,yTroop-3,s);
-        if JobProgressData[JobFocus].Done+JobProgressData[JobFocus].NextTurnPlus
-          >=JobProgressData[JobFocus].Required then
-          Sprite(Panel, HGrSystem, xTroop-138+50,yTroop-4, 23, 16, 1, 129);
+        RisedTextOut(Panel.Canvas,xTerrain+6,148-3,s);
         Tile:=MyMap[MyUn[UnFocus].Loc];
         if (JobFocus=jRoad) and (Tile and fRiver<>0) then
           JobFocus:=nJob+0
@@ -3908,12 +4113,9 @@ with Panel.Canvas do
           else JobFocus:=nJob+4
           end;
         s:=Phrases.Lookup('JOBRESULT', JobFocus);
-        RisedTextOut(Panel.Canvas,xTroop-138+66-BiColorTextWidth(Panel.Canvas,s) div 2,
-          yTroop-19,s);
-        yTile:=yTroop+16;
-        end
-      else yTile:=yTroop+1;
-      PaintZoomedTile(Panel, xTroop-139, yTile, TroopLoc);
+        RisedTextOut(Panel.Canvas,xTerrain-BiColorTextWidth(Panel.Canvas,s) div 2,
+          148-19,s);
+        end;
       if MyMap[TroopLoc] and (fTerrain or fSpecial)=fGrass or fSpecial1 then
         s:=Phrases.Lookup('TERRAIN',fGrass+12)
       else if MyMap[TroopLoc] and fDeadlands<>0 then
@@ -3922,8 +4124,8 @@ with Panel.Canvas do
         and IsJungle(TroopLoc div G.lx) then
         s:=Phrases.Lookup('TERRAIN',fJungle)
       else s:=Phrases.Lookup('TERRAIN',MyMap[TroopLoc] and fTerrain);
-      RisedTextOut(Panel.Canvas,xTroop-138+66-BiColorTextWidth(Panel.Canvas,s) div 2,
-        yTile+22,s);
+      RisedTextOut(Panel.Canvas,xTerrain-BiColorTextWidth(Panel.Canvas,s) div 2,
+        99,s);
       end;
 
     if TerrainBtn.Visible then with TerrainBtn do
@@ -3960,7 +4162,7 @@ if ClientMode<>cEditMap then
       end
   end;
 EOT.SetBack(Panel.Canvas,EOT.Left,EOT.Top-(ClientHeight-PanelHeight));
-SmartInvalidate(0,ClientHeight-PanelHeight,ClientWidth,ClientHeight);
+SmartRectInvalidate(0,ClientHeight-PanelHeight,ClientWidth,ClientHeight);
 
 // topbar
 xTreasurySection:=ClientWidth div 2-172;
@@ -3979,12 +4181,25 @@ with TopBar.Canvas do
   frame(TopBar.Canvas,xResearchSection+332,-1,ClientWidth,TopBarHeight-7,
     MainTexture.clBevelShade,MainTexture.clBevelLight);
   end;
-ImageOp_BCC(TopBar,Templates,2,1,145,38,36,36,$BFBF20,$4040DF);
+if GameMode<>cMovie then
+  ImageOp_BCC(TopBar,Templates,2,1,145,38,36,36,$BFBF20,$4040DF);
 if MyRO.nCity>0 then
   begin
+  TrueMoney:=MyRO.Money;
+  TrueResearch:=MyRO.Research;
+  if supervising then
+    begin // normalize values from after-turn state
+    dec(TrueMoney,TaxSum);
+    if TrueMoney<0 then
+      TrueMoney:=0; // shouldn't happen
+    dec(TrueResearch,ScienceSum);
+    if TrueResearch<0 then
+      TrueResearch:=0; // shouldn't happen
+    end;
+
   // treasury section
   ImageOp_BCC(TopBar,Templates,xTreasurySection+8,1,145,1,36,36,$40A040,$4030C0);
-  s:=IntToStr(MyRO.Money);
+  s:=IntToStr(TrueMoney);
   LoweredTextOut(TopBar.Canvas,-1,MainTexture,xTreasurySection+48,0,s+'%c');
   if MyRO.Government<>gAnarchy then
     begin
@@ -4010,11 +4225,9 @@ if MyRO.nCity>0 then
     else CostFactor:=2;
     Server(sGetTechCost,me,0,i);
     CostFactor:=CostFactor*22; // length of progress bar
-    PaintProgressBar(TopBar.Canvas,2,xResearchSection+48+1,26,
-      MyRO.Research*CostFactor div i,(ScienceSum*CostFactor +i div 2) div i,
-      CostFactor, MainTexture);
-    if MyRO.Research+ScienceSum>=i then
-      Sprite(TopBar, HGrSystem, xResearchSection+48+CostFactor-10, 26-7, 23, 16, 1, 129);
+    PaintRelativeProgressBar(TopBar.Canvas,2,xResearchSection+48+1,26,
+      CostFactor,TrueResearch,ScienceSum,i,true,MainTexture);
+
     if MyRO.ResearchTech<0 then
       s:=Phrases.Lookup('SCIENCE')
     else if MyRO.ResearchTech=adMilitary then
@@ -4052,7 +4265,7 @@ if ClientMode<>cEditMap then
   RisedTextOut(TopBar.Canvas,40+(xTreasurySection-40-BiColorTextWidth(TopBar.Canvas,s)) div 2,6,s);
   TopBar.Canvas.Font.Assign(UniFont[ftNormal]);
   end;
-SmartInvalidate(0,0,ClientWidth,TopBarHeight);
+RectInvalidate(0,0,ClientWidth,TopBarHeight);
 end;{PanelPaint}
 
 procedure TMainScreen.FocusOnLoc(Loc:integer; Options: integer = 0);
@@ -4064,7 +4277,6 @@ dx:=G.lx+1-(xw-Loc+G.lx*1024+1) mod G.lx;
 Outside:=(dx>=(MapWidth+1) div (xxt*2)-2)
   or (ywmax>0) and ((yw>0) and (Loc div G.lx<=yw+1)
     or (yw<ywmax) and (Loc div G.lx>=yw+(MapHeight-1) div yyt-2));
-
 Changed:=true;
 if Outside then
   begin Centre(Loc); PaintAllMaps end
@@ -4142,7 +4354,7 @@ MainOffscreenPaint;
 xwMini:=xw; ywMini:=yw;
 MiniPaint;
 CopyMiniToPanel;
-SmartInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,xMini+2+G.lx*2,
+RectInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,xMini+2+G.lx*2,
   TopBarHeight+MapHeight-overlap+yMini+2+G.ly);
 Update;
 end;
@@ -4153,8 +4365,8 @@ dx, dy, speed: integer;
 begin
 if idle and (me>=0) and (GameMode<>cMovie) then
   if (fsModal in Screen.ActiveForm.FormState)
-    or (Screen.ActiveForm is TBaseDlg)
-    and (TBaseDlg(Screen.ActiveForm).WindowMode<>wmPersistent) then
+    or (Screen.ActiveForm is TBufferedDrawDlg)
+    and (TBufferedDrawDlg(Screen.ActiveForm).WindowMode<>wmPersistent) then
     begin
     BlinkTime:=BlinkOnTime+BlinkOffTime-1;
     if not BlinkON then
@@ -4162,7 +4374,7 @@ if idle and (me>=0) and (GameMode<>cMovie) then
       BlinkON:=true;
       if UnFocus>=0 then
         PaintLocTemp(MyUn[UnFocus].Loc)
-      else if TurnComplete and (G.Difficulty[me]>0) then
+      else if TurnComplete and not supervising then
         EOT.SetButtonIndexFast(eotBlinkOn)
       end
     end
@@ -4180,7 +4392,7 @@ if idle and (me>=0) and (GameMode<>cMovie) then
       if Mouse.CursorPos.y=0 then dy:=-Speed // scroll up
       else if (Mouse.CursorPos.y=Screen.Height-1)
         and (Mouse.CursorPos.x>=TerrainBtn.Left+TerrainBtn.Width)
-        and (Mouse.CursorPos.x<xRightPanel-8) then dy:=Speed; // scroll down
+        and (Mouse.CursorPos.x<xRightPanel+10-8) then dy:=Speed; // scroll down
       if (dx<>0) or (dy<>0) then
         begin
         if (Screen.ActiveForm<>MainScreen)
@@ -4203,7 +4415,7 @@ if idle and (me>=0) and (GameMode<>cMovie) then
   //        ShowMoveHint(MoveHintToLoc, true);
         end
       end
-    else if TurnComplete and (G.Difficulty[me]>0) then
+    else if TurnComplete and not supervising then
       begin
       if BlinkTime=0 then EOT.SetButtonIndexFast(eotBlinkOff)
       else if BlinkTime=BlinkOffTime then EOT.SetButtonIndexFast(eotBlinkOn)
@@ -4215,8 +4427,8 @@ procedure TMainScreen.Centre(Loc:integer);
 begin
 if FastScrolling and MapValid then update;
   // necessary because ScrollDC for form canvas is called after
-xw:=(Loc mod G.lx-MapWidth div (xxt*4)+G.lx) mod G.lx;
-if ywmax<=0 then yw:=ywmax div 2 and not 1
+xw:=(Loc mod G.lx-(MapWidth-xxt*2*((Loc div G.lx) and 1)) div (xxt*4)+G.lx) mod G.lx;
+if ywmax<=0 then yw:=ywcenter
 else
   begin
   yw:=(Loc div G.lx-MapHeight div (yyt*2)+1) and not 1;
@@ -4254,23 +4466,30 @@ if result then with CityDlg do
   end
 end;
 
+function TMainScreen.LocationOfScreenPixel(x,y: integer): integer;
+var
+qx,qy: integer;
+begin
+qx:=(x*(yyt*2)+y*(xxt*2)+xxt*yyt*2) div (xxt*yyt*4)-1;
+qy:=(y*(xxt*2)-x*(yyt*2)-xxt*yyt*2+4000*xxt*yyt) div (xxt*yyt*4)-999;
+result:=(xw+(qx-qy+2048) div 2-1024+G.lx) mod G.lx+G.lx*(yw+qx+qy);
+end;
+
 procedure TMainScreen.MapBoxMouseDown(Sender:TObject;
   Button:TMouseButton;Shift:TShiftState;x,y:integer);
 var
-i,uix,emix,ecix,p1,dx,dy,qx,qy,MouseLoc:integer;
+i,uix,emix,p1,dx,dy,MouseLoc:integer;
 EditTileData: TEditTileData;
 m,m2: TMenuItem;
+MoveAdviceData: TMoveAdviceData;
 DoCenter: boolean;
-s: string;
 begin
 if GameMode=cMovie then
   exit;
 
 if CityDlg.Visible then CityDlg.Close;
 if UnitStatDlg.Visible then UnitStatDlg.Close;
-qx:=(x*(yyt*2)+y*(xxt*2)+xxt*yyt*2) div (xxt*yyt*4)-1;
-qy:=(y*(xxt*2)-x*(yyt*2)-xxt*yyt*2+4000*xxt*yyt) div (xxt*yyt*4)-999;
-MouseLoc:=(xw+(qx-qy+2048) div 2-1024+G.lx) mod G.lx+G.lx*(yw+qx+qy);
+MouseLoc:=LocationOfScreenPixel(x,y);
 if (MouseLoc<0) or (MouseLoc>=G.lx*G.ly) then exit;
 if (Button=mbLeft) and not(ssShift in Shift) then
   begin
@@ -4314,13 +4533,13 @@ if (Button=mbLeft) and not(ssShift in Shift) then
     BitBlt(Panel.Canvas.Handle,xMini+2,yMini+2,G.lx*2,G.ly,Mini.Canvas.Handle,
       0,0,SRCCOPY);
     if ywmax<=0 then
-      Frame(Panel.Canvas,xMini+2+G.lx-MapWidth div 66,yMini+2,
-        xMini+1+G.lx+MapWidth div 66,
+      Frame(Panel.Canvas,xMini+2+G.lx-MapWidth div (2*xxt),yMini+2,
+        xMini+1+G.lx+MapWidth div (2*xxt),
         yMini+2+G.ly-1,MainTexture.clMark,MainTexture.clMark)
-    else Frame(Panel.Canvas,xMini+2+G.lx-MapWidth div 66,yMini+2+yw,
-      xMini+2+G.lx+MapWidth div 66-1,
-      yMini+2+yw+MapHeight div 16-2,MainTexture.clMark,MainTexture.clMark);
-    SmartInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,xMini+2+G.lx*2,
+    else Frame(Panel.Canvas,xMini+2+G.lx-MapWidth div (2*xxt),yMini+2+yw,
+      xMini+2+G.lx+MapWidth div (2*xxt)-1,
+      yMini+2+yw+MapHeight div yyt-2,MainTexture.clMark,MainTexture.clMark);
+    RectInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,xMini+2+G.lx*2,
       TopBarHeight+MapHeight-overlap+yMini+2+G.ly)
     end
   else if MyMap[MouseLoc] and fCity<>0 then {city clicked}
@@ -4330,26 +4549,9 @@ if (Button=mbLeft) and not(ssShift in Shift) then
       ZoomToCity(MouseLoc);
       DoCenter:=false;
       end
-    else if MyMap[MouseLoc] and fObserved<>0 then
+    else
       begin
-      UnitStatDlg.ShowNewContent_EnemyLoc(wmPersistent, MouseLoc);
-      DoCenter:=false;
-      end
-    else with MessgExDlg do
-      begin
-      Kind:=mkOK;
-      ecix:=MyRO.nEnemyCity-1;
-      while (ecix>=0) and (MyRO.EnemyCity[ecix].Loc<>MouseLoc) do
-        dec(ecix);
-      assert(ecix>=0);
-      s:=CityName(MyRO.EnemyCity[ecix].ID);
-      if MyRO.Territory[MouseLoc]>=0 then
-        s:=s+'\\'+Tribe[MyRO.Territory[MouseLoc]].TPhrase('FOREIGNCITY')
-      else s:=s+'\\'+Phrases.Lookup('EXTINCTCITY');
-      MessgText:=Format(s,[TurnToString(MyRO.MapObservedLast[MouseLoc])]);
-      IconKind:=mikEnemyCity;
-      IconIndex:=ecix;
-      ShowModal;
+      UnitStatDlg.ShowNewContent_EnemyCity(wmPersistent, MouseLoc);
       DoCenter:=false;
       end
     end
@@ -4357,7 +4559,7 @@ if (Button=mbLeft) and not(ssShift in Shift) then
     if MyMap[MouseLoc] and fOwned<>0 then
       begin
       DoCenter:=false;
-      if ClientMode<scContact then
+      if not supervising and (ClientMode<scContact) then
         begin // not in negotiation mode
         if (UnFocus>=0) and (MyUn[UnFocus].Loc=MouseLoc) then
           begin // rotate
@@ -4397,11 +4599,11 @@ if (Button=mbLeft) and not(ssShift in Shift) then
   end
 else if (ClientMode<>cEditMap) and (Button=mbRight) and not(ssShift in Shift) then
   begin
-  if G.Difficulty[me]=0 then
+  if supervising then
     begin
     EditLoc:=MouseLoc;
     Server(sGetModels,me,0,nil^);
-    while mCreateUnit.Count>0 do mCreateUnit.Delete(0);
+    EmptyMenu(mCreateUnit);
     for p1:=0 to nPl-1 do if 1 shl p1 and MyRO.Alive<>0 then
       begin
       m:=TMenuItem.Create(mCreateUnit);
@@ -4436,12 +4638,34 @@ else if (ClientMode<>cEditMap) and (Button=mbRight) and not(ssShift in Shift) th
       Status:=Status and ($FFFF-usStay-usRecover-usGoto-usEnhance) or usWaiting;
       MoveUnit(dx,dy,muAutoNext) {simple move}
       end
-    else
+    else if GetMoveAdvice(UnFocus,MouseLoc,MoveAdviceData)>=rExecuted then
       begin
+      if MyMap[MouseLoc] and (fUnit or fOwned)=fUnit then
+        begin // check for suicide mission before movement
+        with MyUn[UnFocus],BattleDlg.Forecast do
+          begin
+          pAtt:=me;
+          mixAtt:=mix;
+          HealthAtt:=Health;
+          ExpAtt:=Exp;
+          FlagsAtt:=Flags;
+          end;
+        BattleDlg.Forecast.Movement:=MyUn[UnFocus].Movement;
+        if (Server(sGetBattleForecastEx,me,MouseLoc,BattleDlg.Forecast)>=rExecuted)
+          and (BattleDlg.Forecast.EndHealthAtt<=0) then
+          begin
+          BattleDlg.uix:=UnFocus;
+          BattleDlg.ToLoc:=MouseLoc;
+          BattleDlg.IsSuicideQuery:=true;
+          BattleDlg.ShowModal;
+          if BattleDlg.ModalResult<>mrOK then
+            exit;
+          end
+        end;
       DestinationMarkON:=false;
       PaintDestination;
       Status:=Status and not (usStay or usRecover or usEnhance) or usWaiting;
-      MoveToLoc(MouseLoc); {goto}
+      MoveToLoc(MouseLoc,false); {goto}
       end
     end
   end
@@ -4452,7 +4676,7 @@ else if (Button=mbMiddle) and (UnFocus>=0)
   PaintDestination;
   MyUn[UnFocus].Status:=MyUn[UnFocus].Status and ($FFFF-usStay-usRecover-usGoto) or usEnhance;
   uix:=UnFocus;
-  if MouseLoc<>MyUn[uix].Loc then MoveToLoc(MouseLoc); {goto}
+  if MouseLoc<>MyUn[uix].Loc then MoveToLoc(MouseLoc,true); {goto}
   if (UnFocus=uix) and (MyUn[uix].Loc=MouseLoc) then MenuClick(mEnhance)
   end
 else if (Button=mbLeft) and (ssShift in Shift)
@@ -4495,6 +4719,7 @@ function TMainScreen.MoveUnit(dx,dy:integer; Options: integer): integer;
 var
 i,cix,uix,euix,FromLoc,ToLoc,DirCode,UnFocus0,Defender,Mission,p1,
   NewTiles,cixChanged: integer;
+OldToTile: cardinal;
 CityCaptured, IsAttack, OldUnrest, NewUnrest, NeedEcoUpdate, NeedRepaintPanel,
   ToTransport, ToShip: boolean;
 PlaneReturnData: TPlaneReturnData;
@@ -4698,41 +4923,50 @@ else
           MyUn[UnFocus].Status:=MyUn[UnFocus].Status and not (usStay or usRecover);
           for uix:=0 to MyRO.nUn-1 do if MyUn[uix].Master=UnFocus then
             MyUn[uix].Status:=MyUn[uix].Status and not usWaiting;
-          if OldUnrest<>NewUnrest then
-            begin
-            CityOptimizer_CityChange(MyUn[UnFocus].Home);
-            for uix:=0 to MyRO.nUn-1 do if MyUn[uix].Master=UnFocus then
-              CityOptimizer_CityChange(MyUn[uix].Home);
+          if CityCaptured
+            and (MyRO.Government in [gRepublic,gDemocracy,gFuture]) then
+            begin // borders have moved, unrest might have changed in any city
+            CityOptimizer_BeginOfTurn;
             NeedEcoUpdate:=true;
-            end;
-          if (MyRO.Government=gDespotism)
-            and (MyModel[MyUn[UnFocus].mix].Kind=mkSpecial_TownGuard) then
+            end
+          else
             begin
-            if MyMap[FromLoc] and fCity<>0 then
-              begin // town guard moved out of city in despotism -- reoptimize!
-              cixChanged:=MyRO.nCity-1;
-              while (cixChanged>=0) and (MyCity[cixChanged].Loc<>FromLoc) do
-                dec(cixChanged);
-              assert(cixChanged>=0);
-              if cixChanged>=0 then
-                begin
-                CityOptimizer_CityChange(cixChanged);
-                NeedEcoUpdate:=true;
-                end;
+            if OldUnrest<>NewUnrest then
+              begin
+              CityOptimizer_CityChange(MyUn[UnFocus].Home);
+              for uix:=0 to MyRO.nUn-1 do if MyUn[uix].Master=UnFocus then
+                CityOptimizer_CityChange(MyUn[uix].Home);
+              NeedEcoUpdate:=true;
               end;
-            if (MyMap[ToLoc] and fCity<>0) and not CityCaptured then
-              begin // town guard moved into city in despotism -- reoptimize!
-              cixChanged:=MyRO.nCity-1;
-              while (cixChanged>=0) and (MyCity[cixChanged].Loc<>ToLoc) do
-                dec(cixChanged);
-              assert(cixChanged>=0);
-              if cixChanged>=0 then
-                begin
-                CityOptimizer_CityChange(cixChanged);
-                NeedEcoUpdate:=true;
+            if (MyRO.Government=gDespotism)
+              and (MyModel[MyUn[UnFocus].mix].Kind=mkSpecial_TownGuard) then
+              begin
+              if MyMap[FromLoc] and fCity<>0 then
+                begin // town guard moved out of city in despotism -- reoptimize!
+                cixChanged:=MyRO.nCity-1;
+                while (cixChanged>=0) and (MyCity[cixChanged].Loc<>FromLoc) do
+                  dec(cixChanged);
+                assert(cixChanged>=0);
+                if cixChanged>=0 then
+                  begin
+                  CityOptimizer_CityChange(cixChanged);
+                  NeedEcoUpdate:=true;
+                  end;
+                end;
+              if (MyMap[ToLoc] and fCity<>0) and not CityCaptured then
+                begin // town guard moved into city in despotism -- reoptimize!
+                cixChanged:=MyRO.nCity-1;
+                while (cixChanged>=0) and (MyCity[cixChanged].Loc<>ToLoc) do
+                  dec(cixChanged);
+                assert(cixChanged>=0);
+                if cixChanged>=0 then
+                  begin
+                  CityOptimizer_CityChange(cixChanged);
+                  NeedEcoUpdate:=true;
+                  end
                 end
               end
-            end
+            end  
           end;
         end;
       else
@@ -4744,11 +4978,12 @@ else
     begin {enemy unit -- attack}
     if result=eBombarded then Defender:=MyRO.Territory[ToLoc]
     else Defender:=MyRO.EnemyUn[euix].Owner;
-    if MyRO.Treaty[Defender]=trCeaseFire then
+    {if MyRO.Treaty[Defender]=trCeaseFire then
       if SimpleQuery(mkYesNo,Phrases.Lookup('FRCANCELQUERY_CEASEFIRE'),
         'MSG_DEFAULT')<>mrOK then
-        exit;
-    if (result and rUnitRemoved<>0) and (result<>eMissionDone) then
+        exit;}
+    if (Options and muNoSuicideCheck=0)
+      and (result and rUnitRemoved<>0) and (result<>eMissionDone) then
       begin // suicide query
       with MyUn[UnFocus],BattleDlg.Forecast do
         begin
@@ -4781,6 +5016,7 @@ else
 
     for i:=0 to MyRO.nEnemyModel-1 do
       LostArmy[i]:=MyRO.EnemyModel[i].Lost;
+    OldToTile:=MyMap[ToLoc];
     result:=Server(sMoveUnit+DirCode,me,UnFocus,nil^);
     nLostArmy:=0;
     for i:=0 to MyRO.nEnemyModel-1 do
@@ -4793,15 +5029,24 @@ else
       UnFocus:=-1;
       SetTroopLoc(FromLoc);
       end;
-    if cixChanged>=0 then
-      begin
-      CityOptimizer_CityChange(cixChanged);
+    if (OldToTile and not MyMap[ToLoc] and fCity<>0)
+      and (MyRO.Government in [gRepublic,gDemocracy,gFuture]) then
+      begin // city was destroyed, borders have moved, unrest might have changed in any city
+      CityOptimizer_BeginOfTurn;
       NeedEcoUpdate:=true;
-      end;
-    if (result=eWon) or (result=eBloody) or (result=eExpelled) then
+      end
+    else
       begin
-      CityOptimizer_TileBecomesAvailable(ToLoc);
-      NeedEcoUpdate:=true;
+      if cixChanged>=0 then
+        begin
+        CityOptimizer_CityChange(cixChanged);
+        NeedEcoUpdate:=true;
+        end;
+      if (result=eWon) or (result=eBloody) or (result=eExpelled) then
+        begin
+        CityOptimizer_TileBecomesAvailable(ToLoc);
+        NeedEcoUpdate:=true;
+        end;
       end;
     if nLostArmy>1 then
       begin
@@ -4818,6 +5063,7 @@ else
   if result and rUnitRemoved<>0 then
     begin
     CityOptimizer_AfterRemoveUnit;
+    ListDlg.RemoveUnit;
     NeedEcoUpdate:=true;
     end;
   if NeedEcoUpdate then
@@ -4852,6 +5098,8 @@ if result>=rExecuted then
       if (MyRO.Wonder[i].CityID=-2) and (MyData.ToldWonders[i].CityID<>-2) then
         with MessgExDlg do
           begin
+          if WondersDlg.Visible then
+            WondersDlg.SmartUpdateContent(false);
           OpenSound:='WONDER_DESTROYED';
           MessgText:=Format(Phrases.Lookup('WONDERDEST'),
             [Phrases.Lookup('IMPROVEMENTS',i)]);
@@ -4866,9 +5114,12 @@ if result>=rExecuted then
     end;
   if CityCaptured and (MyMap[ToLoc] and fCity<>0) then
     begin // city captured
+    ListDlg.AddCity;
     for i:=0 to 27 do {tell about capture of wonders}
       if MyRO.City[MyRO.nCity-1].Built[i]>0 then with MessgExDlg do
         begin
+        if WondersDlg.Visible then
+          WondersDlg.SmartUpdateContent(false);
         OpenSound:='WONDER_CAPTURED';
         MessgText:=Format(Tribe[me].TPhrase('WONDERCAPTOWN'),
           [Phrases.Lookup('IMPROVEMENTS',i)]);
@@ -4901,6 +5152,14 @@ if result>=rExecuted then
   end;
 TellNewContacts;
 
+if (UnFocus>=0) and (MyUn[UnFocus].Master>=0) then
+  with MyUn[MyUn[UnFocus].Master] do
+    if Status and usStay<>0 then
+      begin
+      Status:=Status and not usStay;
+      if (Movement>=100) and (Status and (usRecover or usGoto)=0) then
+        Status:=Status or usWaiting;
+      end;
 if Options and (muAutoNoWait or muAutoNext)<>0 then
   begin
   if (UnFocus>=0) and ((result=eNoTime_Move) or UnitExhausted(UnFocus)
@@ -4911,7 +5170,11 @@ if Options and (muAutoNoWait or muAutoNext)<>0 then
     begin
     MyUn[UnFocus].Status:=MyUn[UnFocus].Status and not usWaiting;
     if Options and muAutoNext<>0 then
-      if CityCaptured and (MyMap[ToLoc] and fCity<>0) then UnFocus:=-1
+      if CityCaptured and (MyMap[ToLoc] and fCity<>0) then
+        begin
+        UnFocus:=-1;
+        PaintLoc(ToLoc); // don't show unit in city if not selected
+        end
       else NextUnit(UnStartLoc,true)
     end
   else if (UnFocus<0) and (Options and muAutoNext<>0) then
@@ -4954,13 +5217,15 @@ with ShowMove do
   ToLoc:=dLoc(FromLoc,dx,dy);
   xToLoc:=ToLoc mod G.lx; yToLoc:=ToLoc div G.lx;
   xFromLoc:=FromLoc mod G.lx; yFromLoc:=FromLoc div G.lx;
-  xw1:=xw+G.lx;
-  // (xFromLoc-xw1)*(xxt*2)-MapWidth/2 -> min
-  while abs(2*(xxt*2)*(xFromLoc-xw1+G.lx)-MapWidth)<abs(2*(xxt*2)*(xFromLoc-xw1)-MapWidth) do
-    dec(xw1,G.lx);
-
   if xToLoc>xFromLoc+2 then xToLoc:=xToLoc-G.lx
   else if xToLoc<xFromLoc-2 then xToLoc:=xToLoc+G.lx;
+
+  xw1:=xw+G.lx;
+  // ((xFromLoc-xw1)*2+yFromLoc and 1+1)*xxt+dx*xxt/2-MapWidth/2 -> min
+  while abs(((xFromLoc-xw1+G.lx)*2+yFromLoc and 1+1)*xxt*2+dx*xxt-MapWidth)
+    <abs(((xFromLoc-xw1)*2+yFromLoc and 1+1)*xxt*2+dx*xxt-MapWidth) do
+    dec(xw1,G.lx);
+
   xTo:=(xToLoc-xw1)*(xxt*2) + yToLoc and 1 *xxt +(xxt-xxu);
   yTo:=(yToLoc-yw)*yyt +(yyt-yyu_anchor);
   xFrom:=(xFromLoc-xw1)*(xxt*2) + yFromLoc and 1 *xxt +(xxt-xxu);
@@ -4969,12 +5234,15 @@ with ShowMove do
   else begin xMin:=xTo;xRange:=xFrom-xTo end;
   if yFrom<yTo then begin yMin:=yFrom;yRange:=yTo-yFrom end
   else begin yMin:=yTo;yRange:=yFrom-yTo end;
+  inc(xRange,xxt*2);
+  inc(yRange,yyt*3);
 
   MainOffscreenPaint;
   NoMap.SetOutput(Buffer);
+  NoMap.SetPaintBounds(0,0,xRange,yRange);
   for Step:=0 to abs(Step1-Step0) do
     begin
-    BitBlt(Buffer.Canvas.Handle,0,0,xRange+xxt*2,yRange+yyt*3,
+    BitBlt(Buffer.Canvas.Handle,0,0,xRange,yRange,
       offscreen.Canvas.Handle,xMin,yMin,SRCCOPY);
     if Step1<>Step0 then
       begin
@@ -4984,50 +5252,36 @@ with ShowMove do
         *(yTo-yFrom)/nStep);
       end
     else begin xMoving:=xFrom; yMoving:=yFrom; end;
-//    if Owner=me then
-//      Sprite(Buffer,HGrTerrain,xMoving-xMin,yMoving-yMin+yyt,xxt*2,yyt*2,1+8*(xxt*2+1),1+yyt+1*(yyt*3+1));
     NoMap.PaintUnit(xMoving-xMin,yMoving-yMin,UnitInfo,0);
-    if yMin+yRange+yyt*3>=MapHeight-overlap then
-      begin
-      if xMin<xMidPanel-7 then
-        BitBlt(Buffer.Canvas.Handle,-xMin,MapHeight-overlap-yMin,xMidPanel-7,overlap,
-          Panel.Canvas.Handle,0,0,SRCCOPY);
-      if xMin+xRange+xxt*2>=xRightPanel-10 then
-        BitBlt(Buffer.Canvas.Handle,xRightPanel-10-xMin,MapHeight-overlap-yMin,
-          Panel.Width-(xRightPanel-10),overlap,Panel.Canvas.Handle,
-          xRightPanel-10,0,SRCCOPY);
-      end;
-
-    if yMin<0 then
-      BitBlt(Canvas.Handle,xMin,TopBarHeight,xRange+xxt*2,yRange+yyt*3+yMin,
-        Buffer.Canvas.Handle,0,-yMin,SRCCOPY)
-    else
-      begin
-      yl:=yRange+yyt*3;
-      if yMin+yl>MapHeight then yl:=MapHeight-yMin;
-      if yl>0 then BitBlt(Canvas.Handle,xMin,TopBarHeight+yMin,xRange+xxt*2,yl,
-        Buffer.Canvas.Handle,0,0,SRCCOPY);
-      end;
+    PaintBufferToScreen(xMin,yMin,xRange,yRange);
 
     SliceCount:=0;
     Ticks:=Ticks0;
     repeat
       if (SliceCount=0) or ((Ticks-Ticks0)*12000 *(SliceCount+1)
         div SliceCount<MoveTime*PerfFreq)  then
-        begin Sleep(1); inc(SliceCount) end;
+        begin
+        if not idle or (GameMode=cMovie) then
+          Application.ProcessMessages;
+        Sleep(1);
+        inc(SliceCount)
+        end;
       QueryPerformanceCounter(Ticks);
     until (Ticks-Ticks0)*12000>=MoveTime*PerfFreq;
     Ticks0:=Ticks
     end;
   end;
 if Restore then
-  BitBlt(Canvas.Handle,xMin,TopBarHeight+yMin,xRange+xxt,yRange+yyt*3,
-    offscreen.Canvas.Handle,xMin,yMin,SRCCOPY);
+  begin
+  BitBlt(Buffer.Canvas.Handle,0,0,xRange,yRange,offscreen.Canvas.Handle,xMin,
+    yMin,SRCCOPY);
+  PaintBufferToScreen(xMin,yMin,xRange,yRange);
+  end;
 BlinkTime:=-1;
 Timer1.Enabled:=true;
 end;
 
-procedure TMainScreen.MoveToLoc(Loc: integer);
+procedure TMainScreen.MoveToLoc(Loc: integer; CheckSuicide: boolean);
 // path finder: move focused unit to loc, start multi-turn goto if too far
 var
 uix,i,MoveOptions,NextLoc,MoveResult: integer;
@@ -5049,6 +5303,8 @@ if GetMoveAdvice(UnFocus,Loc,MoveAdviceData)>=rExecuted then
       if (NextLoc=Loc)
         or (Loc=maNextCity) and (MyMap[NextLoc] and fCity<>0) then
         StopReason:=Arrived;
+      if not CheckSuicide and (NextLoc=Loc) then
+        MoveOptions:=MoveOptions or muNoSuicideCheck;
       MoveResult:=MoveUnit(MoveAdviceData.dx[i],MoveAdviceData.dy[i],MoveOptions);
       if MoveResult<rExecuted then StopReason:=MoveError
       else if MoveResult and rUnitRemoved<>0 then StopReason:=Dead
@@ -5127,9 +5383,9 @@ if Button=mbLeft then
     and (x<xAdvisor+16+3) and (y<yAdvisor+16+3) and HaveStrategyAdvice then
     AdviceBtnClick*)
   else if (x>=xTroop+1) and (y>=yTroop+1)
-    and (x<xTroop+TrRow*66) and (y<=yTroop+55) then
+    and (x<xTroop+TrRow*TrPitch) and (y<=yTroop+55) then
     begin
-    i:=(x-xTroop-1) div 66;
+    i:=(x-xTroop-1) div TrPitch;
     if trix[i]>=0 then
       if ClientMode=cEditMap then begin BrushType:=trix[i]; PanelPaint end
       else if (TroopLoc>=0) then
@@ -5137,11 +5393,11 @@ if Button=mbLeft then
           begin
           if ssShift in Shift then
             UnitStatDlg.ShowNewContent_OwnModel(wmPersistent, MyUn[trix[i]].mix)
-          else if (ClientMode<scContact) and (x-xTroop-1-i*66>=60-20)
-            and (y>=yTroop+35)
+          else if not supervising and (ClientMode<scContact)
+            and (x-xTroop-1-i*TrPitch>=60-20) and (y>=yTroop+35)
             and ((MyUn[trix[i]].Job>jNone)
               or (MyUn[trix[i]].Status and (usStay or usRecover or usGoto)<>0)) then
-            begin
+            begin // wake up
             MyUn[trix[i]].Status:=MyUn[trix[i]].Status
               and ($FFFF-usStay-usRecover-usGoto-usEnhance) or usWaiting;
             if MyUn[trix[i]].Job>jNone then
@@ -5161,7 +5417,9 @@ if Button=mbLeft then
             end
           else if (ClientMode<scContact) then
             begin
-            if CityDlg.Visible then
+            if supervising then
+              UnitStatDlg.ShowNewContent_OwnUnit(wmPersistent, trix[i])
+            else if CityDlg.Visible then
               begin
               CityDlg.CloseAction:=None;
               CityDlg.Close;
@@ -5178,12 +5436,15 @@ if Button=mbLeft then
               BlinkOn:=false;
               PaintLoc(TroopLoc);
               end;
-            UnitInfoBtn.Visible:=true;
-            UnitBtn.Visible:=true;
+            if UnFocus>=0 then
+              begin
+              UnitInfoBtn.Visible:=true;
+              UnitBtn.Visible:=true;
+              TurnComplete:=false;
+              EOT.ButtonIndex:=eotGray;
+              end;
             CheckTerrainBtnVisible;
             PanelPaint;
-            TurnComplete:=false;
-            EOT.ButtonIndex:=eotGray;
             end
           end
         else if Server(sGetUnits,me,TroopLoc,TrCnt)>=rExecuted then
@@ -5198,21 +5459,25 @@ end;
 
 procedure TMainScreen.SetTroopLoc(Loc:integer);
 var
-trixFocus, uix: integer;
+trixFocus,uix,uixDefender: integer;
+Prio: boolean;
 begin
 TroopLoc:=Loc;
-TrRow:=((xRightPanel-14-GetSystemMetrics(SM_CXVSCROLL))-(xTroop+2)) div 66;
+TrRow:=(xRightPanel+10-xTroop-GetSystemMetrics(SM_CXVSCROLL)-19) div TrPitch;
 TrCnt:=0;
 trixFocus:=-1;
 if ClientMode=cEditMap then TrCnt:=nBrushTypes
 else if (Loc>=0) and (MyMap[Loc] and fUnit<>0) then
   if MyMap[Loc] and fOwned<>0 then
     begin // count own units here
-    for uix:=0 to MyRO.nUn-1 do if MyUn[uix].Loc=Loc then
-      begin
-      if uix=UnFocus then trixFocus:=TrCnt;
-      inc(TrCnt);
-      end
+    Server(sGetDefender,me,TroopLoc,uixDefender);
+    for Prio:=true downto false do
+      for uix:=0 to MyRO.nUn-1 do
+        if ((uix=uixDefender)=Prio) and (MyUn[uix].Loc=Loc) then
+          begin
+          if uix=UnFocus then trixFocus:=TrCnt;
+          inc(TrCnt);
+          end
     end
   else // count enemy units here
     Server(sGetUnits,me,Loc,TrCnt);
@@ -5279,6 +5544,38 @@ with canvas do
   end
 end;*)
 
+procedure TMainScreen.SetDebugMap(p: integer);
+begin
+IsoEngine.pDebugMap:=p;
+IsoEngine.Options:=IsoEngine.Options and not (1 shl moLocCodes);
+mLocCodes.Checked:=false;
+MapValid:=false;
+MainOffscreenPaint;
+end;
+
+procedure TMainScreen.SetViewpoint(p: integer);
+var
+i: integer;
+begin
+if supervising and (G.RO[0].Turn>0)
+  and ((p=0) or (1 shl p and G.RO[0].Alive<>0)) then
+  begin
+  for i:=0 to Screen.FormCount-1 do
+    if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
+      Screen.Forms[i].Close; // close windows
+  ItsMeAgain(p);
+  SumCities(TaxSum,ScienceSum);
+  for i:=0 to MyRO.nModel-1 do
+    if Tribe[me].ModelPicture[i].HGr=0 then
+      InitMyModel(i,true);
+
+  SetTroopLoc(-1);
+  PanelPaint;
+  MapValid:=false;
+  PaintAllMaps;
+  end
+end;
+
 procedure TMainScreen.FormKeyDown(Sender:TObject;var Key:word;
   Shift:TShiftState);
 
@@ -5332,7 +5629,12 @@ if ClientMode=cEditMap then
   exit;
   end;
 
-if Shift=[ssCtrl] then
+if Shift=[ssAlt] then
+  case char(Key) of
+    '0': SetDebugMap(-1);
+    '1'..'9': SetDebugMap(ord(Key)-48);
+    end
+else if Shift=[ssCtrl] then
   case char(Key) of
     'J':MenuClick(mJump);
     'K':mShowClick(mDebugMap);
@@ -5341,6 +5643,12 @@ if Shift=[ssCtrl] then
     'N':mNamesClick(mNames);
     'Q':MenuClick_Check(GamePopup,mResign);
     'R':MenuClick(mRun);
+    '0'..'9':
+       begin
+       if ord(Key)-48=me then
+         SetViewpoint(0)
+       else SetViewpoint(ord(Key)-48);
+       end;
     ' ':
       begin // test map repaint time
       QueryPerformanceCounter(time0);
@@ -5366,20 +5674,20 @@ else if Shift=[] then
     char(VK_ADD): EndTurn;
     '1':MapBtnClick(MapBtn0);
     '2':MapBtnClick(MapBtn1);
-    '3':MapBtnClick(MapBtn2);
-    '4':MapBtnClick(MapBtn3);
-    '5':MapBtnClick(MapBtn4);
-    '6':MapBtnClick(MapBtn5);
-    '7':MapBtnClick(MapBtn6);
+    '3':MapBtnClick(MapBtn4);
+    '4':MapBtnClick(MapBtn5);
+    '5':MapBtnClick(MapBtn6);
+    'T':MenuClick(mTechTree);
     'W':MenuClick(mWait);
     end;
 
 if UnFocus>=0 then
   if Shift=[ssCtrl] then
     case char(Key) of
-      'P':MenuClick_Check(UnitPopup,mPillage);
-      'D':MenuClick(mDisband);
       'C':MenuClick_Check(UnitPopup,mCancel);
+      'D':MenuClick(mDisband);
+      'P':MenuClick_Check(UnitPopup,mPillage);
+      'T':MenuClick_Check(UnitPopup,mSelectTransport);
       end
   else if Shift=[] then
     case char(Key) of
@@ -5411,7 +5719,6 @@ if UnFocus>=0 then
         if JobTest(UnFocus,jRR,[eTreaty]) then MenuClick(mRR)
         else MenuClick_Check(TerrainPopup,mRoad);
       'S':MenuClick(mStay);
-      'T':MenuClick_Check(UnitPopup,mSelectTransport);
       'U':MenuClick_Check(UnitPopup,mUnload);
       'V':MenuClick_Check(UnitPopup,mRecover);
       'Z':MenuClick_Check(UnitPopup,mUtilize);
@@ -5500,17 +5807,17 @@ if Sender=mResign then
     end
   else
     begin
-    if Server(sGetGameChanged,me,0,nil^)=eOK then
+    if Server(sGetGameChanged,0,0,nil^)=eOK then
       begin
       QueryText:=Phrases.Lookup('RESIGN');
       case SimpleQuery(mkYesNoCancel,QueryText,'') of
         mrIgnore:
-          Server(sResign,me,0,nil^);
+          Server(sResign,0,0,nil^);
         mrOK:
-          Server(sBreak,me,0,nil^)
+          Server(sBreak,0,0,nil^)
         end
       end
-    else Server(sResign,me,0,nil^)
+    else Server(sResign,0,0,nil^)
     end
 else if Sender=mEmpire then
   RatesDlg.ShowNewContent(wmPersistent)
@@ -5571,9 +5878,19 @@ else if Sender=mRandomMap then
     end
   end
 else if Sender=mJump then
-  begin Jump[me]:=20; EndTurn(true); end
+  begin
+  if supervising then
+    Jump[0]:=20
+  else Jump[me]:=20;
+  EndTurn(true);
+  end
 else if Sender=mRun then
-  begin Jump[me]:=999999; EndTurn(true); end
+  begin
+  if supervising then
+    Jump[0]:=999999
+  else Jump[me]:=999999;
+  EndTurn(true);
+  end
 else if Sender=mEnhanceDef then
   begin
   if UnFocus>=0 then
@@ -5609,6 +5926,8 @@ else if Sender=mHelp then
   if ClientMode=cEditMap then
     HelpDlg.ShowNewContent(wmPersistent, hkText, HelpDlg.TextIndex('MAPEDIT'))
   else HelpDlg.ShowNewContent(wmPersistent, hkMisc, miscMain)
+else if Sender=mTechTree then
+  TechTreeDlg.ShowModal
 else if Sender=mWonders then
   WondersDlg.ShowNewContent(wmPersistent)
 else if Sender=mDiagram then
@@ -5631,7 +5950,7 @@ else if UnFocus>=0 then with MyUn[UnFocus] do
     if Status shr 16=$7FFF then Destination:=maNextCity
     else Destination:=Status shr 16;
     Status:=Status and not (usStay or usRecover) or usWaiting;
-    MoveToLoc(Destination);
+    MoveToLoc(Destination,true);
     end
   else if Sender=mHome then
     if MyMap[Loc] and fCity<>0 then
@@ -5648,7 +5967,7 @@ else if UnFocus>=0 then with MyUn[UnFocus] do
     else
       begin
       Status:=Status and not (usStay or usRecover or usEnhance);
-      MoveToLoc(maNextCity)
+      MoveToLoc(maNextCity,true)
       end
   else if Sender=mCentre then begin Centre(Loc); PaintAllMaps end
   else if Sender=mCity then
@@ -5734,6 +6053,14 @@ else if UnFocus>=0 then with MyUn[UnFocus] do
     end
   else if (Sender=mDisband) or (Sender=mUtilize) then
     begin
+    if (Sender=mUtilize)
+      and not (Server(sRemoveUnit-sExecute,me,UnFocus,nil^)=eUtilized) then
+      begin
+      SimpleMessage(Phrases2.Lookup('SHIP_UTILIZE'));
+        // freight for colony ship is the only case in which the command is
+        // available to player though not valid
+      exit
+      end;
     if (Sender=mUtilize) and (Health<100) then
       if SimpleQuery(mkYesNo,Phrases.Lookup('DAMAGED_UTILIZE'),'')<>mrOK then
         exit;
@@ -5819,18 +6146,19 @@ end;
 
 procedure TMainScreen.InitPopup(Popup: TPopupMenu);
 var
-i,p1,CityCount,Tile,Test: integer;
-NoSuper,extended,Multi,NeedSep: boolean;
-LastSep: TMenuItem;
+i,p1,Tile,Test: integer;
+NoSuper,extended,Multi,NeedSep,HaveCities: boolean;
+LastSep,m: TMenuItem;
 mox: ^TModel;
 begin
-NoSuper:=(G.Difficulty[me]>0) and (1 shl me and MyRO.Alive<>0);
-CityCount:=0; // count cities
+NoSuper:=not supervising and (1 shl me and MyRO.Alive<>0);
+HaveCities:=false;
 for i:=0 to MyRO.nCity-1 do if MyCity[i].Loc>=0 then
-  begin CityCount:=1; Break end;
+  begin HaveCities:=true; Break end;
 if Popup=GamePopup then
   begin
-  mResign.Enabled:= (me=0) and (ClientMode<scContact);
+  mTechTree.Visible:= ClientMode<>cEditMap;
+  mResign.Enabled:= supervising or (me=0) and (ClientMode<scContact);
   mRandomMap.Visible:= (ClientMode=cEditMap)
     and (Server(sMapGeneratorRequest,me,0,nil^)=eOk);
   mOptions.Visible:= ClientMode<>cEditMap;
@@ -5843,6 +6171,7 @@ if Popup=GamePopup then
     mRepScreens.Visible:= NoSuper;
     N10.Visible:= NoSuper;
     mOwnMovement.Visible:= NoSuper;
+    mAllyMovement.Visible:= NoSuper;
     case SoundMode of
       smOff: mSoundOff.Checked:=true;
       smOn: mSoundOn.Checked:=true;
@@ -5851,7 +6180,7 @@ if Popup=GamePopup then
 
     for i:=0 to nTestFlags-1 do
       mManip[i].Checked:= MyRO.TestFlags and (1 shl i)<>0;
-    mManip.Enabled:= me=0;
+    mManip.Enabled:= supervising or (me=0);
 
     Multi:=false;
     for p1:=1 to nPl-1 do
@@ -5869,6 +6198,53 @@ if Popup=GamePopup then
           and ((Imp[i].Preq=preNone) or (MyRO.Tech[Imp[i].Preq]>=tsApplicable)) then
           begin mCityTypes.Enabled:=true; Break end;
     end;
+  mViewpoint.visible:=(ClientMode<>cEditMap) and supervising;
+  mViewpoint.enabled:= G.RO[0].Turn>0;
+  if supervising then
+    begin
+    EmptyMenu(mViewpoint);
+    for p1:=0 to nPl-1 do
+      if (p1=0) or (1 shl p1 and G.RO[0].Alive<>0) then
+        begin
+        m:=TMenuItem.Create(mViewpoint);
+        if p1=0 then
+          m.Caption:=Phrases.Lookup('SUPER')
+        else m.Caption:=Tribe[p1].TString(Phrases2.Lookup('BELONG'));
+        m.Tag:=p1;
+        m.OnClick:=ViewPointClick;
+        if p1<10 then
+          m.ShortCut:=Shortcut(48+p1, [ssCtrl]);
+        m.RadioItem:=true;
+        if p1=me then
+          m.Checked:=true;
+        mViewPoint.Add(m);
+        end
+    end;
+  mDebugMap.visible:=(ClientMode<>cEditMap) and supervising;
+  if supervising then
+    begin
+    EmptyMenu(mDebugMap);
+    for p1:=0 to nPl-1 do
+      if (p1=0) or (1 shl p1 and G.RO[0].Alive<>0) then
+        begin
+        m:=TMenuItem.Create(mDebugMap);
+        if p1=0 then
+          m.Caption:=Phrases2.Lookup('MENU_DEBUGMAPOFF')
+        else m.Caption:=Tribe[p1].TString(Phrases2.Lookup('BELONG'));
+        if p1=0 then
+          m.Tag:=-1
+        else m.Tag:=p1;
+        m.OnClick:=DebugMapClick;
+        if p1<10 then
+          m.ShortCut:=Shortcut(48+p1, [ssAlt]);
+        m.RadioItem:=true;
+        if m.Tag=IsoEngine.pDebugMap then
+          m.Checked:=true;
+        mDebugMap.Add(m);
+        end
+    end;
+  mSmallTiles.Checked:= xxt=33;
+  mNormalTiles.Checked:= xxt=48;
   end
 else if Popup=StatPopup then
   begin
@@ -5877,8 +6253,8 @@ else if Popup=StatPopup then
   mRevolution.Visible:= NoSuper;
   mRevolution.Enabled:= (MyRO.Government<>gAnarchy) and (ClientMode<scContact);
   mUnitStat.Enabled:= NoSuper or (MyRO.Turn>0);
-  mCityStat.Visible:= NoSuper;
-  mCityStat.Enabled:= (CityCount>0) and (me=pTurn);
+  mCityStat.Visible:= 1 shl me and MyRO.Alive<>0;
+  mCityStat.Enabled:= HaveCities;
   mScienceStat.Visible:= true;
   mScienceStat.Enabled:= not NoSuper or (MyRO.ResearchTech>=0)
     or (MyRO.Happened and phTech<>0)
@@ -5914,7 +6290,8 @@ else if Popup=UnitPopup then
   extended:=extended and ((mox.Kind=mkSettler) or (mox.Kind=mkSlaves)
       and (MyRO.Wonder[woPyramids].EffectiveOwner>=0))
     and (MyUn[UnFocus].Master<0) and (Tile and fDeadLands=0);
-  if Server(sRemoveUnit-sExecute,me,UnFocus,nil^)=eUtilized then
+  if (mox.Kind=mkFreight) and (Tile and fCity<>0) and not Phrases2FallenBackToEnglish
+    or (Server(sRemoveUnit-sExecute,me,UnFocus,nil^)=eUtilized) then
     begin
     mDisband.Visible:=false;
     mUtilize.Visible:=true;
@@ -5924,7 +6301,7 @@ else if Popup=UnitPopup then
     end
   else begin mDisband.Visible:=true; mUtilize.Visible:=false end;
   mGoOn.Visible:= MyUn[UnFocus].Status and (usGoto or usWaiting)=usGoto or usWaiting;
-  mHome.Visible:= CityCount>0;
+  mHome.Visible:=HaveCities;
   mRecover.Visible:= (MyUn[UnFocus].Health<100) and (Tile and fTerrain>=fGrass)
     and ((MyRO.Wonder[woGardens].EffectiveOwner=me)
       or (Tile and fTerrain<>fArctic) and (Tile and fTerrain<>fDesert))
@@ -5967,7 +6344,7 @@ else {if Popup=TerrainPopup then}
 
   extended:=extended and ((mox.Kind=mkSettler) or (mox.Kind=mkSlaves)
       and (MyRO.Wonder[woPyramids].EffectiveOwner>=0))
-    and (MyUn[UnFocus].Master<0) and (Tile and fDeadLands=0);
+    and (MyUn[UnFocus].Master<0);
   if extended then
     begin
     mRoad.Visible:= JobTest(UnFocus,jRoad,[eNoBridgeBuilding,eTreaty]);
@@ -5982,8 +6359,8 @@ else {if Popup=TerrainPopup then}
     mFort.Visible:= JobTest(UnFocus,jFort,[eTreaty]);
     mAirBase.Visible:= JobTest(UnFocus,jBase,[eTreaty]);
     mPollution.Visible:=JobTest(UnFocus,jPoll,[eTreaty]);
-    mEnhance.Visible:=
-      MyData.EnhancementJobs[MyMap[MyUn[UnFocus].Loc] and fTerrain,0]<>jNone;
+    mEnhance.Visible:= (Tile and fDeadLands=0)
+      and (MyData.EnhancementJobs[MyMap[MyUn[UnFocus].Loc] and fTerrain,0]<>jNone);
     end
   else
     begin
@@ -6021,7 +6398,7 @@ end;
 procedure TMainScreen.CityClosed(Activateuix: integer; StepFocus: boolean;
   SelectFocus: boolean);
 begin
-if G.Difficulty[me]=0 then
+if supervising then
   begin
   SetTroopLoc(-1);
   PanelPaint
@@ -6061,7 +6438,7 @@ if Tracking and (ssLeft in Shift) then
     xCentre:=(xwMini+(x-xMini-2) div 2+G.lx div 2+MapWidth div (xxt*4)) mod G.lx;
     yCentre:=(y-yMini-2);
     xw:=(xCentre-MapWidth div (xxt*4)+G.lx) mod G.lx;
-    if ywmax<=0 then yw:=ywmax div 2 and not 1
+    if ywmax<=0 then yw:=ywcenter
     else
       begin
       yw:=(yCentre-MapHeight div (yyt*2)+1) and not 1;
@@ -6079,7 +6456,7 @@ if Tracking and (ssLeft in Shift) then
     BitBlt(Panel.Canvas.Handle,xMini+2,yMini+2,G.lx*2,G.ly,Buffer.Canvas.Handle,
       0,0,SRCCOPY);
     MainOffscreenPaint;
-    SmartInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,
+    RectInvalidate(xMini+2,TopBarHeight+MapHeight-overlap+yMini+2,
       xMini+2+G.lx*2,TopBarHeight+MapHeight-overlap+yMini+2+G.ly);
     Update;
     end
@@ -6102,15 +6479,14 @@ end;
 procedure TMainScreen.MapBoxMouseMove(Sender: TObject; Shift: TShiftState; x,
   y: integer);
 var
-qx,qy,MouseLoc: integer;
+MouseLoc: integer;
 begin
 xMouse:=x; yMouse:=y;
 if (ClientMode=cEditMap) and (ssLeft in Shift) and not tracking then
   begin
-  qx:=(x*32+y*66+16*66) div(32*66)-1;
-  qy:=(y*66-x*32-16*66+2000*33*32) div(32*66)-999;
-  MouseLoc:=(xw+(qx-qy+2048) div 2-1024+G.lx) mod G.lx+G.lx*(yw+qx+qy);
-  if MouseLoc<>BrushLoc then MapBoxMouseDown(nil, mbLeft, Shift, x, y);
+  MouseLoc:=LocationOfScreenPixel(x,y);
+  if MouseLoc<>BrushLoc then
+    MapBoxMouseDown(nil, mbLeft, Shift, x, y);
   end
 (*else if idle and (UnFocus>=0) then
   begin
@@ -6145,7 +6521,7 @@ end;
 function TMainScreen.IsPanelPixel(x,y: integer): boolean;
 begin
 result:= (y>=TopBarHeight+MapHeight)
-  or (y>=ClientHeight-PanelHeight) and ((x<xMidPanel-7) or (x>=xRightPanel-10))
+  or (y>=ClientHeight-PanelHeight) and ((x<xMidPanel) or (x>=xRightPanel))
 end;
 
 procedure TMainScreen.FormMouseDown(Sender: TObject; Button: TMouseButton;
@@ -6154,15 +6530,18 @@ begin
 if idle then
   if (x<40) and (y<40) then
     begin
-    InitPopup(GamePopup);
-    if FullScreen then
-      GamePopup.Popup(Left,Top+TopBarHeight-1)
-    else GamePopup.Popup(Left+4,Top+GetSystemMetrics(SM_CYCAPTION)+4+TopBarHeight-1);
+    if GameMode<>cMovie then
+      begin
+      InitPopup(GamePopup);
+      if FullScreen then
+        GamePopup.Popup(Left,Top+TopBarHeight-1)
+      else GamePopup.Popup(Left+4,Top+GetSystemMetrics(SM_CYCAPTION)+4+TopBarHeight-1);
+      end
     end
   else if IsPanelPixel(x,y) then
     PanelBoxMouseDown(Sender,Button,Shift,x,y-(ClientHeight-PanelHeight))
-  else if y>=TopBarHeight then
-    MapBoxMouseDown(Sender,Button,Shift,x,y-TopBarHeight)
+  else if (y>=TopBarHeight) and (x>=MapOffset) and (x<MapOffset+MapWidth) then
+    MapBoxMouseDown(Sender,Button,Shift,x-MapOffset,y-TopBarHeight)
 end;
 
 procedure TMainScreen.FormMouseMove(Sender: TObject; Shift: TShiftState; x,
@@ -6171,8 +6550,8 @@ begin
 if idle then
   if IsPanelPixel(x,y) then
     PanelBoxMouseMove(Sender,Shift,x,y-(ClientHeight-PanelHeight))
-  else if y>=TopBarHeight then
-    MapBoxMouseMove(Sender,Shift,x,y-TopBarHeight);
+  else if (y>=TopBarHeight) and (x>=MapOffset) and (x<MapOffset+MapWidth) then
+    MapBoxMouseMove(Sender,Shift,x-MapOffset,y-TopBarHeight);
 end;
 
 procedure TMainScreen.FormMouseUp(Sender: TObject; Button: TMouseButton;
@@ -6185,28 +6564,79 @@ end;
 procedure TMainScreen.FormPaint(Sender: TObject);
 begin
 MainOffscreenPaint;
-BitBlt(Canvas.Handle,0,TopBarHeight,MapWidth,MapHeight-overlap,offscreen.Canvas.Handle,
+if (MapOffset>0) or (MapOffset+MapWidth<ClientWidth) then with canvas do
+  begin // pillarbox, make left and right border black
+  if me<0 then
+    brush.color:=$000000
+  else brush.color:=EmptySpaceColor;
+  if xMidPanel>MapOffset then
+    FillRect(Rect(0,TopBarHeight,MapOffset,TopBarHeight+MapHeight-overlap))
+  else
+    begin
+    FillRect(Rect(0,TopBarHeight,xMidPanel,TopBarHeight+MapHeight-overlap));
+    FillRect(Rect(xMidPanel,TopBarHeight,MapOffset,TopBarHeight+MapHeight));
+    end;
+  if xRightPanel<MapOffset+MapWidth then
+    FillRect(Rect(MapOffset+MapWidth,TopBarHeight,ClientWidth,TopBarHeight+MapHeight-overlap))
+  else
+    begin
+    FillRect(Rect(MapOffset+MapWidth,TopBarHeight,xRightPanel,TopBarHeight+MapHeight));
+    FillRect(Rect(xRightPanel,TopBarHeight,ClientWidth,TopBarHeight+MapHeight-overlap));
+    end;
+  Brush.Style:=bsClear;
+  end;
+BitBlt(Canvas.Handle,MapOffset,TopBarHeight,MapWidth,MapHeight-overlap,offscreen.Canvas.Handle,
   0,0,SRCCOPY);
 BitBlt(Canvas.Handle,0,0,ClientWidth,TopBarHeight,TopBar.Canvas.Handle,
   0,0,SRCCOPY);
-BitBlt(Canvas.Handle,xMidPanel-7,TopBarHeight+MapHeight-overlap,xRightPanel-xMidPanel-3,overlap,
-  offscreen.Canvas.Handle,xMidPanel-7,MapHeight-overlap,SRCCOPY);
-BitBlt(Canvas.Handle,0,TopBarHeight+MapHeight-overlap,xMidPanel-7,overlap,
+if xMidPanel>MapOffset then
+  BitBlt(Canvas.Handle,xMidPanel,TopBarHeight+MapHeight-overlap,
+    ClientWidth div 2-xMidPanel,overlap,
+    offscreen.Canvas.Handle,xMidPanel-MapOffset,MapHeight-overlap,SRCCOPY)
+else BitBlt(Canvas.Handle,MapOffset,TopBarHeight+MapHeight-overlap,
+  ClientWidth div 2-MapOffset,overlap,
+  offscreen.Canvas.Handle,0,MapHeight-overlap,SRCCOPY);
+if xRightPanel<MapOffset+MapWidth then
+  BitBlt(Canvas.Handle,ClientWidth div 2,TopBarHeight+MapHeight-overlap,
+    xRightPanel-ClientWidth div 2,overlap,
+    offscreen.Canvas.Handle,ClientWidth div 2-MapOffset,MapHeight-overlap,SRCCOPY)
+else BitBlt(Canvas.Handle,ClientWidth div 2,TopBarHeight+MapHeight-overlap,
+  MapOffset+MapWidth-ClientWidth div 2,overlap,
+  offscreen.Canvas.Handle,ClientWidth div 2-MapOffset,MapHeight-overlap,SRCCOPY);
+BitBlt(Canvas.Handle,0,TopBarHeight+MapHeight-overlap,xMidPanel,overlap,
   Panel.Canvas.Handle,0,0,SRCCOPY);
-BitBlt(Canvas.Handle,xRightPanel-10,TopBarHeight+MapHeight-overlap,Panel.Width-(xRightPanel-10),
-  overlap,Panel.Canvas.Handle,xRightPanel-10,0,SRCCOPY);
+BitBlt(Canvas.Handle,xRightPanel,TopBarHeight+MapHeight-overlap,Panel.Width-xRightPanel,
+  overlap,Panel.Canvas.Handle,xRightPanel,0,SRCCOPY);
 BitBlt(Canvas.Handle,0,TopBarHeight+MapHeight,Panel.Width,PanelHeight-overlap,
   Panel.Canvas.Handle,0,overlap,SRCCOPY);
 if (pLogo>=0) and (G.RO[pLogo]=nil) and (AILogo[pLogo]<>nil) then
-  BitBlt(Canvas.Handle, xRightPanel-(16+64), ClientHeight-PanelHeight, 64,64,
-    AILogo[pLogo].Canvas.Handle,0,0,SRCCOPY);
+  BitBlt(Canvas.Handle, xRightPanel+10-(16+64), ClientHeight-PanelHeight, 64,64,
+    AILogo[pLogo].Canvas.Handle,0,0,SRCCOPY);     
 end;
 
-procedure TMainScreen.SmartInvalidate(Left,Top,Rigth,Bottom: integer);
+procedure TMainScreen.RectInvalidate(Left,Top,Rigth,Bottom: integer);
 var
 r0: HRgn;
 begin
 r0:=CreateRectRgn(Left,Top,Rigth,Bottom);
+InvalidateRgn(Handle,r0,false);
+DeleteObject(r0);
+end;
+
+procedure TMainScreen.SmartRectInvalidate(Left,Top,Rigth,Bottom: integer);
+var
+i: integer;
+r0,r1: HRgn;
+begin
+r0:=CreateRectRgn(Left,Top,Rigth,Bottom);
+for i:=0 to ControlCount-1 do
+  if not (Controls[i] is TArea) and Controls[i].Visible then
+    begin
+    with Controls[i].BoundsRect do
+      r1:=CreateRectRgn(Left,Top,Right,Bottom);
+    CombineRgn(r0,r0,r1,RGN_DIFF);
+    DeleteObject(r1);
+    end;
 InvalidateRgn(Handle,r0,false);
 DeleteObject(r0);
 end;
@@ -6248,16 +6678,19 @@ begin
 with TMenuItem(Sender) do
   begin
   Flag:=1 shl (Tag shr 8);
-  if Checked then Server(sClearTestFlag,me,Flag,nil^)
+  if Checked then Server(sClearTestFlag,0,Flag,nil^)
   else
     begin
-    Server(sSetTestFlag,me,Flag,nil^);
+    Server(sSetTestFlag,0,Flag,nil^);
     Play('CHEAT');
     end;
-  if Flag=tfUncover then
-    begin MapValid:=false; PaintAllMaps; end
-  else if Flag=tfAllTechs then
-    TellNewModels
+  if not supervising then
+    begin
+    if Flag=tfUncover then
+      begin MapValid:=false; PaintAllMaps; end
+    else if Flag=tfAllTechs then
+      TellNewModels
+    end
   end
 end;
 
@@ -6272,6 +6705,40 @@ with TButtonC(Sender) do
 if Sender=MapBtn0 then
   begin MiniPaint; PanelPaint end // update mini map only
 else begin MapValid:=false; PaintAllMaps; end; // update main map
+end;
+
+procedure TMainScreen.GrWallBtnDownChanged(Sender: TObject);
+begin
+if TButtonBase(Sender).Down then
+  begin
+  MapOptionChecked:=MapOptionChecked or (1 shl moGreatWall);
+  TButtonBase(Sender).Hint:='';
+  end
+else
+  begin
+  MapOptionChecked:=MapOptionChecked and not (1 shl moGreatWall);
+  TButtonBase(Sender).Hint:=Phrases.Lookup('CONTROLS',-1+TButtonBase(Sender).Tag and $FF);
+  end;
+SetMapOptions;
+MapValid:=false;
+PaintAllMaps;
+end;
+
+procedure TMainScreen.BareBtnDownChanged(Sender: TObject);
+begin
+if TButtonBase(Sender).Down then
+  begin
+  MapOptionChecked:=MapOptionChecked or (1 shl moBareTerrain);
+  TButtonBase(Sender).Hint:='';
+  end
+else
+  begin
+  MapOptionChecked:=MapOptionChecked and not (1 shl moBareTerrain);
+  TButtonBase(Sender).Hint:=Phrases.Lookup('CONTROLS',-1+TButtonBase(Sender).Tag and $FF);
+  end;
+SetMapOptions;
+MapValid:=false;
+PaintAllMaps;
 end;
 
 procedure TMainScreen.FormKeyUp(Sender: TObject; var Key: Word;
@@ -6312,7 +6779,7 @@ begin
 SoundMode:=smOnAlt;
 end;
 
-procedure TMainScreen.AdviceBtnClick;
+{procedure TMainScreen.AdviceBtnClick;
 var
 OldAdviceLoc: integer;
 begin
@@ -6322,9 +6789,9 @@ AdvisorDlg.GiveStrategyAdvice;
 OldAdviceLoc:=MainMap.AdviceLoc;
 MainMap.AdviceLoc:=-1;
 PaintLoc(OldAdviceLoc);
-end;
+end;}
 
-procedure TMainScreen.SetAdviceLoc(Loc: integer; AvoidRect: TRect);
+{procedure TMainScreen.SetAdviceLoc(Loc: integer; AvoidRect: TRect);
 var
 OldAdviceLoc,x,y: integer;
 begin
@@ -6342,12 +6809,75 @@ if Loc<>MainMap.AdviceLoc then
   PaintLoc(OldAdviceLoc);
   PaintLoc(MainMap.AdviceLoc);
   end;
-end;
+end;}
 
 procedure TMainScreen.UnitInfoBtnClick(Sender: TObject);
 begin
 if UnFocus>=0 then
   UnitStatDlg.ShowNewContent_OwnModel(wmPersistent, MyUn[UnFocus].mix)
+end;
+
+procedure TMainScreen.ViewpointClick(Sender: TObject);
+begin
+SetViewpoint(TMenuItem(Sender).Tag);
+end;
+
+procedure TMainScreen.DebugMapClick(Sender: TObject);
+begin
+SetDebugMap(TMenuItem(Sender).Tag);
+end;
+
+procedure TMainScreen.mSmallTilesClick(Sender: TObject);
+begin
+SetTileSize(33,16);
+end;
+
+procedure TMainScreen.mNormalTilesClick(Sender: TObject);
+begin
+SetTileSize(48,24);
+end;
+
+procedure TMainScreen.SetTileSize(x,y: integer);
+var
+i,CenterLoc: integer;
+begin
+CenterLoc:=(xw+MapWidth div (xxt*4)) mod G.lx+(yw+MapHeight div (yyt*2))*G.lx;
+IsoEngine.ApplyTileSize(x,y);
+FormResize(nil);
+Centre(CenterLoc);
+PaintAllMaps;
+for i:=0 to Screen.FormCount-1 do
+  if Screen.Forms[i].Visible and (Screen.Forms[i] is TBufferedDrawDlg) then
+    TBufferedDrawDlg(Screen.Forms[i]).SmartUpdateContent(false);
+end;
+
+procedure TMainScreen.SaveSettings;
+var
+i,j: integer;
+Reg: TRegistry;
+begin
+OptionChecked:=OptionChecked and soExtraMask;
+for i:=0 to ComponentCount-1 do if Components[i] is TMenuItem then
+  for j:=0 to nSaveOption-1 do
+    if TMenuItem(Components[i]).Checked
+      and (TMenuItem(Components[i]).Tag=SaveOption[j]) then
+      inc(OptionChecked,1 shl j);
+
+Reg:=TRegistry.Create;
+Reg.OpenKey('SOFTWARE\cevo\RegVer9',true);
+Reg.WriteInteger('TileWidth',xxt*2);
+Reg.WriteInteger('TileHeight',yyt*2);
+Reg.WriteInteger('OptionChecked', OptionChecked);
+Reg.WriteInteger('MapOptionChecked', MapOptionChecked);
+Reg.WriteInteger('CityReport',integer(CityRepMask));
+Reg.closekey;
+Reg.Free;
+end;
+
+procedure TMainScreen.MovieSpeedBtnClick(Sender: TObject);
+begin
+MovieSpeed:=TButtonB(Sender).Tag shr 8;
+CheckMovieSpeedBtnState;
 end;
 
 initialization

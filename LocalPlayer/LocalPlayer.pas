@@ -13,7 +13,7 @@ implementation
 
 uses
 Term,CityScreen,Draft,MessgEx,Select,CityType,Help,UnitStat,Diagram,
-NatStat,Wonders,Nego,Enhance,BaseWin,Battle,Advisor,Rates,
+NatStat,Wonders,Nego,Enhance,BaseWin,Battle,Rates,TechTree,
 
 Forms;
 
@@ -41,8 +41,9 @@ if not FormsCreated then
   Application.CreateForm(TNegoDlg, NegoDlg);
   Application.CreateForm(TEnhanceDlg, EnhanceDlg);
   Application.CreateForm(TBattleDlg, BattleDlg);
-  Application.CreateForm(TAdvisorDlg, AdvisorDlg);
+  //Application.CreateForm(TAdvisorDlg, AdvisorDlg);
   Application.CreateForm(TRatesDlg, RatesDlg);
+  Application.CreateForm(TTechTreeDlg, TechTreeDlg);
   end;
 MainScreen.Client(Command,Player,Data);
 end;

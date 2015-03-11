@@ -8,19 +8,19 @@ uses
   Protocol,ClientTools,Term,ScreenTools,BaseWin,
 
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonB, ButtonC, Menus;
+  ButtonBase, ButtonB, ButtonC, Menus, EOTButton;
 
 type
   PEnemyReport=^TEnemyReport;
 
-  TNatStatDlg = class(TBaseDlg)
+  TNatStatDlg = class(TBufferedDrawDlg)
     ToggleBtn: TButtonB;
-    AttUpBtn: TButtonC;
-    AttDownBtn: TButtonC;
     CloseBtn: TButtonB;
     Popup: TPopupMenu;
     ScrollUpBtn: TButtonC;
     ScrollDownBtn: TButtonC;
+    ContactBtn: TEOTButton;
+    TellAIBtn: TButtonC;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure CloseBtnClick(Sender: TObject);
@@ -29,13 +29,10 @@ type
     procedure PlayerClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: word;
       Shift: TShiftState);
-    procedure AttUpBtnClick(Sender: TObject);
-    procedure AttDownBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure ScrollUpBtnClick(Sender: TObject);
     procedure ScrollDownBtnClick(Sender: TObject);
+    procedure TellAIBtnClick(Sender: TObject);
 
   public
     procedure CheckAge;
@@ -48,12 +45,10 @@ type
   private
     pView, AgePrepared, LinesDown: integer;
     SelfReport,CurrentReport: PEnemyReport;
-    ContactEnabled: boolean;
+    ShowContact,ContactEnabled: boolean;
     Back, Template: TBitmap;
-    Paper: TTexture;
     ReportText: TStringList;
     procedure GenerateReportText;
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
   end;
 
 var
@@ -65,16 +60,16 @@ implementation
 {$R *.DFM}
 
 uses
-  Diagram,Select,Messg,MessgEx, Help,Tribes,DePNG;
+  Diagram,Select,Messg,MessgEx, Help,Tribes,Directories;
 
 const
 xIcon=326; yIcon=49;
 xAttrib=96; yAttrib=40;
 xRelation=16; yRelation=110;
-xReport=24; yReport=165; wReport=352; hReport=264;
 PaperShade=3;
 ReportLines=12;
 LineSpacing=22;
+xReport=24; yReport=165; wReport=352; hReport=ReportLines*LineSpacing;
 
 
 procedure TNatStatDlg.FormCreate(Sender: TObject);
@@ -83,19 +78,18 @@ inherited;
 AgePrepared:=-2;
 GetMem(SelfReport,SizeOf(TEnemyReport)-2*(INFIN+1));
 ReportText:=TStringList.Create;
-InitButtons(self);
+InitButtons();
+ContactBtn.Template:=Templates;
 HelpContext:='DIPLOMACY';
 ToggleBtn.Hint:=Phrases.Lookup('BTN_SELECT');
+ContactBtn.Hint:=Phrases.Lookup('BTN_DIALOG');
 
 Back:=TBitmap.Create;
 Back.PixelFormat:=pf24bit;
 Back.Width:=ClientWidth; Back.Height:=ClientHeight;
 Template:=TBitmap.Create;
-LoadGraphicFile(Template, 'Graphics\Nation', gfNoGamma);
+LoadGraphicFile(Template, HomeDir+'Graphics\Nation', gfNoGamma);
 Template.PixelFormat:=pf8bit;
-
-InitTexture(Paper,'Paper',0);
-Paper.clTextLight:=$7F007F; // text with no 3D effect
 end;
 
 procedure TNatStatDlg.FormDestroy(Sender: TObject);
@@ -104,14 +98,6 @@ ReportText.Free;
 FreeMem(SelfReport);
 Template.Free;
 Back.Free;
-end;
-
-procedure TNatStatDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+30) or (Msg.LParamLo<Left+ToggleBtn.Left+ToggleBtn.Width)
-  or (Msg.LParamLo>=Left+CloseBtn.Left) then
-  Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
 end;
 
 procedure TNatStatDlg.CheckAge;
@@ -140,14 +126,18 @@ if pView=me then
 else CurrentReport:=pointer(MyRO.EnemyReport[pView]);
 if CurrentReport.TurnOfCivilReport>=0 then
   GenerateReportText;
-ContactEnabled:= (pView<>me) and (G.Difficulty[me]>0)
+ShowContact:= (pView<>me) and (not supervising or (me<>0));
+ContactEnabled:= ShowContact and not supervising
   and (1 shl pView and MyRO.Alive<>0);
-AttUpBtn.Visible:=ContactEnabled;
-AttDownBtn.Visible:=ContactEnabled;
+ContactBtn.Visible:=ContactEnabled and (MyRO.Happened and phGameEnd=0)
+  and (ClientMode<scContact);
 ScrollUpBtn.Visible:=(CurrentReport.TurnOfCivilReport>=0)
   and (ReportText.Count>ReportLines);
 ScrollDownBtn.Visible:=(CurrentReport.TurnOfCivilReport>=0)
   and (ReportText.Count>ReportLines);
+if OptionChecked and (1 shl soTellAI)<>0 then
+  TellAIBtn.ButtonIndex:=3
+else TellAIBtn.ButtonIndex:=2;
 Caption:=Tribe[pView].TPhrase('TITLE_NATION');
 LinesDown:=0;
 
@@ -201,7 +191,7 @@ p1,Treaty: integer;
 s: string;
 HasContact,ExtinctPart: boolean;
 begin
-GetMem(List,4*(MyRO.Turn+1));
+GetMem(List,4*(MyRO.Turn+2));
 
 ReportText.Clear;
 ReportText.Add('');
@@ -250,6 +240,7 @@ procedure TNatStatDlg.OffscreenPaint;
 var
 i, y: integer;
 s: string;
+ps: pchar;
 Extinct: boolean;
 
 begin
@@ -275,11 +266,14 @@ with offscreen do
     frame(offscreen.Canvas,18-1,yIcon-4-1,18+64,yIcon-4+48,$000000,$000000);
     end;
 
+  if (pView=me) or not Extinct then
+    LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib,
+      Phrases.Lookup('GOVERNMENT',CurrentReport.Government)+Phrases.Lookup('FRAND'));
   if pView=me then
     begin
-    LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+9,
+    LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+19,
       Phrases.Lookup('CREDIBILITY',RoughCredibility(MyRO.Credibility)));
-    LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+28,
+    LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+38,
       Format(Phrases.Lookup('FRCREDIBILITY'),[MyRO.Credibility]));
     end
   else
@@ -291,10 +285,8 @@ with offscreen do
       LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+28,
         TurnToString(CurrentReport.TurnOfCivilReport))
       end
-    else if ContactEnabled then
+    else
       begin
-      LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib,
-        Phrases.Lookup('ATTITUDE',CurrentReport.Attitude)+Phrases.Lookup('FRAND'));
       LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+19,
         Phrases.Lookup('CREDIBILITY',RoughCredibility(CurrentReport.Credibility)));
       LoweredTextOut(Canvas,-1,MainTexture,xAttrib,yAttrib+38,
@@ -307,7 +299,7 @@ with offscreen do
       LoweredTextOut(Canvas,-1,MainTexture,
         (ClientWidth-BiColorTextWidth(canvas,s)) div 2,yRelation+9,s)
       end
-    else if ContactEnabled then
+    else if ShowContact then
       begin
       LoweredTextOut(Canvas,-1,MainTexture,xRelation,yRelation,
         Phrases.Lookup('FRTREATY'));
@@ -328,17 +320,13 @@ with offscreen do
 
     if Extinct then
       FrameImage(canvas,BigImp,xIcon,yIcon,xSizeBig,ySizeBig,0,200)
-    else if CurrentReport.Government=gAnarchy then
+    {else if CurrentReport.Government=gAnarchy then
       FrameImage(canvas,BigImp,xIcon,yIcon,xSizeBig,ySizeBig,112,400,
         ContactEnabled and (MyRO.Happened and phGameEnd=0) and (ClientMode<scContact))
     else
       FrameImage(canvas,BigImp,xIcon,yIcon,xSizeBig,ySizeBig,
         56*(CurrentReport.Government-1),40,
-        ContactEnabled and (MyRO.Happened and phGameEnd=0) and (ClientMode<scContact));
-
-    if ContactEnabled then
-      LoweredTextOut(Canvas,-1,MainTexture,34,447,Format(Phrases.Lookup('FROURATT'),
-        [Phrases.Lookup('ATTITUDE',MyRO.Attitude[pView])]));
+        ContactEnabled and (MyRO.Happened and phGameEnd=0) and (ClientMode<scContact))};
     end;
 
   if CurrentReport.TurnOfCivilReport>=0 then
@@ -364,7 +352,8 @@ with offscreen do
           begin
 //          LineType:=s[1];
           delete(s,1,1);
-          LoweredTextOut(canvas,-1,Paper,xReport+8,yReport+LineSpacing*y,s);
+          BiColorTextOut(canvas,Colors.Canvas.Pixels[clkMisc,cliPaperText],
+            $7F007F,xReport+8,yReport+LineSpacing*y,s);
           end;
         inc(y);
         end
@@ -376,7 +365,15 @@ with offscreen do
     RisedTextOut(Canvas,(ClientWidth-BiColorTextWidth(Canvas,s)) div 2,
       yReport+hReport div 2-10,s);
     end;
+
+  if OptionChecked and (1 shl soTellAI)<>0 then
+    begin
+    Server(sGetAIInfo,me,pView,ps);
+    LoweredTextOut(Canvas,-1,MainTexture,42,445,ps);
+    end
+  else LoweredTextOut(Canvas,-2,MainTexture,42,445,Phrases2.Lookup('MENU_TELLAI'));
   end;
+ContactBtn.SetBack(Offscreen.Canvas,ContactBtn.Left,ContactBtn.Top);
 
 MarkUsedOffscreen(ClientWidth,ClientHeight);
 end; {OffscreenPaint}
@@ -414,7 +411,7 @@ p1,StartCount: integer;
 m: TMenuItem;
 ExtinctPart: boolean;
 begin
-while Popup.Items.Count>0 do Popup.Items.Delete(0);
+EmptyMenu(Popup.Items);
 
 // own nation
 if G.Difficulty[me]<>0 then
@@ -478,24 +475,6 @@ if Key=VK_F9 then // my key
 else inherited  
 end;
 
-procedure TNatStatDlg.AttUpBtnClick(Sender: TObject);
-begin
-if MyRO.Attitude[pView]<nAttitude-1 then
-  begin
-  Server(sSetAttitude+pView shl 4,me,MyRO.Attitude[pView]+1,nil^);
-  SmartUpdateContent
-  end
-end;
-
-procedure TNatStatDlg.AttDownBtnClick(Sender: TObject);
-begin
-if MyRO.Attitude[pView]>0 then
-  begin
-  Server(sSetAttitude+pView shl 4,me,MyRO.Attitude[pView]-1,nil^);
-  SmartUpdateContent
-  end
-end;
-
 procedure TNatStatDlg.EcoChange;
 begin
 if Visible and (pView=me) then
@@ -503,17 +482,6 @@ if Visible and (pView=me) then
   SelfReport.Government:=MyRO.Government;
   SelfReport.Money:=MyRO.Money;
   SmartUpdateContent
-  end
-end;
-
-procedure TNatStatDlg.FormMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-if (x>=xIcon) and (x<xIcon+64) and (y>=yIcon) and (y<yIcon+64) then
-  begin
-  if ContactEnabled and (MyRO.Happened and phGameEnd=0)
-    and (ClientMode<scContact) then
-    DialogBtnClick(nil);
   end
 end;
 
@@ -533,6 +501,15 @@ if LinesDown+ReportLines<ReportText.Count then
   inc(LinesDown);
   SmartUpdateContent;
   end
+end;
+
+procedure TNatStatDlg.TellAIBtnClick(Sender: TObject);
+begin
+OptionChecked:=OptionChecked xor (1 shl soTellAI);
+if OptionChecked and (1 shl soTellAI)<>0 then
+  TellAIBtn.ButtonIndex:=3
+else TellAIBtn.ButtonIndex:=2;
+SmartUpdateContent
 end;
 
 end.

@@ -126,6 +126,28 @@ if result='' then
   else result:=Format('[%s %d]',[Item,Index])
 end;
 
+{might become necessary for 1.3
+
+function TStringTable.Lookup(const Fallback: TStringTable; const Item: string; Index: integer): string;
+var
+Handle: integer;
+begin
+Handle:=Gethandle(Item);
+if Handle>=0 then result:=LookupByHandle(Handle, Index)
+else result:='';
+if result='' then
+  result:=Fallback.Lookup(Item, Index);
+end;
+
+function TStringTable.TryLookup(const Item: string; Index: integer): string;
+var
+Handle: integer;
+begin
+Handle:=Gethandle(Item);
+if Handle>=0 then result:=LookupByHandle(Handle, Index)
+else result:='';
+end;}
+
 function TStringTable.Search(const Content: string; var Handle, Index: integer): boolean;
 var
 h,i: integer;
@@ -148,5 +170,4 @@ until false;
 end;
 
 end.
-
 

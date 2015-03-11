@@ -1,6 +1,6 @@
 {$INCLUDE switches}
 
-library cevo;
+program cevo;
 
 uses
   Forms,
@@ -45,24 +45,18 @@ uses
   Rates in 'LocalPlayer\Rates.pas' {RatesDlg},
   TechTree in 'LocalPlayer\TechTree.pas' {TechTreeDlg};
 
-{$R *.RES}
+{$R cevo.RES}
 
-procedure Run(clientPtr: pointer); stdcall;
 begin
-DotNetClient:=TClientCall(clientPtr);
-Application.Initialize;
-Application.Title := '';
-Application.CreateForm(TDirectDlg, DirectDlg);
-Application.CreateForm(TStartDlg, StartDlg);
-Application.CreateForm(TMessgDlg, MessgDlg);
-Application.CreateForm(TInputDlg, InputDlg);
-Application.CreateForm(TBackground, Background);
-Application.CreateForm(TLogDlg, LogDlg);
-Application.Run;
-end;
-
-exports
-Run name 'Run';
-
+  DotNetClient:=nil;
+  Application.Initialize;
+  Application.Title := 'C-evo';
+  Application.CreateForm(TDirectDlg, DirectDlg);
+  Application.CreateForm(TStartDlg, StartDlg);
+  Application.CreateForm(TMessgDlg, MessgDlg);
+  Application.CreateForm(TInputDlg, InputDlg);
+  Application.CreateForm(TBackground, Background);
+  Application.CreateForm(TLogDlg, LogDlg);
+  Application.Run;
 end.
 

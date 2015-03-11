@@ -5,13 +5,13 @@ unit Inp;
 interface
 
 uses
-  ScreenTools,
+  ScreenTools,Messg,
 
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonA, StdCtrls, ButtonB, ButtonBase;
 
 type
-  TInputDlg = class(TForm)
+  TInputDlg = class(TDrawDlg)
     OKBtn: TButtonA;
     EInput: TEdit;
     procedure OKBtnClick(Sender: TObject);
@@ -24,8 +24,6 @@ type
     procedure CenterToRect(Rect: TRect);
   private
     Center: boolean;
-    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
   end;
 
 var
@@ -39,7 +37,8 @@ procedure TInputDlg.FormCreate(Sender: TObject);
 begin
 Canvas.Font.Assign(UniFont[ftNormal]);
 Canvas.Brush.Style:=bsClear;
-InitButtons(self);
+TitleHeight:=ClientHeight;
+InitButtons();
 Center:=true
 end;
 
@@ -58,16 +57,6 @@ RisedTextOut(Canvas,(ClientWidth-BiColorTextWidth(Canvas,Caption)) div 2,9,Capti
 Corner(canvas,ClientWidth-9,1,1,MainTexture);
 Corner(canvas,1,ClientHeight-9,2,MainTexture);
 Corner(canvas,ClientWidth-9,ClientHeight-9,3,MainTexture);}
-end;
-
-procedure TInputDlg.OnEraseBkgnd(var m:TMessage);
-begin
-end;
-
-procedure TInputDlg.OnHitTest(var Msg:TMessage);
-begin
-if Msg.LParamHi>=Top+36 then Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
 end;
 
 procedure TInputDlg.OKBtnClick(Sender: TObject);

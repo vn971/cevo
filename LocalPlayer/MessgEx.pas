@@ -29,7 +29,10 @@ type
   public
     Kind, IconKind, IconIndex, HelpKind, HelpNo, CenterTo: integer;
     OpenSound: string;
+    function ShowModal: Integer; override;
+    procedure CancelMovie;
   private
+    MovieCancelled: boolean;
     procedure PaintBook(ca: TCanvas; x,y,clPage,clCover: integer);
     procedure PaintMyArmy;
     procedure PaintEnemyArmy;
@@ -43,7 +46,8 @@ mkYesNoCancel=4; mkOkCancelRemove=5; mkOkHelp=6; mkModel=7;
 
 //message icon kinds
 mikNone=-1; mikImp=0; mikModel=1; mikTribe=2; mikBook=3; mikAge=4;
-mikPureIcon=5; mikMyArmy=6; mikEnemyArmy=7; mikEnemyCity=8;
+mikPureIcon=5; mikMyArmy=6; mikEnemyArmy=7; mikFullControl=8; mikShip=9;
+mikBigIcon=10; mikEnemyShipComplete=11;
 
 
 var
@@ -61,18 +65,15 @@ implementation
 
 uses
 ClientTools,BaseWin,Term,Help, Select, Diplomacy, Inp, UnitStat, Tribes,
-IsoEngine;
+IsoEngine,Diagram;
 
 {$R *.DFM}
 
-type
-TCloseThread=class(TThread)
-  constructor Create;
-  procedure Execute; override;
-  end;
-
 const
 LostUnitsPerLine=6;
+
+var
+PerfFreq: int64;
 
 
 procedure TMessgExDlg.FormCreate(Sender:TObject);
@@ -96,10 +97,10 @@ Button3.Visible:= (GameMode<>cMovie) and (Kind=mkYesNoCancel);
 RemoveBtn.Visible:= (GameMode<>cMovie) and (Kind=mkOkCancelRemove);
 EInput.Visible:= (GameMode<>cMovie) and (Kind=mkModel);
 if Button3.Visible then
-  begin Button1.Left:=39; Button2.Left:=155; end
+  begin Button1.Left:=43; Button2.Left:=159; end
 else if Button2.Visible then
-  begin Button1.Left:=97; Button2.Left:=213; end
-else Button1.Left:=155;
+  begin Button1.Left:=101; Button2.Left:=217; end
+else Button1.Left:=159;
 RemoveBtn.Left:=ClientWidth-38;
 case Kind of
   mkYesNo, mkYesNoCancel:
@@ -124,6 +125,10 @@ RemoveBtn.Hint:=Phrases.Lookup('BTN_DELGAME');
 case IconKind of
   mikImp,mikModel,mikAge,mikPureIcon:
     TopSpace:=56;
+  mikBigIcon:
+    TopSpace:=152;
+  mikEnemyShipComplete:
+    TopSpace:=136;
   mikBook:
     if IconIndex>=0 then TopSpace:=84
     else TopSpace:=47;
@@ -133,8 +138,10 @@ case IconKind of
     if Tribe[IconIndex].faceHGr>=0 then
       TopSpace:=64
     end;
-  mikEnemyCity:
-    TopSpace:=44;
+  mikFullControl:
+    TopSpace:=80;  
+  mikShip:
+    TopSpace:=240;
   else TopSpace:=0;
   end;
 
@@ -152,26 +159,52 @@ case CenterTo of
   0:
     begin
     Left:=(Screen.Width-ClientWidth) div 2;
-    Top:=(Screen.Height-ClientHeight) div 2;
+    Top:=(Screen.Height-ClientHeight) div 2-MapCenterUp;
     end;
   1:
     begin
     Left:=(Screen.Width-ClientWidth) div 4;
-    Top:=(Screen.Height-ClientHeight)*2 div 3;
+    Top:=(Screen.Height-ClientHeight)*2 div 3-MapCenterUp;
     end;
   -1:
     begin
     Left:=(Screen.Width-ClientWidth) div 4;
-    Top:=(Screen.Height-ClientHeight) div 3;
+    Top:=(Screen.Height-ClientHeight) div 3-MapCenterUp;
     end;
   end;
 for i:=0 to ControlCount-1 do
   Controls[i].Top:=ClientHeight-(34+Border);
 if Kind=mkModel then
   EInput.Top:=ClientHeight-(76+Border);
+end;
 
+function TMessgExDlg.ShowModal: Integer;
+var
+Ticks0,Ticks: int64;
+begin
 if GameMode=cMovie then
-  TCloseThread.Create;
+  begin
+  if not ((GameMode=cMovie) and (MovieSpeed=4)) then
+    begin
+    MovieCancelled:=false;
+    Show;
+    QueryPerformanceCounter(Ticks0);
+    repeat
+      Application.ProcessMessages;
+      Sleep(1);
+      QueryPerformanceCounter(Ticks);
+    until MovieCancelled or ((Ticks-Ticks0)*1000>=1500*PerfFreq);
+    Hide;
+    end;
+  result:=mrOk;
+  end
+else
+  result:=inherited ShowModal;
+end;
+
+procedure TMessgExDlg.CancelMovie;
+begin
+MovieCancelled:=true;
 end;
 
 procedure TMessgExDlg.PaintBook(ca: TCanvas; x,y,clPage,clCover: integer);
@@ -348,19 +381,26 @@ case IconKind of
     FrameImage(Canvas, BigImp, ClientWidth div 2-28,24,xSizeBig, ySizeBig,
       IconIndex mod 7*xSizeBig,
       IconIndex div 7*ySizeBig);
+  mikBigIcon:
+    FrameImage(Canvas, BigImp, ClientWidth div 2-3*28,32,xSizeBig*3, ySizeBig*3,
+      IconIndex mod 2*3*xSizeBig,
+      IconIndex div 2*3*ySizeBig);
+  mikEnemyShipComplete:
+    begin
+    BitBlt(Buffer.Canvas.Handle,0,0,140,120,Canvas.Handle,
+      (ClientWidth-140) div 2,24,SRCCOPY);
+    ImageOp_BCC(Buffer,Templates,0,0,1,279,140,120,0,$FFFFFF);
+    BitBlt(Canvas.Handle,(ClientWidth-140) div 2,24,140,
+      120,Buffer.Canvas.Handle,0,0,SRCCOPY);
+    end;
   mikMyArmy:
     PaintMyArmy;
   mikEnemyArmy:
     PaintEnemyArmy;
-  mikEnemyCity:
-    begin
-    BitBlt(Buffer.Canvas.Handle,0,0,64,48,Canvas.Handle,
-      ClientWidth div 2-32,20,SRCCOPY);
-    NoMap.SetOutput(Buffer);
-    NoMap.PaintCity(0,0,MyRO.EnemyCity[IconIndex],false);
-    BitBlt(Canvas.Handle,ClientWidth div 2-32,20,64,48,Buffer.Canvas.Handle,
-      0,0,SRCCOPY);
-    end
+  mikFullControl:
+    Sprite(Canvas,HGrSystem2,ClientWidth div 2-31,24,63,63,1,281);
+  mikShip:
+    PaintColonyShip(Canvas,IconIndex,17,ClientWidth-34,38);
   end;
 
 if EInput.Visible then EditFrame(Canvas,EInput.BoundsRect,MainTexture);
@@ -464,17 +504,9 @@ Play(OpenSound);
 OpenSound:='';
 end;
 
-constructor TCloseThread.Create;
-begin
-inherited create(false);
-FreeOnTerminate:=true;
-end;
 
-procedure TCloseThread.Execute;
-begin
-Sleep(1500);
-SendMessage(MessgExDlg.Handle, WM_CLOSE, 0, 0);
-end;
+initialization
+QueryPerformanceFrequency(PerfFreq);
 
 end.
 

@@ -4,13 +4,12 @@ unit Battle;
 interface
 
 uses
-  ScreenTools,Protocol,
+  ScreenTools,Protocol,Messg,ButtonBase, ButtonA,
 
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonA;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 type
-  TBattleDlg = class(TForm)
+  TBattleDlg = class(TDrawDlg)
     OKBtn: TButtonA;
     CancelBtn: TButtonA;
     procedure FormPaint(Sender: TObject);
@@ -27,8 +26,6 @@ type
     uix,ToLoc: integer;
     Forecast: TBattleForecastEx;
     IsSuicideQuery: boolean;
-  protected
-    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
   end;
 
 var
@@ -57,8 +54,9 @@ FirstStrikeColor=$A0A0A0;
 procedure PaintBattleOutcome(ca: TCanvas; xm,ym,uix,ToLoc: integer;
   Forecast: TBattleForecastEx);
 var
-euix,TerrType,ADamage,DDamage,StrMax,DamageMax,MaxBar,LAStr,LDStr,
+euix,ADamage,DDamage,StrMax,DamageMax,MaxBar,LAStr,LDStr,
   LADamage,LDDamage,LABaseDamage,LAAvoidedDamage,LDBaseDamage: integer;
+//TerrType: Cardinal;
 UnitInfo: TUnitInfo;
 TextSize: TSize;
 LabelText: string;
@@ -66,7 +64,7 @@ FirstStrike: boolean;
 begin
 MaxBar:=65;
 
-TerrType:=MyMap[ToLoc] and fTerrain;
+//TerrType:=MyMap[ToLoc] and fTerrain;
 GetUnitInfo(ToLoc,euix,UnitInfo);
 
 FirstStrike:=(MyModel[MyUn[uix].mix].Cap[mcFirst]>0)
@@ -161,7 +159,7 @@ else RisedTextOut(ca,xm-(TextSize.cx+1) div 2, ym+8+LAAvoidedDamage+(LADamage-LA
 
 NoMap.SetOutput(Buffer);
 BitBlt(Buffer.Canvas.Handle,0,0,66,48,ca.Handle,xm+8+4,ym-8-12-48,SRCCOPY);
-if TerrType<fForest then
+{if TerrType<fForest then
   Sprite(Buffer,HGrTerrain,0,16,66,32,1+TerrType*(xxt*2+1),1+yyt)
 else
   begin
@@ -169,7 +167,7 @@ else
   if (TerrType=fForest) and IsJungle(ToLoc div G.lx) then
     Sprite(Buffer,HGrTerrain,0,16,66,32,1+7*(xxt*2+1),1+yyt+19*(yyt*3+1))
   else Sprite(Buffer,HGrTerrain,0,16,66,32,1+7*(xxt*2+1),1+yyt+2*(2+TerrType-fForest)*(yyt*3+1));
-  end;
+  end;}
 NoMap.PaintUnit(1,0,UnitInfo,0);
 BitBlt(ca.Handle,xm+8+4,ym-8-12-48,66,48,Buffer.Canvas.Handle,0,0,SRCCOPY);
 
@@ -185,7 +183,7 @@ procedure TBattleDlg.FormCreate(Sender: TObject);
 begin
 OKBtn.Caption:=Phrases.Lookup('BTN_YES');
 CancelBtn.Caption:=Phrases.Lookup('BTN_NO');
-InitButtons(self);
+InitButtons();
 end;
 
 procedure TBattleDlg.FormShow(Sender: TObject);
@@ -254,10 +252,6 @@ PaintBattleOutcome(Canvas, ClientWidth div 2, ym, uix, ToLoc, Forecast);
 for cix:=0 to ControlCount-1 do
   if (Controls[cix].Visible) and (Controls[cix] is TButtonBase) then
     BtnFrame(Canvas,Controls[cix].BoundsRect,MainTexture);
-end;
-
-procedure TBattleDlg.OnEraseBkgnd(var m:TMessage);
-begin
 end;
 
 procedure TBattleDlg.FormMouseDown(Sender: TObject; Button: TMouseButton;

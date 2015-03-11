@@ -7,14 +7,25 @@ interface
 uses
   ScreenTools,
 
-  Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms,ButtonA,
-  ButtonBase;
+  Windows,Messages,SysUtils,Classes,Graphics,Controls,Forms,ButtonBase,ButtonA,
+  ButtonB,Area;
 
 const
 WM_PLAYSOUND=WM_USER;
 
 type
-  TBaseMessgDlg = class(TForm)
+  TDrawDlg = class(TForm)
+    constructor Create(AOwner: TComponent); override;
+  public
+    procedure SmartInvalidate; virtual;
+  protected
+    TitleHeight: integer; // defines area to grip the window for moving (from top)
+    procedure InitButtons();
+    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
+    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
+  end;
+
+  TBaseMessgDlg = class(TDrawDlg)
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender:TObject);
   public
@@ -23,8 +34,6 @@ type
     Lines, TopSpace: integer;
     procedure SplitText(preview: boolean);
     procedure CorrectHeight;
-    procedure OnEraseBkgnd(var m:TMessage); message WM_ERASEBKGND;
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
   end;
 
   TMessgDlg = class(TBaseMessgDlg)
@@ -40,7 +49,6 @@ type
     Kind: integer;
     OpenSound: string;
   private
-    LinkBounds: TRect;
     procedure OnPlaySound(var Msg:TMessage); message WM_PLAYSOUND;
   end;
 
@@ -62,6 +70,86 @@ implementation
 
 {$R *.DFM}
 
+constructor TDrawDlg.Create(AOwner: TComponent);
+begin
+inherited;
+TitleHeight:=0;
+end;
+
+procedure TDrawDlg.OnEraseBkgnd(var m:TMessage);
+begin
+end;
+
+procedure TDrawDlg.OnHitTest(var Msg:TMessage);
+var
+i: integer;
+ControlBounds: TRect;
+begin
+if BorderStyle<>bsNone then
+  inherited
+else
+  begin
+  if integer(Msg.LParamHi)>=Top+TitleHeight then
+    Msg.result:=HTCLIENT
+  else
+    begin
+    for i:=0 to ControlCount-1 do if Controls[i].Visible then
+      begin
+      ControlBounds:=Controls[i].BoundsRect;
+      if (integer(Msg.LParamLo)>=Left+ControlBounds.Left)
+        and (integer(Msg.LParamLo)<Left+ControlBounds.Right)
+        and (integer(Msg.LParamHi)>=Top+ControlBounds.Top)
+        and (integer(Msg.LParamHi)<Top+ControlBounds.Bottom) then
+        begin
+        Msg.result:=HTCLIENT;
+        exit;
+        end;
+      end;
+    Msg.result:=HTCAPTION
+    end;
+  end
+end;
+
+procedure TDrawDlg.InitButtons();
+var
+cix: integer;
+//ButtonDownSound, ButtonUpSound: string;
+begin
+//ButtonDownSound:=Sounds.Lookup('BUTTON_DOWN');
+//ButtonUpSound:=Sounds.Lookup('BUTTON_UP');
+for cix:=0 to ComponentCount-1 do
+  if Components[cix] is TButtonBase then
+    begin
+    TButtonBase(Components[cix]).Graphic:=GrExt[HGrSystem].Data;
+//      if ButtonDownSound<>'*' then
+//        DownSound:=HomeDir+'Sounds\'+ButtonDownSound+'.wav';
+//      if ButtonUpSound<>'*' then
+//        UpSound:=HomeDir+'Sounds\'+ButtonUpSound+'.wav';
+    if Components[cix] is TButtonA then
+      TButtonA(Components[cix]).Font:=UniFont[ftButton];
+    if Components[cix] is TButtonB then
+      TButtonB(Components[cix]).Mask:=GrExt[HGrSystem].Mask;
+    end;
+end;
+
+procedure TDrawDlg.SmartInvalidate;
+var
+i: integer;
+r0,r1: HRgn;
+begin
+r0:=CreateRectRgn(0,0,ClientWidth,ClientHeight);
+for i:=0 to ControlCount-1 do
+  if not (Controls[i] is TArea) and Controls[i].Visible then
+    begin
+    with Controls[i].BoundsRect do
+      r1:=CreateRectRgn(Left,Top,Right,Bottom);
+    CombineRgn(r0,r0,r1,RGN_DIFF);
+    DeleteObject(r1);
+    end;
+InvalidateRgn(Handle,r0,false);
+DeleteObject(r0);
+end;
+
 procedure TBaseMessgDlg.FormCreate(Sender: TObject);
 begin
 Left:=(Screen.Width-ClientWidth) div 2;
@@ -69,7 +157,8 @@ Canvas.Font.Assign(UniFont[ftNormal]);
 Canvas.Brush.Style:=bsClear;
 MessgText:='';
 TopSpace:=0;
-InitButtons(self);
+TitleHeight:=Screen.Height;
+InitButtons();
 end;
 
 procedure TBaseMessgDlg.FormPaint(Sender:TObject);
@@ -103,7 +192,9 @@ while Start<Length(MessgText) do
   begin
   Stop:=Start;
   while(Stop<Length(MessgText)) and (MessgText[Stop]<>'\')
-    and (BiColorTextWidth(Canvas,Copy(MessgText,Start,Stop-Start+1))<ClientWidth-56) do inc(Stop);
+    and (BiColorTextWidth(Canvas,Copy(MessgText,Start,Stop-Start+1))
+      <ClientWidth-56) do
+    inc(Stop);
   if Stop<>Length(MessgText) then
     begin
     OrdinaryStop:=Stop;
@@ -134,17 +225,6 @@ for i:=0 to ControlCount-1 do
   Controls[i].Top:=ClientHeight-(34+Border);
 end;
 
-procedure TBaseMessgDlg.OnEraseBkgnd(var m:TMessage);
-begin
-end;
-
-procedure TBaseMessgDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+ClientHeight-(34+Border)) then
-  Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
-end;
-
 procedure TMessgDlg.FormCreate(Sender:TObject);
 begin
 inherited;
@@ -155,8 +235,8 @@ procedure TMessgDlg.FormShow(Sender: TObject);
 begin
 Button1.Visible:=true;
 Button2.Visible:= not (Kind in [mkOK]);
-if Button2.Visible then Button1.Left:=97
-else Button1.Left:=155;
+if Button2.Visible then Button1.Left:=101
+else Button1.Left:=159;
 if Kind=mkYesNo then
   begin
   Button1.Caption:=Phrases.Lookup('BTN_YES');

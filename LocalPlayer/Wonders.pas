@@ -11,7 +11,7 @@ uses
   ButtonBase, ButtonB;
 
 type
-  TWondersDlg = class(TBaseDlg)
+  TWondersDlg = class(TBufferedDrawDlg)
     CloseBtn: TButtonB;
     procedure FormCreate(Sender: TObject);
     procedure CloseBtnClick(Sender: TObject);
@@ -27,7 +27,6 @@ type
 
   private
     xm,ym,Selection: integer;
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
   end;
 
 var
@@ -69,7 +68,7 @@ procedure TWondersDlg.FormCreate(Sender: TObject);
 begin
 Canvas.Font.Assign(UniFont[ftNormal]);
 Canvas.Brush.Style:=bsClear;
-InitButtons(self);
+InitButtons();
 end;
 
 procedure TWondersDlg.FormShow(Sender: TObject);
@@ -227,13 +226,6 @@ if not HaveWonder then
 
 MarkUsedOffscreen(ClientWidth,ClientHeight);
 end; {OffscreenPaint}
-
-procedure TWondersDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+WideFrame) or (Msg.LParamLo>=Left+CloseBtn.Left) then
-  Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
-end;
 
 procedure TWondersDlg.CloseBtnClick(Sender: TObject);
 begin

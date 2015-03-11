@@ -7,7 +7,7 @@ uses
   WinProcs, Classes, Graphics;
 
 const
-eotBlinkOff=-1; eotCancel=0; eotGray=1; eotBlinkOn=2;
+eotBlinkOff=-1; eotCancel=0; eotGray=1; eotBlinkOn=2; eotBackToNego=3;
 
 type
   TEOTButton = class(TButtonBase)

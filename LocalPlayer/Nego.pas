@@ -20,13 +20,11 @@ type
     Text: array[0..MaxHistory-1] of ansistring;
     end;
 
-  TNegoDlg = class(TBaseDlg)
+  TNegoDlg = class(TBufferedDrawDlg)
     OkBtn: TButtonA;
     BwdBtn: TButtonB;
     FwdBtn: TButtonB;
     CloseBtn: TButtonB;
-    AttUpBtn: TButtonC;
-    AttDownBtn: TButtonC;
     WantStateReportBtn: TButtonN;
     WantMilReportBtn: TButtonN;
     WantMapBtn: TButtonN;
@@ -62,8 +60,6 @@ type
     procedure BwdBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure CloseBtnClick(Sender: TObject);
-    procedure AttUpBtnClick(Sender: TObject);
-    procedure AttDownBtnClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
@@ -84,7 +80,6 @@ type
     MyAllowed, OppoAllowed: TPriceSet;
     CommandAllowed: set of scDipNotice-scDipStart..scDipBreak-scDipStart;
     History: array[0..nPl-1] of THistory;
-    Paper: TTexture;
     RomanFont: TFont;
     Costs,Delivers: array[0..11] of cardinal;
     procedure ResetCurrentOffer;
@@ -93,7 +88,6 @@ type
     procedure SplitText(Text: string; Bounds: TRect);
     procedure PaintNationPicture(x,y,p: integer);
     procedure SetButtonStates;
-    procedure OnHitTest(var Msg:TMessage); message WM_NCHITTEST;
   end;
 
 var
@@ -111,9 +105,9 @@ xPadC=140; yPadC=427;
 xPad0=140; yPad0=13;
 xPad1=334; yPad1=13;
 wIcon=40; hIcon=40;
-wText=300; hText=237;
-xText0=14; yText0=173;
-xText1=326; yText1=173;
+wText=300; hText=256;
+xText0=14; yText0=154;
+xText1=326; yText1=154;
 xNationPicture0=20; xNationPicture1=556;
 yNationPicture=40;
 yAttitude=148;
@@ -137,7 +131,7 @@ procedure TNegoDlg.FormCreate(Sender: TObject);
 var
 cix: integer;
 begin
-InitButtons(self);
+InitButtons();
 for cix:=0 to ComponentCount-1 do
   if Components[cix] is TButtonN then with TButtonN(Components[cix]) do
     begin
@@ -151,12 +145,10 @@ for cix:=0 to ComponentCount-1 do
     end;
 
 fillchar(History, sizeof(History), 0);
-InitTexture(Paper,'Paper',0);
-Paper.clTextLight:=$7F007F; // text with no 3D effect
 RomanFont:=TFont.Create;
 RomanFont.Name:='Times New Roman';
 RomanFont.Size:=Round(144 * 72/RomanFont.PixelsPerInch);
-RomanFont.Color:=Paper.clBevelLight;
+RomanFont.Color:=Colors.Canvas.Pixels[clkMisc,cliPaper];
 HelpContext:='DIPLOMACY';
 OkBtn.Caption:=Phrases.Lookup('BTN_OK');
 AcceptBtn.SmartHint:=Phrases.Lookup('BTN_ACCEPT');
@@ -193,31 +185,31 @@ case MyRO.Treaty[DipMem[me].pContact] of
     begin
     WantHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTPEACE');
     OfferHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERPEACE');
-    WantLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTCEASEFIRE');
-    OfferLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERCEASEFIRE');
+    //WantLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTCEASEFIRE');
+    //OfferLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERCEASEFIRE');
     end;
-  trCeasefire:
+  {trCeasefire:
     begin
     WantHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTPEACE');
     OfferHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERPEACE');
-    end;
+    end;}
   trPeace:
     begin
     WantHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTFRIENDLY');
     OfferHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERFRIENDLY');
-    WantLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTENDPEACE');
-    OfferLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERENDPEACE');
+    //WantLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTENDPEACE');
+    //OfferLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERENDPEACE');
     end;
   trFriendlyContact:
     begin
     WantHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTALLIANCE');
     OfferHiTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERALLIANCE');
     end;
-  trAlliance:
+  {trAlliance:
     begin
     WantLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_WANTENDALLIANCE');
     OfferLoTreatyBtn.SmartHint:=Phrases.Lookup('BTN_OFFERENDALLIANCE');
-    end;
+    end;}
   end;
 end;
 
@@ -313,8 +305,8 @@ for preview:=true downto false do
         Sprite(offscreen,HGrSystem,Bounds.Left+PaperBorder_Left+(ListIndent-14),
           y+7,8,8,90,16);
       s:=Copy(Text,Start,Stop-Start+1);
-      LoweredTextOut(Offscreen.Canvas, -1, Paper,
-        Bounds.Left+PaperBorder_Left+Indent,y,s);
+      BiColorTextOut(Offscreen.Canvas,Colors.Canvas.Pixels[clkMisc,cliPaperText],
+        $7F007F,Bounds.Left+PaperBorder_Left+Indent,y,s);
       end;
     inc(Line);
     Start:=Stop+2;
@@ -373,11 +365,11 @@ if MyRO.Treaty[DipMem[me].pContact]<trAlliance then
   MyAllowed:=MyAllowed+[opTreaty shr 24,opMap shr 24];
   OppoAllowed:=OppoAllowed+[opTreaty shr 24,opMap shr 24];
   end;
-if MyRO.Treaty[DipMem[me].pContact] in [trNone,trPeace,trAlliance] then
+{if MyRO.Treaty[DipMem[me].pContact] in [trNone,trPeace,trAlliance] then
   begin
   MyAllowed:=MyAllowed+[opLowTreaty shr 24];
   OppoAllowed:=OppoAllowed+[opLowTreaty shr 24];
-  end;
+  end;}
 for i:=0 to nShipPart-1 do
   begin
   if MyRO.Ship[me].Parts[i]>0 then
@@ -455,8 +447,6 @@ if (DipCommand>=0) and (Page=History[me].n) then
   History[me].Text[History[me].n]:=copy(DipCommandToString(me,DipMem[me].pContact,
     MyRO.Treaty[DipMem[me].pContact],ClientMode, DipCommand, ReceivedOffer, CurrentOffer),1,255);
 
-AttUpBtn.Visible:= Page=History[me].n;
-AttDownBtn.Visible:= Page=History[me].n;
 FwdBtn.Visible:= Page<History[me].n;
 BwdBtn.Visible:= Page>=2;
 if Page<History[me].n then OkEnabled:=false
@@ -479,9 +469,6 @@ BtnFrame(Offscreen.Canvas,OkBtn.BoundsRect,MainTexture);
 BtnFrame(Offscreen.Canvas,BwdBtn.BoundsRect,MainTexture);
 BtnFrame(Offscreen.Canvas,FwdBtn.BoundsRect,MainTexture);
 BtnFrame(Offscreen.Canvas,CloseBtn.BoundsRect,MainTexture);
-if AttUpBtn.Visible then
-  RFrame(Offscreen.Canvas,AttUpBtn.Left-1,AttUpBtn.Top-1,AttUpBtn.Left+12,
-    AttUpBtn.Top+24,MainTexture.clBevelShade,MainTexture.clBevelLight);
 
 RFrame(Offscreen.Canvas,xPadC-2, yPadC-2, xPadC+41+42*3,yPadC+41,
   $FFFFFF,$B0B0B0);
@@ -533,7 +520,7 @@ with Offscreen.Canvas do
 
 Offscreen.Canvas.Font.Assign(UniFont[ftNormal]);
 
-if Page=History[me].n then
+{if Page=History[me].n then
   begin // show attitude
   s:=Phrases.Lookup('ATTITUDE',MyRO.EnemyReport[DipMem[me].pContact].Attitude);
   //LoweredTextOut(Offscreen.Canvas,-1,MainTexture,
@@ -543,7 +530,7 @@ if Page=History[me].n then
   //LoweredTextOut(Offscreen.Canvas,-1,MainTexture,
   RisedTextOut(Offscreen.Canvas,xText1+wText div 2-
     BiColorTextWidth(Offscreen.Canvas,s) div 2,yAttitude,s);
-  end;
+  end;}
 
 if History[me].Text[Page-1]<>'' then
   SplitText(History[me].Text[Page-1],
@@ -567,15 +554,6 @@ RisedTextOut(Offscreen.Canvas,xCred1+10-(BiColorTextWidth(Offscreen.Canvas,s)+1)
 
 MarkUsedOffscreen(ClientWidth,ClientHeight);
 end; {OffscreenPaint}
-
-procedure TNegoDlg.OnHitTest(var Msg:TMessage);
-begin
-if (Msg.LParamHi>=Top+yNationPicture)
-  or (Msg.LParamLo>=Left+xPad0-1) and (Msg.LParamLo<Left+xPad1-1+(wIcon+2)*4)
-  or (Msg.LParamLo>=Left+CloseBtn.Left) then
-  Msg.result:=HTCLIENT
-else Msg.result:=HTCAPTION
-end;
 
 procedure TNegoDlg.Initiate;
 begin
@@ -624,24 +602,6 @@ end;
 procedure TNegoDlg.CloseBtnClick(Sender: TObject);
 begin
 Close
-end;
-
-procedure TNegoDlg.AttUpBtnClick(Sender: TObject);
-begin
-if MyRO.Attitude[DipMem[me].pContact]<nAttitude-1 then
-  begin
-  Server(sSetAttitude+DipMem[me].pContact shl 4,me,MyRO.Attitude[DipMem[me].pContact]+1,nil^);
-  SmartUpdateContent
-  end
-end;
-
-procedure TNegoDlg.AttDownBtnClick(Sender: TObject);
-begin
-if MyRO.Attitude[DipMem[me].pContact]>0 then
-  begin
-  Server(sSetAttitude+DipMem[me].pContact shl 4,me,MyRO.Attitude[DipMem[me].pContact]-1,nil^);
-  SmartUpdateContent
-  end
 end;
 
 procedure TNegoDlg.FormKeyDown(Sender: TObject; var Key: Word;
@@ -751,11 +711,11 @@ else
       if MyRO.Treaty[DipMem[me].pContact]<trPeace then Price:=opTreaty+trPeace
       else Price:=opTreaty+MyRO.Treaty[DipMem[me].pContact]+1;
       end;
-    opLowTreaty:
+{    opLowTreaty:
       begin
       if MyRO.Treaty[DipMem[me].pContact]=trNone then Price:=opTreaty+trCeaseFire
       else Price:=opTreaty+MyRO.Treaty[DipMem[me].pContact]-1;
-      end
+      end}
     end;
   end;
 
@@ -837,11 +797,11 @@ else
       if MyRO.Treaty[DipMem[me].pContact]<trPeace then Price:=opTreaty+trPeace
       else Price:=opTreaty+MyRO.Treaty[DipMem[me].pContact]+1;
       end;
-    opLowTreaty:
+{    opLowTreaty:
       begin
       if MyRO.Treaty[DipMem[me].pContact]=trNone then Price:=opTreaty+trCeaseFire
       else Price:=opTreaty+MyRO.Treaty[DipMem[me].pContact]-1;
-      end
+      end}
     end;
   end;
 

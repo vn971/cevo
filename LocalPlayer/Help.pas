@@ -54,7 +54,6 @@ type
     procedure SearchBtnClick(Sender: TObject);
   public
     Difficulty: integer;
-    Texture: TTexture;
     procedure ShowNewContent(NewMode,Category,Index: integer);
     procedure ClearHistory;
     function TextIndex(Item: string): integer;
@@ -121,13 +120,13 @@ const
 {text formats}
 pkNormal=0;pkCaption=1;pkSmallIcon=2;pkBigIcon=3;pkAdvIcon=4;pkTer=5;
 pkBigTer=6;pkFeature=7;pkDot=8;pkNormal_Dot=9;pkDomain=10;pkSection=11;
-pkBigFeature=12;pkExp=13;pkTreaty=14;pkExternal=15;pkModel=16;pkNormal_64=17;
+pkBigFeature=12;pkExp=13;pkAITStat=14;pkExternal=15;pkModel=16;pkNormal_64=17;
 pkIllu=18;pkLogo=19;pkTerImp=20;pkRightIcon=21;pkAdvIcon_AsPreq=22;
 pkSmallIcon_AsPreq=23;pkSpecialIcon=24;pkGov=25;
 
-nSeeAlso=13;
+nSeeAlso=14;
 SeeAlso: array[0..nSeeAlso-1] of record Kind,no,SeeKind,SeeNo: integer end=
-((Kind:hkImp;no:imWalls;SeeKind:hkFeature;SeeNo:mcLongRange),
+((Kind:hkImp;no:imWalls;SeeKind:hkFeature;SeeNo:mcArtillery),
 (Kind:hkImp;no:imHydro;SeeKind:hkImp;SeeNo:woHoover),
 (Kind:hkImp;no:imWalls;SeeKind:hkImp;SeeNo:imGrWall),
 (Kind:hkImp;no:imHighways;SeeKind:hkAdv;SeeNo:adWheel),
@@ -138,6 +137,7 @@ SeeAlso: array[0..nSeeAlso-1] of record Kind,no,SeeKind,SeeNo: integer end=
 (Kind:hkImp;no:imShipHab;SeeKind:hkImp;SeeNo:imSpacePort),
 (Kind:hkFeature;no:mcSub;SeeKind:hkFeature;SeeNo:mcRadar),
 (Kind:hkFeature;no:mcDefense;SeeKind:hkAdv;SeeNo:adSteel),
+(Kind:hkFeature;no:mcSE;SeeKind:hkFeature;SeeNo:mcNP),
 (Kind:hkAdv;no:adWheel;SeeKind:hkImp;SeeNo:imHighways),
 (Kind:hkAdv;no:adSteel;SeeKind:hkFeature;SeeNo:mcDefense));
 
@@ -162,7 +162,7 @@ SearchResult:=THyperText.Create;
 CreatePVSB(sb,Handle,36,551,36+432);
 
 HelpText:=TStringTable.Create;
-HelpText.LoadFromFile(HomeDir+'Help\help.txt');
+HelpText.LoadFromFile(LocalizedFilePath('Help\help.txt'));
 hADVHELP:=HelpText.Gethandle('ADVHELP');
 hIMPHELP:=HelpText.Gethandle('IMPHELP');
 hFEATUREHELP:=HelpText.Gethandle('FEATUREHELP');
@@ -173,7 +173,7 @@ hJOBHELP:=HelpText.Gethandle('JOBHELP');
 CaptionFont:=Font.Create;
 CaptionFont.Assign(UniFont[ftNormal]);
 CaptionFont.Style:=CaptionFont.Style+[fsItalic,fsBold];
-InitButtons(self);
+InitButtons();
 
 TopBtn.Hint:=Phrases.Lookup('BTN_CONTENTS');
 BackBtn.Hint:=Phrases.Lookup('BTN_BACK');
@@ -259,21 +259,21 @@ if THelpLineInfo(MainText.Objects[sb.si.npos+i]).Format
   ca.FrameRect(rect(x+1,i*24+1,x+24-1,i*24+24-1));
   ca.Brush.Style:=bsClear;}
   BitBlt(ca.handle,x,y-4,24,24,GrExt[HGrSystem].Data.Canvas.Handle,1,146,SRCCOPY);
-  LoweredTextOut(ca,$FFFFFF,Texture,x+10-ca.Textwidth(s[1]) div 2,y-3,s[1]);
-  LoweredTextOut(ca,CaptionColor,Texture,x+24,y-3,copy(s,2,255));
+  BiColorTextOut(ca,$FFFFFF,$7F007F,x+10-ca.Textwidth(s[1]) div 2,y-3,s[1]);
+  BiColorTextOut(ca,CaptionColor,$7F007F,x+24,y-3,copy(s,2,255));
   ca.Font.Assign(UniFont[ftNormal]);
   end
 else if THelpLineInfo(MainText.Objects[sb.si.npos+i]).Format=pkSection then
   begin
   ca.Font.Assign(CaptionFont);
-  LoweredTextOut(ca,CaptionColor,Texture,x,y-3,s);
+  BiColorTextOut(ca,CaptionColor,$7F007F,x,y-3,s);
   ca.Font.Assign(UniFont[ftNormal]);
   end
 else
   begin
   if (Kind=hkMisc) and (no=miscMain) then
     ca.Font.Assign(CaptionFont);
-  TextColor:=-1;
+  TextColor:=Colors.Canvas.Pixels[clkMisc,cliPaperText];
   if ca=Canvas then
     begin
     TextSize.cx:=BiColorTextWidth(ca,s);
@@ -281,13 +281,13 @@ else
     if y+TextSize.cy>=WideFrame+InnerHeight then
       TextSize.cy:=WideFrame+InnerHeight-y;
     FillSeamless(ca,x,y,TextSize.cx,TextSize.cy,-SideFrame,sb.si.npos*24-WideFrame,
-      Texture);
+      Paper);
     end;
-  LoweredTextOut(ca,TextColor,Texture,x,y,s);
+  BiColorTextOut(ca,TextColor,$7F007F,x,y,s);
   if lit then with ca do
     begin
     assert(ca=Canvas);
-    pen.color:=Texture.clTextShade;
+    pen.color:=TextColor;
     moveto(x+1,y+TextSize.cy-2);
     lineto(x+TextSize.cx,y+TextSize.cy-2);
     end;
@@ -352,24 +352,27 @@ procedure THelpDlg.OffscreenPaint;
   procedure PaintTerrIcon(x,y,xSrc,ySrc: integer);
   begin
   Frame(offscreen.canvas,x-1,y-1,x+xSizeBig,y+ySizeBig,$000000,$000000);
-  Sprite(Offscreen, HGrTerrain, x, y, 56, 32, xSrc, ySrc);
-  Sprite(Offscreen, HGrTerrain, x, y+32, 56, 8, xSrc, ySrc);
-  Sprite(Offscreen, HGrTerrain, x, y, 66-33, 32-16, xSrc+xxt, ySrc+yyt);
-  Sprite(Offscreen, HGrTerrain, x, y+16, 66-33, 24, xSrc+xxt, ySrc);
-  Sprite(Offscreen, HGrTerrain, x+33, y, 56-33, 32-16, xSrc, ySrc+yyt);
-  Sprite(Offscreen, HGrTerrain, x+33, y+16, 56-33, 24, xSrc, ySrc);
+  if 2*yyt<40 then
+    begin
+    Sprite(Offscreen, HGrTerrain, x, y, 56, 2*yyt, xSrc, ySrc);
+    Sprite(Offscreen, HGrTerrain, x, y+2*yyt, 56, 40-2*yyt, xSrc, ySrc);
+    end
+  else Sprite(Offscreen, HGrTerrain, x, y, 56, 40, xSrc, ySrc);
+  Sprite(Offscreen, HGrTerrain, x, y, xxt, yyt, xSrc+xxt, ySrc+yyt);
+  Sprite(Offscreen, HGrTerrain, x, y+yyt, xxt, 40-yyt, xSrc+xxt, ySrc);
+  Sprite(Offscreen, HGrTerrain, x+xxt, y, 56-xxt, yyt, xSrc, ySrc+yyt);
+  Sprite(Offscreen, HGrTerrain, x+xxt, y+yyt, 56-xxt, 40-yyt, xSrc, ySrc);
   end;
 
 var
-i,j,yl,srcno,ofs,cnt: integer;
+i,j,yl,srcno,ofs,cnt,y: integer;
 s: string;
 HelpLineInfo: THelpLineInfo;
 begin
 inherited;
-Texture.clTextLight:=$7F007F; // text with no 3D effect
-CaptionColor:=Texture.clTextShade;
+CaptionColor:=Colors.Canvas.Pixels[clkMisc,cliPaperCaption];
 FillSeamless(offscreen.Canvas,0,0,InnerWidth,InnerHeight,0,sb.si.npos*24,
-  Texture);
+  Paper);
 with offscreen.Canvas do
   begin
   Font.Assign(UniFont[ftNormal]);
@@ -410,14 +413,14 @@ with offscreen.Canvas do
           PaintLogo(offscreen.canvas,(InnerWidth-122) div 2,i*24+1,
             GrExt[HGrSystem].Data.Canvas.Pixels[95,1],$000000);
           Font.Assign(UniFont[ftSmall]);
-          LoweredTextout(offscreen.Canvas,-1,Texture,
+          BiColorTextout(offscreen.Canvas,$000000,$7F007F,
             (InnerWidth-TextWidth(s)) div 2,i*24+26,s);
           Font.Assign(UniFont[ftNormal]);
           end;
         pkSmallIcon,pkSmallIcon_AsPreq:
           begin
           Frame(offscreen.Canvas,8-1+x0[i],2-1+i*24,8+xSizeSmall+x0[i],2+20+i*24,
-            Texture.clBevelLight,Texture.clBevelShade);
+            $000000,$000000);
           if HelpLineInfo.Picpix=imPalace then
             BitBlt(offscreen.Canvas.Handle,8+x0[i],2+i*24,xSizeSmall,ySizeSmall,SmallImp.Canvas.Handle,
               0*xSizeSmall,1*ySizeSmall,SRCCOPY)
@@ -440,12 +443,16 @@ with offscreen.Canvas do
             1:
               begin
               PaintTerrIcon(12+x0[i],-7+i*24, 1+3*(xxt*2+1), 1+yyt);
-              Sprite(Offscreen, HGrTerrain, 12+x0[i],-7+4+i*24, 56, 32, 1+3*(xxt*2+1), 1+yyt+1*(yyt*3+1));
+              if 2*yyt<40 then
+                Sprite(Offscreen, HGrTerrain, 12+x0[i],-7+4+i*24, 56, 2*yyt, 1+3*(xxt*2+1)+xxt-28, 1+yyt+1*(yyt*3+1))
+              else Sprite(Offscreen, HGrTerrain, 12+x0[i],-7+4+i*24-4, 56, 40, 1+3*(xxt*2+1)+xxt-28, 1+yyt+1*(yyt*3+1)+yyt-20);
               end;
             2:
               begin
               PaintTerrIcon(12+x0[i],-7+i*24, 1+7*(xxt*2+1), 1+yyt+4*(yyt*3+1));
-              Sprite(Offscreen, HGrTerrain, 12+x0[i],-7+4+i*24, 56, 32, 1+4*(xxt*2+1), 1+yyt+12*(yyt*3+1))
+              if 2*yyt<40 then
+                Sprite(Offscreen, HGrTerrain, 12+x0[i],-7+4+i*24, 56, 32, 1+4*(xxt*2+1)+xxt-28, 1+yyt+12*(yyt*3+1)+yyt-16)
+              else Sprite(Offscreen, HGrTerrain, 12+x0[i],-7+4+i*24, 56, 32, 1+4*(xxt*2+1)+xxt-28, 1+yyt+12*(yyt*3+1)+yyt-16)
               end;
             end;
           x0[i]:=64+8+8+x0[i];
@@ -453,7 +460,7 @@ with offscreen.Canvas do
         pkDomain:
           begin
           Frame(offscreen.Canvas,8-1+x0[i],2-1+i*24,8+36+x0[i],2+20+i*24,
-            Texture.clBevelLight,Texture.clBevelShade);
+            $000000,$000000);
           Dump(offscreen,HGrSystem,8+x0[i],2+i*24,36,20,
             75+HelpLineInfo.Picpix*37,295);
           x0[i]:=x0[i]+(8+8+36);
@@ -461,7 +468,7 @@ with offscreen.Canvas do
         pkAdvIcon,pkAdvIcon_AsPreq:
           begin
           Frame(offscreen.Canvas,8-1+x0[i],2-1+i*24,8+xSizeSmall+x0[i],2+ySizeSmall+i*24,
-            Texture.clBevelLight,Texture.clBevelShade);
+            $000000,$000000);
           if AdvIcon[HelpLineInfo.Picpix]<84 then
             BitBlt(offscreen.Canvas.Handle,8+x0[i],2+i*24,xSizeSmall,ySizeSmall,
               SmallImp.Canvas.Handle, (AdvIcon[HelpLineInfo.Picpix]+SystemIconLines*7) mod 7*xSizeSmall,
@@ -496,7 +503,7 @@ with offscreen.Canvas do
               Dump(offscreen,HGrSystem,InnerWidth-38-38*cnt,i*24+1,36,20,75+j*37,295);
               Frame(offscreen.canvas,InnerWidth-39-38*cnt,i*24,
                 InnerWidth-2-38*cnt,i*24+21,
-                Texture.clBevelLight,Texture.clBevelShade);
+                $000000,$000000);
               end;
           DarkGradient(offscreen.Canvas,InnerWidth-38-38*cnt,i*24+23,cnt*38-2,1);
           ofs:=InnerWidth-(39+7)-19*cnt;
@@ -513,21 +520,29 @@ with offscreen.Canvas do
           end;
         pkTer,pkBigTer:
           begin
+          if HelpLineInfo.Format=pkBigTer then
+            y:=i*24-3+yyt
+          else y:=i*24+13;
           if HelpLineInfo.Picpix>=3*12 then srcno:=2*9+6
           else if HelpLineInfo.Picpix mod 12=fJungle then srcno:=18*9
           else if HelpLineInfo.Picpix mod 12<fJungle then
             srcno:=HelpLineInfo.Picpix mod 12
           else srcno:=27+(HelpLineInfo.Picpix mod 12-9)*18;
           if HelpLineInfo.Format=pkTer then
-            begin ofs:=x0[i]+8; x0[i]:=64+8+ofs; end
-          else begin ofs:=InnerWidth-(64+40); x0[i]:=x0[i]+8; end;
+            begin ofs:=x0[i]+8; x0[i]:=2*xxt+8+ofs; end
+          else begin ofs:=InnerWidth-(2*xxt+38); x0[i]:=x0[i]+8; end;
           if srcno>=fJungle then
-            Sprite(offscreen,HGrTerrain,ofs,i*24-3,xxt*2,yyt*2,1+2*(xxt*2+1), 1+yyt+2*(yyt*3+1));
-          Sprite(offscreen,HGrTerrain,ofs,i*24-3,xxt*2,yyt*2,
-            1+srcno mod 9 *(xxt*2+1),1+yyt+srcno div 9 *(yyt*3+1));
+            begin
+            Sprite(offscreen,HGrTerrain,ofs+4,y-yyt+2,xxt*2-8,yyt*2-4,
+              5+2*(xxt*2+1),3+yyt+2*(yyt*3+1));
+            Sprite(offscreen,HGrTerrain,ofs,y-2*yyt,xxt*2,yyt*3-2,
+              1+srcno mod 9 *(xxt*2+1),1+srcno div 9 *(yyt*3+1));
+            end
+          else Sprite(offscreen,HGrTerrain,ofs+4,y-yyt+2,xxt*2-8,yyt*2-4,
+            5+srcno mod 9 *(xxt*2+1),3+yyt+srcno div 9 *(yyt*3+1));
           if HelpLineInfo.Picpix>=3*12 then {rare resource}
-            Sprite(offscreen,HGrTerrain,ofs,i*24-3,xxt*2,yyt*2,
-              1+8*(xxt*2+1), 1+yyt+(HelpLineInfo.Picpix-2*12)*(yyt*3+1))
+            Sprite(offscreen,HGrTerrain,ofs,y-2*yyt,xxt*2,yyt*3,
+              1+8*(xxt*2+1), 1+(HelpLineInfo.Picpix-2*12)*(yyt*3+1))
           else if HelpLineInfo.Picpix>=12 then {special tile}
             begin
             if HelpLineInfo.Picpix mod 12=fJungle then srcno:=17*9+8
@@ -535,8 +550,8 @@ with offscreen.Canvas do
               srcno:=HelpLineInfo.Picpix mod 12
             else srcno:=18+8+(HelpLineInfo.Picpix mod 12-9)*18;
             srcno:=srcno+HelpLineInfo.Picpix div 12*9;
-            Sprite(offscreen,HGrTerrain,ofs,i*24-3,xxt*2,yyt*2,
-              1+srcno mod 9 *(xxt*2+1),1+yyt+srcno div 9 *(yyt*3+1));
+            Sprite(offscreen,HGrTerrain,ofs,y-2*yyt,xxt*2,yyt*3,
+              1+srcno mod 9 *(xxt*2+1),1+srcno div 9 *(yyt*3+1));
             end;
           end;
         pkTerImp:
@@ -544,25 +559,30 @@ with offscreen.Canvas do
           ofs:=8;
           if HelpLineInfo.Picpix=5 then
             begin // display mine on hills
-            Sprite(offscreen,HGrTerrain,ofs,i*24+9,xxt*2,yyt*2,1+2*(xxt*2+1),
-              1+yyt+2*(yyt*3+1));
+            Sprite(offscreen,HGrTerrain,ofs+4,i*24+13-yyt,xxt*2-8,yyt*2-4,
+              5+2*(xxt*2+1),3+yyt+2*(yyt*3+1));
             srcno:=45
             end
           else srcno:=fPrairie; // display on prairie
-          Sprite(offscreen,HGrTerrain,ofs,i*24+9,xxt*2,yyt*2,
-            1+srcno mod 9 *(xxt*2+1),1+yyt+srcno div 9 *(yyt*3+1));
+          Sprite(offscreen,HGrTerrain,ofs+4,i*24+13-yyt,xxt*2-8,yyt*2-4,
+            5+srcno mod 9 *(xxt*2+1),3+yyt+srcno div 9 *(yyt*3+1));
           if HelpLineInfo.Picpix=12 then {river}
-            Sprite(offscreen,HGrTerrain,ofs,i*24+9,xxt*2,yyt*2,1+5*(xxt*2+1),
+            Sprite(offscreen,HGrTerrain,ofs,i*24+11-yyt,xxt*2,yyt*2,1+5*(xxt*2+1),
               1+yyt+13*(yyt*3+1))
           else if HelpLineInfo.Picpix>=3 then {improvement 2}
-            Sprite(offscreen,HGrTerrain,ofs,i*24+9,xxt*2,yyt*2,
-              1+(HelpLineInfo.Picpix-3)*(xxt*2+1), 1+yyt+12*(yyt*3+1))
+            begin
+            if HelpLineInfo.Picpix=6 then
+              Sprite(offscreen,HGrTerrain,ofs,i*24+11-2*yyt,xxt*2,yyt*3,
+                1+7 *(xxt*2+1),1+12 *(yyt*3+1));
+            Sprite(offscreen,HGrTerrain,ofs,i*24+11-2*yyt,xxt*2,yyt*3,
+              1+(HelpLineInfo.Picpix-3)*(xxt*2+1), 1+12*(yyt*3+1))
+            end
           else {improvement 1}
             begin
-            Sprite(offscreen,HGrTerrain,ofs,i*24+9,xxt*2,yyt*2,
-              1+2*(xxt*2+1),1+yyt+(9+HelpLineInfo.Picpix)*(yyt*3+1));
-            Sprite(offscreen,HGrTerrain,ofs,i*24+9,xxt*2,yyt*2,
-              1+5*(xxt*2+1),1+yyt+(9+HelpLineInfo.Picpix)*(yyt*3+1))
+            Sprite(offscreen,HGrTerrain,ofs,i*24+11-2*yyt,xxt*2,yyt*3,
+              1+2*(xxt*2+1),1+(9+HelpLineInfo.Picpix)*(yyt*3+1));
+            Sprite(offscreen,HGrTerrain,ofs,i*24+11-2*yyt,xxt*2,yyt*3,
+              1+5*(xxt*2+1),1+(9+HelpLineInfo.Picpix)*(yyt*3+1))
             end;
           x0[i]:=x0[i]+8;
           end;
@@ -588,15 +608,15 @@ with offscreen.Canvas do
           Dump(offscreen,HGrSystem,20,8-3+i*24,12,14,121+HelpLineInfo.Picpix*13,28);
           x0[i]:=20+8+11;
           end;
-        pkTreaty:
+        pkAITStat:
           begin
-          Dump(offscreen,HGrSystem,20,8-3+i*24,14,14,120+HelpLineInfo.Picpix*15,43);
+          Sprite(offscreen,HGrSystem,20,6+i*24,14,14,1+HelpLineInfo.Picpix*15,316);
           x0[i]:=20+8+11;
           end;
         pkGov:
           begin
           Frame(offscreen.Canvas,8-1+x0[i],2-1+i*24,8+xSizeSmall+x0[i],2+20+i*24,
-            Texture.clBevelLight,Texture.clBevelShade);
+            $000000,$000000);
           BitBlt(offscreen.Canvas.Handle,8+x0[i],2+i*24,xSizeSmall,ySizeSmall,SmallImp.Canvas.Handle,
             (HelpLineInfo.Picpix-1)*xSizeSmall,ySizeSmall,SRCCOPY);
           x0[i]:=x0[i]+(8+8+36);
@@ -648,7 +668,7 @@ CheckSeeAlso: boolean;
 
   procedure AddTer(i: integer);
   begin
-  if MainText.Count>1 then MainText.LF;
+  if MainText.Count>1 then begin MainText.LF; end;
   MainText.AddLine(Phrases.Lookup('TERRAIN',i),pkTer,i,hkTer,i);
   end;
 
@@ -681,8 +701,6 @@ CheckSeeAlso: boolean;
       if i=0 then i:=2;
       AddLine(Format(HelpText.Lookup('TECHFORMULA'),[TechFormula_M[i],TechFormula_D[i]]))
       end
-    else if Item='TREATIES' then
-      for i:=0 to trAlliance do AddLine(Phrases.Lookup('TREATY',i),pkTreaty,i)
     else if Item='EXPERIENCE' then
       for i:=0 to nExp-1 do AddLine(Phrases.Lookup('EXPERIENCE',i),pkExp,i)
     else if Item='MODERN' then
@@ -693,6 +711,8 @@ CheckSeeAlso: boolean;
         end
     else if Item='SAVED' then
       AddLine(DataDir+'Saved',pkNormal)
+    else if Item='AITSTAT' then
+      for i:=0 to 3 do AddLine(Phrases2.Lookup('AITSTAT',i),pkAITStat,i)
     end
   end;
 
@@ -769,7 +789,7 @@ CheckSeeAlso: boolean;
         begin // external image
         p:=1;
         repeat inc(p) until (p>Length(s)) or (s[p]='\');
-        if LoadGraphicFile(ExtPic, 'Help\'+Copy(s,2,p-2)) then
+        if LoadLocalizedGraphicFile(ExtPic, 'Help\'+Copy(s,2,p-2)) then
           begin
           MainText.AddLine('',pkExternal);
           for i:=0 to (ExtPic.Height-12) div 24 do MainText.LF;
@@ -889,6 +909,7 @@ CheckSeeAlso: boolean;
       begin
       if i>0 then begin LF; LF end;
       AddLine(Phrases.Lookup('JOBRESULT',JobHelp[i]),pkSection);
+      AddLine;
       AddLine('',pkTerImp,i);
       AddLine;
       AddText(HelpText.LookupByHandle(hJOBHELP,i));
@@ -1003,7 +1024,7 @@ with MainText do
           AddLine(HelpText.Lookup('HELPTITLE_GOVLIST'),pkBigIcon,gDemocracy+6,hkMisc,miscGovList); LF;
           AddLine(HelpText.Lookup('HELPTITLE_KEYS'),pkBigIcon,2,hkText,HelpText.GetHandle('HOTKEYS')); LF;
           AddLine(HelpText.Lookup('HELPTITLE_ABOUT'),pkBigIcon,1,hkText,HelpText.GetHandle('ABOUT')); LF;
-          AddLine(HelpText.Lookup('HELPTITLE_CREDITS'),pkBigIcon,25,hkMisc,miscCredits);
+          AddLine(HelpText.Lookup('HELPTITLE_CREDITS'),pkBigIcon,22,hkMisc,miscCredits);
           end;
         miscCredits:
           begin
@@ -1207,6 +1228,13 @@ with MainText do
           AddFeature(mcWill);
           AddFeature(mcAcademy);
           end;
+        if (no<28) and not Phrases2FallenBackToEnglish then
+          begin
+          LF;
+          if Imp[no].Expiration>=0 then
+            AddText(Phrases2.Lookup('HELP_WONDERMORALE1'))
+          else AddText(Phrases2.Lookup('HELP_WONDERMORALE2'));
+          end;
         if Imp[no].Preq<>preNone then
           begin
           NextSection('PREREQ');
@@ -1229,6 +1257,7 @@ with MainText do
           end;
         if Imp[no].Kind=ikShipPart then
           begin
+          LF;
           if no=imShipComp then i:=1
           else if no=imShipPow then i:=2
           else {if no=imShipHab then} i:=3;
@@ -1331,28 +1360,32 @@ with MainText do
           NextSection('SPECIAL');
           if no=3*12 then
             begin
+            LF;
             for special:=1 to 3 do
               begin
               if special>1 then LF;
               AddLine(Phrases.Lookup('TERRAIN',3*12+special),pkTer,3*12+special);
               end
             end
-          else if (no<12) and (no<>fGrass) then
-            for special:=1 to 2 do if (no<>fOcean)
-              and ((no<>fGrass) and (no<>fArctic) and (no<>fSwamp) or (special<2)) then
-              begin
-              if special>1 then LF;
-              AddLine(Phrases.Lookup('TERRAIN',no+special*12),pkTer,no+special*12);
-              i:=FoodRes[special]-FoodRes[0];
-              if i<>0 then
-                MainText[Count-1]:=MainText[Count-1]+Format(HelpText.Lookup('SPECIALFOOD'),[i]);
-              i:=ProdRes[special]-ProdRes[0];
-              if i<>0 then
-                MainText[Count-1]:=MainText[Count-1]+Format(HelpText.Lookup('SPECIALPROD'),[i]);
-              i:=TradeRes[special]-TradeRes[0];
-              if i<>0 then
-                MainText[Count-1]:=MainText[Count-1]+Format(HelpText.Lookup('SPECIALTRADE'),[i]);
-              end;
+          else if (no<12) and (no<>fGrass) and (no<>fOcean) then
+            begin
+            LF;
+            for special:=1 to 2 do
+              if (no<>fArctic) and (no<>fSwamp) or (special<2) then
+                begin
+                if special>1 then LF;
+                AddLine(Phrases.Lookup('TERRAIN',no+special*12),pkTer,no+special*12);
+                i:=FoodRes[special]-FoodRes[0];
+                if i<>0 then
+                  MainText[Count-1]:=MainText[Count-1]+Format(HelpText.Lookup('SPECIALFOOD'),[i]);
+                i:=ProdRes[special]-ProdRes[0];
+                if i<>0 then
+                  MainText[Count-1]:=MainText[Count-1]+Format(HelpText.Lookup('SPECIALPROD'),[i]);
+                i:=TradeRes[special]-TradeRes[0];
+                if i<>0 then
+                  MainText[Count-1]:=MainText[Count-1]+Format(HelpText.Lookup('SPECIALTRADE'),[i]);
+                end;
+            end;
           if no=3*12 then
             begin
             LF;
