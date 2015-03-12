@@ -1,0 +1,2 @@
+# delphi cannot create "output" dirs by itself,
+# we must therefore add the directory to VCS (git).

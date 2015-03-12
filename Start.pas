@@ -233,19 +233,22 @@ if FirstStart then
   end
 else
   begin
-  Reg.OpenKey('SOFTWARE\cevo\RegVer9',false);
-  try
-    ScreenMode:=Reg.ReadInteger('ScreenMode');
-    FullScreen:= ScreenMode>0;
-    ResolutionX:=Reg.ReadInteger('ResolutionX');
-    ResolutionY:=Reg.ReadInteger('ResolutionY');
-    ResolutionBPP:=Reg.ReadInteger('ResolutionBPP');
-    ResolutionFreq:=Reg.ReadInteger('ResolutionFreq');
-    if ScreenMode=2 then
-      ChangeResolution(ResolutionX,ResolutionY,ResolutionBPP,ResolutionFreq);
-  except
-    end;
-  Reg.closekey;
+// For some unknown reason, this does not work on a clean Windows installation.
+// I filled a bug report and commented out this code in the mean time.
+//
+//   Reg.OpenKey('SOFTWARE\cevo\RegVer9',false);
+//   try
+//     ScreenMode:=Reg.ReadInteger('ScreenMode');
+//     FullScreen:= ScreenMode>0;
+//     ResolutionX:=Reg.ReadInteger('ResolutionX');
+//     ResolutionY:=Reg.ReadInteger('ResolutionY');
+//     ResolutionBPP:=Reg.ReadInteger('ResolutionBPP');
+//     ResolutionFreq:=Reg.ReadInteger('ResolutionFreq');
+//     if ScreenMode=2 then
+//       ChangeResolution(ResolutionX,ResolutionY,ResolutionBPP,ResolutionFreq);
+//   except
+//     end;
+//   Reg.closekey;
   end;
 Reg.Free;
 

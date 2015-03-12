@@ -1,0 +1,12 @@
+#### compilation output
+*.cfg
+*.dcu
+*.ddp
+*.drc
+*.exe
+*.map
+*.rsm
+/target/cevo.dll
+
+#### backups by delphi
+*.~*
