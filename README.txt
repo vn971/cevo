@@ -4,7 +4,7 @@ This repository is based on the original project (Civilization Evolution http://
 but with these modifications:
 
 	This project is "hackable", no absolute paths are inlined and
-	there are exact instructions on how to compile from source.
+	there is a step-by-step instruction on how to compile from source.
 
 	Development is happening in "git".
 	We want public bug reports, public MergeRequests/PullRequests, public forks.
