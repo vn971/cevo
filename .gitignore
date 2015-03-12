@@ -1,5 +1,4 @@
 #### compilation output
-*.cfg
 *.dcu
 *.ddp
 *.drc
@@ -10,3 +9,7 @@
 
 #### backups by delphi
 *.~*
+
+# Note about *.cfg files.
+# They are included to allow building from command line `dcc32 cevo.dpr`.
+# They are not needed in any other way.

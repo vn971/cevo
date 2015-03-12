@@ -17,14 +17,17 @@ but with these modifications:
 
 
 Build instructions:
-	install Delphi3+ (tested on Delphi7). Some installation archives are only 200 Mb in size.
-	open project "CevoWin32.dpr"
+	install Delphi3 - Delphi7 (tested on Delphi7). Some installation archives are only 200 Mb.
+	click Menu > open project > CevoWin32.dpr
 	click Menu > project > Build CevoWin32
 	close the project and all files
-	open project "cevo.dpr"
+	click Menu > open project > cevo.dpr
 	play the game by running the project! (F9)
+
+Notes:
 	if you make source modifications, simply re-build "cevo.dpr"
-	check out /target/CevoWin32.exe to launch the game without IDE
+	if you want to run the game without IDE, simply launch /target/CevoWin32.exe
+	if you want to compile the game from command line, use this: `dcc32 cevo.dpr`
 
 
 For license information, see LICENSE.txt
