@@ -16,7 +16,7 @@ but with these modifications:
 	Look for commits diverging from the official version (steffen-gerlach git branch).
 
 
-Build instructions:
+Build instructions using graphical IDE:
 	install Delphi3 - Delphi7 (tested on Delphi7). Some installation archives are only 200 Mb.
 	click Menu > open project > CevoWin32.dpr
 	click Menu > project > Build CevoWin32
@@ -24,10 +24,14 @@ Build instructions:
 	click Menu > open project > cevo.dpr
 	play the game by running the project! (F9)
 
+Build instructions using command line:
+	install Delphi, same as above
+	invoke `dcc32 CevoWin32.dpr`
+	invoke `dcc32 cevo.dpr`
+	run the game `target/CevoWin32.exe`
+
 Notes:
 	if you make source modifications, simply re-build "cevo.dpr"
-	if you want to run the game without IDE, simply launch /target/CevoWin32.exe
-	if you want to compile the game from command line, use this: `dcc32 cevo.dpr`
 
 
 For license information, see LICENSE.txt
