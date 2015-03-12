@@ -1,5 +1,0 @@
-#NAME Standard AI
-#GAMEVERSION 1.2.0
-#BEGINNER
-#PATH StdAI.dll
-#CREDITS Standard AI by Steffen Gerlach.
