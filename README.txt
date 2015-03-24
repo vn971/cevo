@@ -17,7 +17,7 @@ Look for commits diverging from the official version (steffen-gerlach git branch
 
 
 Build instructions using graphical IDE:
-* install Delphi3 - Delphi7 (tested on Delphi7). Some installation archives are only 200 Mb.
+* install Delphi3 - Delphi7 (tested on Delphi7).
 * click Menu > open project > CevoWin32.dpr
 * click Menu > project > Build CevoWin32
 * close the project and all files
