@@ -708,6 +708,8 @@ if DeleteBtn.Visible then
 if Page=pgLoad then
   BtnFrame(Canvas,ReplayBtn.BoundsRect,MainTexture);
 
+xMini:=0;
+yMini:=0;
 if not (Page in [pgMain,pgNoLoad]) then
   begin
   xMini:=x0Mini-MiniWidth;
@@ -718,7 +720,7 @@ if not (Page in [pgMain,pgNoLoad]) then
     MainTexture.clBevelLight);
   end;
 s:='';
-if MiniMode=mmPicture then
+if (MiniMode=mmPicture) and (xMini>0) then
   begin
   BitBlt(Canvas.Handle,xMini+2,yMini+2,MiniWidth*2,MiniHeight,Mini.Canvas.Handle,0,0,SRCCOPY);
   if page=pgStartRandom then s:=Phrases.Lookup('RANMAP')
