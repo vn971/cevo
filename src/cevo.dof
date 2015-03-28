@@ -39,8 +39,8 @@ MaxStackSize=16777216
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=target
-UnitOutputDir=target\dcu
+OutputDir=..\target
+UnitOutputDir=..\target\dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
 SearchPath=
@@ -50,7 +50,7 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=target\CevoWin32.exe
+HostApplication=..\target\CevoWin32.exe
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -80,28 +80,3 @@ Comments=
 $(DELPHI)\Bin\dcldb40.bpl=Borland Database Components
 $(DELPHI)\Bin\dclqrt40.bpl=QuickReport Components
 $(DELPHI)\Bin\dclocx40.bpl=Borland Sample Imported ActiveX Controls
-[HistoryLists\hlConditionals]
-Count=1
-Item0=SCR
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlUnitOutputDirectory]
-Count=2
-Item0=target\dcu
-Item1=Project
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..
-[HistoryLists\hlHostApplication]
-Count=6
-Item0=target\CevoDotNet.exe
-Item1=target\CevoWin32.exe
-Item2=Project\CevoWin32.exe
-Item3=target\CevoWin32.exe
-Item4=target\Loader.exe
-Item5=target\Win32Loader.bat
-[HistoryLists\hlRunParameters]
-Count=2
-Item0=-man
-Item1=/man
