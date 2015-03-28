@@ -29,44 +29,47 @@ implementation
 
 procedure Register;
 begin
-RegisterComponents('Samples', [TButtonA]);
+  RegisterComponents('Samples', [TButtonA]);
 end;
 
 constructor TButtonA.Create;
 begin
-inherited Create(aOwner);
-FCaption:='';
-SetBounds(0,0,100,25);
+  inherited Create(aOwner);
+  FCaption := '';
+  SetBounds(0, 0, 100, 25);
 end;
 
 procedure TButtonA.Paint;
 begin
-with Canvas do
-  if FGraphic<>nil then
+  with Canvas do
+    if FGraphic <> nil then
     begin
-    BitBlt(Canvas.Handle,0,0,100,25,Graphic.Canvas.Handle,
-      195,243+26*Byte(Down),SRCCOPY);
-    Canvas.Brush.Style:=bsClear;
-    Textout(50-(TextWidth(FCaption)+1) div 2,12-textheight(FCaption) div 2,
-      FCaption);
+      BitBlt(Canvas.Handle, 0, 0, 100, 25, Graphic.Canvas.Handle,
+        195, 243 + 26 * byte(Down), SRCCOPY);
+      Canvas.Brush.Style := bsClear;
+      Textout(50 - (TextWidth(FCaption) + 1) div 2, 12 - textheight(FCaption) div 2,
+        FCaption);
     end
-  else begin Brush.Color:=$0000FF; FrameRect(Rect(0,0,100,25)) end
+    else
+    begin
+      Brush.Color := $0000FF;
+      FrameRect(Rect(0, 0, 100, 25));
+    end;
 end;
 
 procedure TButtonA.SetCaption(x: string);
 begin
-if x<>FCaption then
+  if x <> FCaption then
   begin
-  FCaption:=x;
-  Invalidate
-  end
+    FCaption := x;
+    Invalidate;
+  end;
 end;
 
 procedure TButtonA.SetFont(const x: TFont);
 begin
-Canvas.Font.Assign(x);
-Canvas.Font.Color:=$000000;
+  Canvas.Font.Assign(x);
+  Canvas.Font.Color := $000000;
 end;
 
 end.
-

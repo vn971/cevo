@@ -29,42 +29,45 @@ implementation
 
 procedure Register;
 begin
-RegisterComponents('Samples', [TButtonB]);
+  RegisterComponents('Samples', [TButtonB]);
 end;
 
 constructor TButtonB.Create;
 begin
-inherited Create(aOwner);
-ShowHint:=true;
-SetBounds(0,0,25,25);
+  inherited Create(aOwner);
+  ShowHint := True;
+  SetBounds(0, 0, 25, 25);
 end;
 
 procedure TButtonB.Paint;
 begin
-with Canvas do
-  if FGraphic<>nil then
+  with Canvas do
+    if FGraphic <> nil then
     begin
-    BitBlt(Canvas.Handle,0,0,25,25,FGraphic.Canvas.Handle,
-      169,243+26*Byte(FDown),SRCCOPY);
-    if FIndex>=0 then
+      BitBlt(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
+        169, 243 + 26 * byte(FDown), SRCCOPY);
+      if FIndex >= 0 then
       begin
-      BitBlt(Canvas.Handle,0,0,25,25,FMask.Canvas.Handle,
-        1+FIndex mod 12 *26,337+FIndex div 12 *26,SRCAND);
-      BitBlt(Canvas.Handle,0,0,25,25,FGraphic.Canvas.Handle,
-        1+FIndex mod 12 *26,337+FIndex div 12 *26,SRCPAINT);
-      end
+        BitBlt(Canvas.Handle, 0, 0, 25, 25, FMask.Canvas.Handle,
+          1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, SRCAND);
+        BitBlt(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
+          1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, SRCPAINT);
+      end;
     end
-  else begin Brush.Color:=$0000FF; FrameRect(Rect(0,0,25,25)) end
+    else
+    begin
+      Brush.Color := $0000FF;
+      FrameRect(Rect(0, 0, 25, 25));
+    end;
 end;
 
 procedure TButtonB.SetIndex(x: integer);
 begin
-if x<>FIndex then
+  if x <> FIndex then
   begin
-  FIndex:=x;
-  Invalidate
-  end
+    FIndex := x;
+    Invalidate;
+  end;
 end;
 
 end.
-
