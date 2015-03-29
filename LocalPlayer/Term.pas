@@ -2624,8 +2624,7 @@ case Command of
       and not ((GameMode=cMovie) and (MovieSpeed=4)) then
       begin
       assert(NewPlayer=me);
-      if not idle or (GameMode=cMovie) then
-        Application.ProcessMessages;
+      Application.ProcessMessages;
       if Command=cShowCityChanged then
         begin
         CurrentMoveInfo.DoShow:=false;
