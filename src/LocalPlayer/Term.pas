@@ -5835,8 +5835,7 @@ begin
         if (SliceCount = 0) or ((Ticks - Ticks0) * 12000 * (SliceCount + 1) div
           SliceCount < MoveTime * PerfFreq) then
         begin
-          if not idle or (GameMode = cMovie) then
-            Application.ProcessMessages;
+          Application.ProcessMessages;
           Sleep(1);
           Inc(SliceCount);
         end;
