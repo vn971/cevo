@@ -10,18 +10,8 @@
 #### backups by delphi
 *.~*
 
-#### exclude AI files manually...
-/target/*.ai.txt
-/target/*.dll
-/target/*.ini
-/target/*.bmp
-/target/*.readme.txt
-/target/KiaI*
-/target/Crystal*
-/target/AIAS*
-/target/Capital*
-/target/AI_UO*
-/target/Seti*
+#### exclude AI files
+/target/AI/*
 
 
-# *.cfg files are included to allow building from command line
+#### dcc32 configuration files (*.cfg) are included to allow building from command line

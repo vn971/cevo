@@ -53,7 +53,7 @@ var
 
 initialization
   BinariesDirectory := ExtractFilePath(ParamStr(0));
-  AiDirectory := BinariesDirectory;
+  AiDirectory := BinariesDirectory + 'AI\';
   GraphicsDirectory := BinariesDirectory + 'Graphics\';
   SoundsDirectory := BinariesDirectory + 'Sounds\';
 
