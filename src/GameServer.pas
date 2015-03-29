@@ -203,19 +203,19 @@ begin
   Brain[bixRandom].Initialized := False;
   nBrain := bixFirstAI;
   bixBeginner := bixFirstAI;
-  if FindFirst(HomeDir + '*.ai.txt', $21, f) = 0 then
+  if FindFirst(AiDirectory + '*.ai.txt', $21, f) = 0 then
     repeat
       with Brain[nBrain] do
       begin
         FileName := Copy(f.Name, 1, Length(f.Name) - 7);
-        DLLName := HomeDir + FileName;
+        DLLName := AiDirectory + FileName;
         Name := Copy(f.Name, 1, Length(f.Name) - 7);
         Credits := '';
         Flags := fMultiple;
         Client := nil;
         Initialized := False;
         ServerVersion := 0;
-        AssignFile(T, HomeDir + f.Name);
+        AssignFile(T, AiDirectory + f.Name);
         Reset(T);
         while not EOF(T) do
         begin
@@ -228,7 +228,7 @@ begin
           else if Copy(s, 1, 9) = '#BEGINNER' then
             bixBeginner := nBrain
           else if Copy(s, 1, 5) = '#PATH' then
-            DLLName := HomeDir + trim(Copy(s, 7, 255))
+            DLLName := AiDirectory + trim(Copy(s, 7, 255))
           else if Copy(s, 1, 12) = '#GAMEVERSION' then
             for i := 13 to Length(s) do
               case s[i] of
@@ -530,7 +530,7 @@ var
   MapFile: TFileStream;
   s: string[255];
 begin
-  MapFile := TFileStream.Create(DataDir + 'Maps\' + FileName, fmCreate or
+  MapFile := TFileStream.Create(UserDirectory + 'Maps\' + FileName, fmCreate or
     fmShareExclusive);
   MapFile.Position := 0;
   s := 'cEvoMap'#0;
@@ -553,7 +553,7 @@ begin
   Result := False;
   MapFile := nil;
   try
-    MapFile := TFileStream.Create(DataDir + 'Maps\' + FileName,
+    MapFile := TFileStream.Create(UserDirectory + 'Maps\' + FileName,
       fmOpenRead or fmShareExclusive);
     MapFile.Position := 0;
     MapFile.Read(s[1], 8); {file id}

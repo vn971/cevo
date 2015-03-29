@@ -93,7 +93,7 @@ begin
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
   Template := TBitmap.Create;
-  LoadGraphicFile(Template, HomeDir + 'Graphics\Nation', gfNoGamma);
+  LoadGraphicFile(Template, GraphicsDirectory + 'Nation', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 

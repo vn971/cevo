@@ -577,7 +577,7 @@ begin
       end;
   end;
   FreeMem(resampled);
-  //smallimp.savetofile(homedir+'smallimp.bmp'); //!!!
+  //smallimp.savetofile(BinariesDirectory+'smallimp.bmp'); //!!!
 end;
 
 procedure ImpImage(ca: TCanvas; x, y, iix: integer; Government: integer;
@@ -1177,7 +1177,7 @@ begin
   begin
     if AILogo[p] = nil then
       AILogo[p] := TBitmap.Create;
-    if not LoadGraphicFile(AILogo[p], HomeDir + Name, gfNoError) then
+    if not LoadGraphicFile(AILogo[p], BinariesDirectory + Name, gfNoError) then
     begin
       AILogo[p].Free;
       AILogo[p] := nil;
@@ -1243,12 +1243,12 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     ok: boolean;
   begin
     UnusedTribeFiles.Clear;
-    ok := FindFirst(DataDir + 'Localization\' + 'Tribes\*.tribe.txt',
+    ok := FindFirst(UserDirectory + 'Localization\' + 'Tribes\*.tribe.txt',
       faArchive + faReadOnly, SearchRec) = 0;
     if not ok then
     begin
       FindClose(SearchRec);
-      ok := FindFirst(HomeDir + 'Tribes\*.tribe.txt', faArchive + faReadOnly, SearchRec) = 0;
+      ok := FindFirst(BinariesDirectory + 'Tribes\*.tribe.txt', faArchive + faReadOnly, SearchRec) = 0;
     end;
     if ok then
       repeat

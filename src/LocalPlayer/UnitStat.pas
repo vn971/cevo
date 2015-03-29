@@ -81,7 +81,7 @@ begin
   Back.Width := 5 * wCommon;
   Back.Height := hMax;
   Template := TBitmap.Create;
-  LoadGraphicFile(Template, HomeDir + 'Graphics\Unit', gfNoGamma);
+  LoadGraphicFile(Template, GraphicsDirectory + 'Unit', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 

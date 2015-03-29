@@ -215,13 +215,13 @@ begin
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
   Template := TBitmap.Create;
-  LoadGraphicFile(Template, HomeDir + 'Graphics\City', gfNoGamma);
+  LoadGraphicFile(Template, GraphicsDirectory + 'City', gfNoGamma);
   Template.PixelFormat := pf8bit;
   CityMapTemplate := TBitmap.Create;
-  LoadGraphicFile(CityMapTemplate, HomeDir + 'Graphics\BigCityMap', gfNoGamma);
+  LoadGraphicFile(CityMapTemplate, GraphicsDirectory + 'BigCityMap', gfNoGamma);
   CityMapTemplate.PixelFormat := pf8bit;
   SmallCityMapTemplate := TBitmap.Create;
-  LoadGraphicFile(SmallCityMapTemplate, HomeDir + 'Graphics\SmallCityMap', gfNoGamma);
+  LoadGraphicFile(SmallCityMapTemplate, GraphicsDirectory + 'SmallCityMap', gfNoGamma);
   SmallCityMapTemplate.PixelFormat := pf24bit;
   SmallCityMap := TBitmap.Create;
   SmallCityMap.PixelFormat := pf24bit;

@@ -232,8 +232,8 @@ begin
   assert(WAVFileName[1] <> '[');
   Result := (WAVFileName <> '') and (WAVFileName[1] <> '[') and (WAVFileName <> '*');
   if Result then
-    //  SndPlaySound(pchar(HomeDir+'Sounds\'+WAVFileName+'.wav'),SND_ASYNC)
-    PlaySound(HomeDir + 'Sounds\' + WAVFileName);
+    //  SndPlaySound(pchar(SoundsDirectory + WAVFileName + '.wav'), SND_ASYNC);
+    PlaySound(SoundsDirectory + WAVFileName);
 {$ENDIF}
 end;
 
@@ -249,7 +249,7 @@ begin
   WAVFileName := Sounds.Lookup(Item, Index);
   assert(WAVFileName[1] <> '[');
   if (WAVFileName <> '') and (WAVFileName[1] <> '[') and (WAVFileName <> '*') then
-    PrepareSound(HomeDir + 'Sounds\' + WAVFileName);
+    PrepareSound(SoundsDirectory + WAVFileName);
 {$ENDIF}
 end;
 
@@ -500,7 +500,7 @@ begin
   Result := i;
   if i = nGrExt then
   begin
-    FileName := HomeDir + 'Graphics\' + Name;
+    FileName := GraphicsDirectory + Name;
     Source := TBitmap.Create;
     try
       Source.LoadFromFile(FileName + '.bmp')
@@ -1390,7 +1390,7 @@ begin
     with MainTexture do
     begin
       MainTextureAge := Age;
-      LoadGraphicFile(Image, HomeDir + 'Graphics\Texture' + IntToStr(Age + 1), gfJPG);
+      LoadGraphicFile(Image, GraphicsDirectory + 'Texture' + IntToStr(Age + 1), gfJPG);
       clBevelLight := Colors.Canvas.Pixels[clkAge0 + Age, cliBevelLight];
       clBevelShade := Colors.Canvas.Pixels[clkAge0 + Age, cliBevelShade];
       clTextLight := Colors.Canvas.Pixels[clkAge0 + Age, cliTextLight];
@@ -1442,24 +1442,24 @@ initialization
   Phrases := TStringTable.Create;
   Phrases2 := TStringTable.Create;
   Phrases2FallenBackToEnglish := False;
-  if FileExists(DataDir + 'Localization\Language.txt') then
+  if FileExists(UserDirectory + 'Localization\Language.txt') then
   begin
-    Phrases.LoadFromFile(DataDir + 'Localization\Language.txt');
-    if FileExists(DataDir + 'Localization\Language2.txt') then
-      Phrases2.LoadFromFile(DataDir + 'Localization\Language2.txt')
+    Phrases.LoadFromFile(UserDirectory + 'Localization\Language.txt');
+    if FileExists(UserDirectory + 'Localization\Language2.txt') then
+      Phrases2.LoadFromFile(UserDirectory + 'Localization\Language2.txt')
     else
     begin
-      Phrases2.LoadFromFile(HomeDir + 'Language2.txt');
+      Phrases2.LoadFromFile(BinariesDirectory + 'Language2.txt');
       Phrases2FallenBackToEnglish := True;
     end;
   end
   else
   begin
-    Phrases.LoadFromFile(HomeDir + 'Language.txt');
-    Phrases2.LoadFromFile(HomeDir + 'Language2.txt');
+    Phrases.LoadFromFile(BinariesDirectory + 'Language.txt');
+    Phrases2.LoadFromFile(BinariesDirectory + 'Language2.txt');
   end;
   Sounds := TStringTable.Create;
-  if not Sounds.LoadFromFile(HomeDir + 'Sounds\sound.txt') then
+  if not Sounds.LoadFromFile(SoundsDirectory + 'sound.txt') then
   begin
     Sounds.Free;
     Sounds := nil;
@@ -1520,14 +1520,14 @@ initialization
   HGrSystem := LoadGraphicSet('System');
   HGrSystem2 := LoadGraphicSet('System2');
   Templates := TBitmap.Create;
-  LoadGraphicFile(Templates, HomeDir + 'Graphics\Templates', gfNoGamma);
+  LoadGraphicFile(Templates, GraphicsDirectory + 'Templates', gfNoGamma);
   Templates.PixelFormat := pf24bit;
   Colors := TBitmap.Create;
-  LoadGraphicFile(Colors, HomeDir + 'Graphics\Colors');
+  LoadGraphicFile(Colors, GraphicsDirectory + 'Colors');
   Paper := TBitmap.Create;
-  LoadGraphicFile(Paper, HomeDir + 'Graphics\Paper', gfJPG);
+  LoadGraphicFile(Paper, GraphicsDirectory + 'Paper', gfJPG);
   BigImp := TBitmap.Create;
-  LoadGraphicFile(BigImp, HomeDir + 'Graphics\Icons');
+  LoadGraphicFile(BigImp, GraphicsDirectory + 'Icons');
   MainTexture.Image := TBitmap.Create;
   MainTextureAge := -2;
   ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];

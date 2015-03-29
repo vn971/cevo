@@ -5,7 +5,8 @@ unit Directories;
 interface
 
 var
-  HomeDir, DataDir: string;
+  BinariesDirectory, AiDirectory, GraphicsDirectory, SoundsDirectory,
+  UserDirectory: string;
 
 function LocalizedFilePath(path: string): string;
 
@@ -40,40 +41,42 @@ end;
 
 function LocalizedFilePath(path: string): string;
 begin
-  Result := DataDir + 'Localization\' + path;
+  Result := UserDirectory + 'Localization\' + path;
   if not FileExists(Result) then
-    Result := HomeDir + path;
+    Result := BinariesDirectory + path;
 end;
 
 
 var
-  AppDataDir: string;
+  AppUserDirectory: string;
   src, dst: TSearchRec;
 
 initialization
-  HomeDir := ExtractFilePath(ParamStr(0));
+  BinariesDirectory := ExtractFilePath(ParamStr(0));
+  AiDirectory := BinariesDirectory;
+  GraphicsDirectory := BinariesDirectory + 'Graphics\';
+  SoundsDirectory := BinariesDirectory + 'Sounds\';
 
-
-  AppDataDir := GetSpecialDirectory(CSIDL_APPDATA);
-  if AppDataDir = '' then
-    DataDir := HomeDir
+  AppUserDirectory := GetSpecialDirectory(CSIDL_APPDATA);
+  if AppUserDirectory = '' then
+    UserDirectory := BinariesDirectory
   else
   begin
-    if not DirectoryExists(AppDataDir + '\C-evo') then
-      CreateDir(AppDataDir + '\C-evo');
-    DataDir := AppDataDir + '\C-evo\';
+    if not DirectoryExists(AppUserDirectory + '\C-evo') then
+      CreateDir(AppUserDirectory + '\C-evo');
+    UserDirectory := AppUserDirectory + '\C-evo\';
   end;
-  if not DirectoryExists(DataDir + 'Saved') then
-    CreateDir(DataDir + 'Saved');
-  if not DirectoryExists(DataDir + 'Maps') then
-    CreateDir(DataDir + 'Maps');
+  if not DirectoryExists(UserDirectory + 'Saved') then
+    CreateDir(UserDirectory + 'Saved');
+  if not DirectoryExists(UserDirectory + 'Maps') then
+    CreateDir(UserDirectory + 'Maps');
 
   // copy appdata if not done yet
-  if FindFirst(HomeDir + 'AppData\Saved\*.cevo', $21, src) = 0 then
+  if FindFirst(BinariesDirectory + 'AppData\Saved\*.cevo', $21, src) = 0 then
     repeat
-      if (FindFirst(DataDir + 'Saved\' + src.Name, $21, dst) <> 0) or
+      if (FindFirst(UserDirectory + 'Saved\' + src.Name, $21, dst) <> 0) or
         (dst.Time < src.Time) then
-        CopyFile(PChar(HomeDir + 'AppData\Saved\' + src.Name),
-          PChar(DataDir + 'Saved\' + src.Name), False);
+        CopyFile(PChar(BinariesDirectory + 'AppData\Saved\' + src.Name),
+          PChar(UserDirectory + 'Saved\' + src.Name), False);
     until FindNext(src) <> 0;
 end.

@@ -268,9 +268,9 @@ begin
   Reg.Free;
 
   ActionsOffered := [maManual, maCredits, maWeb];
-  if FileExists(HomeDir + 'Configurator.exe') then
+  if FileExists(BinariesDirectory + 'Configurator.exe') then
     include(ActionsOffered, maConfig);
-  if FileExists(HomeDir + 'AI Template\AI development manual.html') then
+  if FileExists(BinariesDirectory + 'AI Template\AI development manual.html') then
     include(ActionsOffered, maAIDev);
 
   bixDefault := -1;
@@ -369,7 +369,7 @@ begin
   for i := bixFirstAI to nBrain - 1 do
   begin
     BrainPicture[i] := TBitmap.Create;
-    if not LoadGraphicFile(BrainPicture[i], HomeDir + Brain[i].FileName, gfNoError) then
+    if not LoadGraphicFile(BrainPicture[i], AiDirectory + Brain[i].FileName, gfNoError) then
     begin
       BrainPicture[i].Width := 64;
       BrainPicture[i].Height := 64;
@@ -891,7 +891,7 @@ begin
     pgLoad:
     begin //load
       FileName := List.Items[List.ItemIndex];
-      if LoadGame(DataDir + 'Saved\', FileName + '.cevo', LoadTurn, False) then
+      if LoadGame(UserDirectory + 'Saved\', FileName + '.cevo', LoadTurn, False) then
         UnlistBackupFile(FileName)
       else
         SimpleMessage(Phrases.Lookup('LOADERR'));
@@ -982,7 +982,7 @@ begin
         Reg.closekey;
         Reg.Free;
 
-        StartNewGame(DataDir + 'Saved\', FileName + '.cevo', MapFileName,
+        StartNewGame(UserDirectory + 'Saved\', FileName + '.cevo', MapFileName,
           lxpre[WorldSize], lypre[WorldSize], StartLandMass, MaxTurn);
         UnlistBackupFile(FileName);
       end;
@@ -1122,7 +1122,7 @@ begin
 
     pgLoad:
     begin
-      AssignFile(LogFile, DataDir + 'Saved\' + List.Items[List.ItemIndex] + '.cevo');
+      AssignFile(LogFile, UserDirectory + 'Saved\' + List.Items[List.ItemIndex] + '.cevo');
       try
         Reset(LogFile, 4);
         BlockRead(LogFile, s[1], 2); {file id}
@@ -1176,7 +1176,7 @@ begin
       MiniMode := mmPicture;
       if Page = pgEditMap then
         MapFileName := List.Items[List.ItemIndex] + '.cevo map';
-      if LoadGraphicFile(Mini, DataDir + 'Maps\' + Copy(MapFileName,
+      if LoadGraphicFile(Mini, UserDirectory + 'Maps\' + Copy(MapFileName,
         1, Length(MapFileName) - 9), gfNoError) then
       begin
         if Mini.Width div 2 > MaxWidthMapLogo then
@@ -1193,7 +1193,7 @@ begin
         MiniHeight := MaxHeightMapLogo;
       end;
 
-      AssignFile(MapFile, DataDir + 'Maps\' + MapFileName);
+      AssignFile(MapFile, UserDirectory + 'Maps\' + MapFileName);
       try
         Reset(MapFile, 4);
         BlockRead(MapFile, s[1], 2); {file id}
@@ -1367,7 +1367,7 @@ var
   f: TSearchRec;
 begin
   FormerGames.Clear;
-  if FindFirst(DataDir + 'Saved\*.cevo', $21, f) = 0 then
+  if FindFirst(UserDirectory + 'Saved\*.cevo', $21, f) = 0 then
     repeat
       i := FormerGames.Count;
       while (i > 0) and (f.Time < integer(FormerGames.Objects[i - 1])) do
@@ -1386,7 +1386,7 @@ var
   f: TSearchRec;
 begin
   Maps.Clear;
-  if FindFirst(DataDir + 'Maps\*.cevo map', $21, f) = 0 then
+  if FindFirst(UserDirectory + 'Maps\*.cevo map', $21, f) = 0 then
     repeat
       Maps.Add(Copy(f.Name, 1, Length(f.Name) - 9));
     until FindNext(f) <> 0;
@@ -1573,14 +1573,14 @@ begin
     case SelectedAction of
       maConfig:
       begin
-        ShellExecute(Handle, 'open', PChar(HomeDir + 'Configurator.exe'),
+        ShellExecute(Handle, 'open', PChar(BinariesDirectory + 'Configurator.exe'),
           PChar('-r"' + ParamStr(0) + '"'), '', SW_SHOWNORMAL);
         Close;
       end;
       maManual: DirectHelp(cStartHelp);
       maCredits: DirectHelp(cStartCredits);
       maAIDev: ShellExecute(Handle, 'open',
-          PChar(HomeDir + 'AI Template\AI development manual.html'), '', '',
+          PChar(BinariesDirectory + 'AI Template\AI development manual.html'), '', '',
           SW_SHOWNORMAL);
       maWeb: ShellExecute(Handle, 'open', 'http://c-evo.org', '', '', SW_SHOWNORMAL)
     end;
@@ -1747,23 +1747,23 @@ begin
           exit;
         end;
       if Page = pgLoad then
-        AssignFile(f, DataDir + 'Saved\' + List.Items[List.ItemIndex] + '.cevo')
+        AssignFile(f, UserDirectory + 'Saved\' + List.Items[List.ItemIndex] + '.cevo')
       else
-        AssignFile(f, DataDir + 'Maps\' + List.Items[List.ItemIndex] + '.cevo map');
+        AssignFile(f, UserDirectory + 'Maps\' + List.Items[List.ItemIndex] + '.cevo map');
       ok := True;
       try
         if Page = pgLoad then
-          Rename(f, DataDir + 'Saved\' + NewName + '.cevo')
+          Rename(f, UserDirectory + 'Saved\' + NewName + '.cevo')
         else
-          Rename(f, DataDir + 'Maps\' + NewName + '.cevo map');
+          Rename(f, UserDirectory + 'Maps\' + NewName + '.cevo map');
       except
         //      Play('INVALID');
         ok := False
       end;
       if Page <> pgLoad then
         try // rename map picture
-          AssignFile(f, DataDir + 'Maps\' + List.Items[List.ItemIndex] + '.bmp');
-          Rename(f, DataDir + 'Maps\' + NewName + '.bmp');
+          AssignFile(f, UserDirectory + 'Maps\' + List.Items[List.ItemIndex] + '.bmp');
+          Rename(f, UserDirectory + 'Maps\' + NewName + '.bmp');
         except
         end;
       if ok then
@@ -1797,9 +1797,9 @@ begin
     if MessgDlg.ModalResult = mrOk then
     begin
       if Page = pgLoad then
-        AssignFile(f, DataDir + 'Saved\' + List.Items[List.ItemIndex] + '.cevo')
+        AssignFile(f, UserDirectory + 'Saved\' + List.Items[List.ItemIndex] + '.cevo')
       else
-        AssignFile(f, DataDir + 'Maps\' + List.Items[List.ItemIndex] + '.cevo map');
+        AssignFile(f, UserDirectory + 'Maps\' + List.Items[List.ItemIndex] + '.cevo map');
       Erase(f);
       iDel := List.ItemIndex;
       if Page = pgLoad then
@@ -1984,7 +1984,7 @@ end;
 
 procedure TStartDlg.ReplayBtnClick(Sender: TObject);
 begin
-  LoadGame(DataDir + 'Saved\', List.Items[List.ItemIndex] + '.cevo', LastTurn, True);
+  LoadGame(UserDirectory + 'Saved\', List.Items[List.ItemIndex] + '.cevo', LastTurn, True);
   SlotAvailable := -1;
 end;
 

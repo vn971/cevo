@@ -37,11 +37,11 @@ begin
   img := nil;
   if FullScreen then
   begin
-    if FileExists(HomeDir + 'Graphics\Background.bmp') or
-      FileExists(HomeDir + 'Graphics\Background.png') then
+    if FileExists(GraphicsDirectory + 'Background.bmp') or
+      FileExists(GraphicsDirectory + 'Background.png') then
     begin
       img := TBitmap.Create;
-      LoadGraphicFile(img, HomeDir + 'Graphics\Background');
+      LoadGraphicFile(img, GraphicsDirectory + 'Background');
     end;
   end
   else

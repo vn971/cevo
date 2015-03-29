@@ -89,7 +89,7 @@ begin
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
   Template := TBitmap.Create;
-  LoadGraphicFile(Template, HomeDir + 'Graphics\MiliRes', gfNoGamma);
+  LoadGraphicFile(Template, GraphicsDirectory + 'MiliRes', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 
