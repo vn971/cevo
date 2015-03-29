@@ -1,4 +1,4 @@
-C-evo is a free empire building game for Windows (see below on Linux support).
+C-evo is a free empire building game for Windows and Linux(wine).
 
 This repository is based on the original project (Civilization Evolution http://c-evo.org),
 but with these modifications:
@@ -9,8 +9,9 @@ a step-by-step instruction on how to compile from source was added.
 * Development is happening in "git".
 We want public bug reports, public MergeRequests/PullRequests, public forks.
 
-* Pull requests for better Linux support will always be gladly accepted
-(Linux is strongly desired as a target platform alternative).
+* Pull requests for better Linux support will always be gladly accepted.
+I fixed a bug with unit movement in `wine` as a starting point.
+The game fully works in wine from now on (this was the only bug known)!
 
 * You can of course see all the technical differences using git.
 Look for commits diverging from the official version (steffen-gerlach git branch).
