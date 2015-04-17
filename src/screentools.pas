@@ -6,7 +6,8 @@ interface
 
 uses
   StringTables,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus;
+  LCLIntf, LCLType, LMessages,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus;
 
 type
   TTexture = record
@@ -182,6 +183,7 @@ var
 implementation
 
 uses
+  FileUtil,
   Directories, Sound, ButtonBase, ButtonA, ButtonB,
   Registry, JPEG;
 

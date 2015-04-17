@@ -3,7 +3,7 @@ unit Area;
 interface
 
 uses
-  WinProcs, Classes, Graphics, Controls;
+  Classes, Graphics, Controls;
 
 type
   TArea = class(TGraphicControl)

@@ -6,7 +6,8 @@ interface
 
 uses
   Protocol, ScreenTools, BaseWin, StringTables,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType, LMessages,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, ButtonB, PVSB, ButtonBase;
 
 const

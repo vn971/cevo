@@ -1,11 +1,12 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 unit Battle;
 
 interface
 
 uses
   ScreenTools, Protocol, Messg, ButtonBase, ButtonA,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
+  LCLIntf, LCLType, LMessages,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 type
   TBattleDlg = class(TDrawDlg)

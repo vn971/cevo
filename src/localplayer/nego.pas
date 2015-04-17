@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Nego;
 
@@ -6,8 +6,8 @@ interface
 
 uses
   ScreenTools,BaseWin,Protocol,Term,
-
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ButtonA,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, ButtonA,
   ButtonBase, ButtonB, ButtonC, ButtonN;
 
 
@@ -395,7 +395,7 @@ with Offscreen.Canvas do
       1+Tribe[p].facepix mod 10 *65,1+Tribe[p].facepix div 10 *49)
   else FillRect(Rect(x,y,x+64,y+48));
   Brush.Style:=bsClear;
-  Frame(Offscreen.Canvas,x-1,y-1,x+64,y+48,$000000,$000000);
+  //Frame(Offscreen.Canvas,x-1,y-1,x+64,y+48,$000000,$000000);
   end
 end;
 

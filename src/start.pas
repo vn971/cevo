@@ -6,7 +6,8 @@ interface
 
 uses
   GameServer, Messg, ButtonBase, ButtonA, ButtonC, ButtonB, Area,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   Menus, Registry;
 
 const

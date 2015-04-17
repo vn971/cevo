@@ -3,7 +3,8 @@ unit ButtonN;
 interface
 
 uses
-  WinProcs, Classes, Graphics, Controls;
+  LCLIntf, LCLType,
+  Classes, Graphics, Controls;
 
 type
   TButtonN = class(TGraphicControl)

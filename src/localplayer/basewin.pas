@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit BaseWin;
 
@@ -6,7 +6,8 @@ interface
 
 uses
   ScreenTools, Messg,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 type
   TBufferedDrawDlg = class(TDrawDlg)

@@ -4,7 +4,8 @@ interface
 
 uses
   ButtonBase,
-  WinProcs, Classes, Graphics;
+  LCLIntf, LCLType,
+  Classes, Graphics;
 
 type
   TButtonA = class(TButtonBase)

@@ -6,7 +6,8 @@ interface
 
 uses
   ScreenTools, Messg,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonA, StdCtrls, ButtonB, ButtonBase;
 
 type

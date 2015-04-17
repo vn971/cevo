@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit NoTerm;
 
@@ -6,7 +6,8 @@ interface
 
 uses
   ScreenTools, Protocol, Messg,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonBase, ButtonB;
 
 type

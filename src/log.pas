@@ -5,7 +5,8 @@ unit log;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   StdCtrls, Menus;
 
 type

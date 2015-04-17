@@ -6,7 +6,8 @@ interface
 
 uses
   Protocol, ClientTools, Term, ScreenTools, BaseWin,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonBase, ButtonB, ButtonC, Menus, EOTButton;
 
 type

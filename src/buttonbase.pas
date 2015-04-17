@@ -3,7 +3,7 @@ unit ButtonBase;
 interface
 
 uses
-  WinProcs, Classes, Graphics, Controls;
+  Classes, Graphics, Controls;
 
 type
   TButtonBase = class(TGraphicControl)

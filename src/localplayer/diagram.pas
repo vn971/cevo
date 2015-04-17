@@ -6,7 +6,8 @@ interface
 
 uses
   BaseWin,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonB, ButtonBase, Menus;
 
 type

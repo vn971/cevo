@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit IsoEngine;
 
@@ -8,7 +8,8 @@ uses
   Protocol, ClientTools, ScreenTools, Tribes,
   {$IFNDEF SCR}Term,{$ENDIF}
 
-  Windows, SysUtils, Classes, Graphics;
+  LCLIntf, LCLType,
+  SysUtils, Classes, Graphics;
 
 type
   TInitEnemyModelEvent = function(emix: integer): boolean;
@@ -490,7 +491,7 @@ begin
   if (Width <= 0) or (Height <= 0) then
     exit;
 
-  Windows.BitBlt(FOutput.Canvas.Handle, x, y, Width, Height, Src.Canvas.Handle, xSrc,
+  LCLIntf.BitBlt(FOutput.Canvas.Handle, x, y, Width, Height, Src.Canvas.Handle, xSrc,
     ySrc, Rop);
 end;
 
@@ -529,9 +530,9 @@ begin
   if (Width <= 0) or (Height <= 0) then
     exit;
 
-  Windows.BitBlt(OutDC, xDst, yDst, Width, Height, MaskDC, xSrc, ySrc, SRCAND);
+  LCLIntf.BitBlt(OutDC, xDst, yDst, Width, Height, MaskDC, xSrc, ySrc, SRCAND);
   if not PureBlack then
-    Windows.BitBlt(OutDC, xDst, yDst, Width, Height, DataDC, xSrc, ySrc, SRCPAINT);
+    LCLIntf.BitBlt(OutDC, xDst, yDst, Width, Height, DataDC, xSrc, ySrc, SRCPAINT);
 end;
 
 procedure TIsoMap.PaintUnit(x, y: integer; const UnitInfo: TUnitInfo; Status: integer);
@@ -630,10 +631,12 @@ begin
   if not Accessory then
     exit;
 
-{if ciCapital and CityInfo.Flags<>0 then
+{
+if ciCapital and CityInfo.Flags<>0 then
   Sprite(Tribe[CityInfo.Owner].symHGr,x+cpic.xf,y-13+cpic.yf,13,14,
     1+Tribe[CityInfo.Owner].sympix mod 10 *65,
-    1+Tribe[CityInfo.Owner].sympix div 10 *49); {capital -- paint flag}
+    1+Tribe[CityInfo.Owner].sympix div 10 *49); //capital -- paint flag
+}
 
   if MyMap[CityInfo.Loc] and fObserved <> 0 then
   begin
@@ -960,7 +963,7 @@ var
       begin
         if BordersOK and (1 shl p1) = 0 then
         begin
-          Windows.BitBlt(Borders.Canvas.Handle, 0, p1 * (yyt * 2), xxt * 2, yyt * 2,
+          LCLIntf.BitBlt(Borders.Canvas.Handle, 0, p1 * (yyt * 2), xxt * 2, yyt * 2,
             GrExt[HGrTerrain].Data.Canvas.Handle, 1 + 8 * (xxt * 2 + 1), 1 + yyt + 16 * (yyt * 3 + 1), SRCCOPY);
           for dy := 0 to yyt * 2 - 1 do
           begin

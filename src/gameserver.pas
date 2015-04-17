@@ -6,7 +6,7 @@ unit GameServer;
 interface
 
 uses
-  dynlibs, // allows "FreeLibrary"
+  dynlibs,
   Protocol, Database;
 
 const
@@ -101,7 +101,7 @@ implementation
 uses
   FileUtil,
   Directories, CityProcessing, UnitProcessing, CmdList,
-  Windows, Classes, SysUtils;
+  LCLIntf, LCLType, Classes, SysUtils;
 
 var
   MaxTurn, LoadTurn, {turn where to stop loading}

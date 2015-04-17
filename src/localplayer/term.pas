@@ -6,7 +6,8 @@ interface
 
 uses
   Protocol, Tribes, PVSB, ClientTools, ScreenTools, BaseWin, Messg, ButtonBase,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus, ExtCtrls,
+  LCLIntf, LCLType, LMessages,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus, ExtCtrls,
   ButtonA, ButtonB, ButtonC, EOTButton, Area;
 
 const
@@ -421,6 +422,7 @@ procedure HelpOnTerrain(Loc, NewMode: integer);
 implementation
 
 uses
+  FileUtil,
   Directories, IsoEngine, CityScreen, Draft, MessgEx, Select, CityType, Help,
   UnitStat, Diplomacy, Inp, log, Diagram, NatStat, Wonders, Enhance, Nego, Battle, Rates,
   TechTree,

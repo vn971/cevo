@@ -1,11 +1,12 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 unit Rates;
 
 interface
 
 uses
   Protocol, ScreenTools, BaseWin,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  LCLIntf, LCLType,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonBase, ButtonB, ButtonC;
 
 type
