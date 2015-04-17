@@ -229,7 +229,7 @@ type
     MapHeight, BlinkTime, BrushLoc, EditLoc, xMouse, yMouse: integer;
     BrushType: cardinal;
     trix: array[0..63] of integer;
-    AILogo: array[0..nPl - 1] of TBitmap;
+    AILogo: array[0..nPl - 1] of TFPImageBitmap;
     Mini, Panel, TopBar: TBitmap;
     sb: TPVScrollbar;
     Closable, RepaintOnResize, Tracking, TurnComplete, Edited, GoOnPhase,
@@ -1181,13 +1181,8 @@ begin
   end
   else
   begin
-    if AILogo[p] = nil then
-      AILogo[p] := TBitmap.Create;
-    if not LoadGraphicFile(AILogo[p], BinariesDirectory + Name, gfNoError) then
-    begin
-      AILogo[p].Free;
-      AILogo[p] := nil;
-    end;
+    FreeAndNil(AILogo[p]);
+    AILogo[p] := LoadAnyGraphics(BinariesDirectory + Name + '.bmp', gfNoError);
   end;
 end;
 
