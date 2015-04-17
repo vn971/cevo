@@ -26,7 +26,7 @@ implementation
 const
   Count: integer = 0;
 
-procedure CreatePVSB;
+procedure CreatePVSB(var sb: TPVScrollbar; Handle, y0, x1, y1: integer);
 begin
   Inc(Count);
   sb.h := CreateWindowEx(0, 'SCROLLBAR', PChar('PVSB' + IntToStr(Count)),
@@ -34,7 +34,7 @@ begin
   sb.si.cbSize := 28;
 end;
 
-procedure InitPVSB;
+procedure InitPVSB(var sb: TPVScrollbar; max, Page: integer);
 begin
   with sb.si do
   begin
@@ -90,7 +90,7 @@ begin
     end;
 end;
 
-function ProcessMouseWheel;
+function ProcessMouseWheel(var sb: TPVScrollbar; const m: TMessage): boolean;
 var
   NewPos: integer;
 begin
