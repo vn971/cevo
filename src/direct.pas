@@ -6,7 +6,8 @@ interface
 
 uses
   Messg,
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
+  LCLIntf, LCLType, LMessages,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 const
   WM_GO = WM_USER;
@@ -40,7 +41,9 @@ var
 implementation
 
 uses
-  ScreenTools, Protocol, GameServer, Start, LocalPlayer, NoTerm, Back, ShellAPI;
+  ScreenTools, Protocol, GameServer, Start,
+  LocalPlayer in 'localplayer\localplayer.pas',
+  NoTerm, Back;
 
 {$R *.DFM}
 
@@ -51,7 +54,7 @@ end;
 
 procedure TDirectDlg.DlgNotify(ID: integer);
 var
-  hMem: cardinal;
+  hMem: Cardinal;
   p: pointer;
   s: string;
 begin
@@ -124,8 +127,7 @@ begin
         Kind := mkYesNo;
         ShowModal;
         if ModalResult = mrOk then
-          ShellExecute(Handle, 'open', 'http://c-evo.org/_sg/contact/cevobug.html',
-            '', '', SW_SHOWNORMAL);
+          OpenURL('http://c-evo.org/_sg/contact/cevobug.html');
       end;
     end;
     ntStartDone:
