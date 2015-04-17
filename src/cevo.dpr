@@ -1,8 +1,12 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 library cevo;
 
 uses
+{$IFNDEF FPC}
+{$ELSE}
+  Interfaces,
+{$ENDIF}
   Forms,
   StringTables in 'StringTables.pas',
   Directories in 'Directories.pas',
@@ -45,7 +49,7 @@ uses
   Rates in 'LocalPlayer\Rates.pas' {RatesDlg},
   TechTree in 'LocalPlayer\TechTree.pas' {TechTreeDlg};
 
-{$R *.RES}
+{$R *.res}
 
 procedure Run(clientPtr: pointer); stdcall;
 begin

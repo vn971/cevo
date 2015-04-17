@@ -1,14 +1,23 @@
-#### compilation output
-*.dcu
+#### compilation output (Delphi)
 *.ddp
 *.drc
 *.exe
-*.map
-*.rsm
 /target/cevo.dll
+/target/dcu/*.dcu
+/target/*.map
+/target/*.rsm
+
+#### compilation output (Lazarus)
+/target/*.a
+/target/*.compiled
+/target/*.o
+/target/*.ppu
 
 #### backups by delphi
 *.~*
+
+#### Lazarus local files
+*.lps
 
 #### exclude AI files
 /target/AI/*
