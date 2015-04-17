@@ -188,10 +188,12 @@ scContact=$4900; // + concerned player shl 4 for server call
 scReject=$4A00;
 scDipStart=$4B00;
 scDipNotice=$4B10;
+scDipNoticeMinusScDipStart=scDipNotice-scDipStart;
 scDipAccept=$4B20;
 scDipCancelTreaty=$4B30;
 scDipOffer=$4B4E;
 scDipBreak=$4BF0;
+scDipBreakMinusScDipStart=scDipBreak-scDipStart;
 
 {server return codes: flags}
 rExecuted=             $40000000;

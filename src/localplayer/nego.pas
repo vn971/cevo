@@ -78,7 +78,7 @@ type
     Page, DipCommand: integer;
     CurrentOffer: TOffer;
     MyAllowed, OppoAllowed: TPriceSet;
-    CommandAllowed: set of scDipNotice-scDipStart..scDipBreak-scDipStart;
+    CommandAllowed: set of scDipNoticeMinusScDipStart..scDipBreakMinusScDipStart;
     History: array[0..nPl-1] of THistory;
     RomanFont: TFont;
     Costs,Delivers: array[0..11] of cardinal;
