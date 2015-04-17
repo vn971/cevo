@@ -17,7 +17,7 @@ implementation
 
 uses
   FileUtil,
-  LCLIntf, LCLType, // replacement for "windows" unit
+  LCLIntf, LCLType,
   SysUtils;
 
 function LocalizedFilePath(path: string): string;
