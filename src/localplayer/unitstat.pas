@@ -41,7 +41,7 @@ type
     // for dkEnemyUnit, euixShow=-1 ->
     mox: ^TModelInfo; // for dkEnemyModel
     Kind: (dkOwnModel, dkOwnUnit, dkEnemyModel, dkEnemyUnit, dkEnemyCityDefense, dkEnemyCity);
-    Back, Template: TBitmap;
+    Back, Template: TFPImageBitmap;
     procedure OffscreenPaint; override;
   end;
 
@@ -81,8 +81,7 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := 5 * wCommon;
   Back.Height := hMax;
-  Template := TBitmap.Create;
-  LoadGraphicFile(Template, GraphicsDirectory + 'Unit', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'Unit.bmp', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 
