@@ -4072,6 +4072,8 @@ begin
 
     // lazarus todo: check correctness. (vn971)
     // In the original code, "Rgn: HRGN" was 0 and "update: PRect" was Nil.
+    // Delphi interface can be seen here:
+    // http://sourceforge.net/p/lazarus-ccr/svn/HEAD/tree/components/orpheus/mymisc.pas#l695
     // See also `ScrollWindowEx` below.
     ScrollWindowEx(
                    Offscreen.Canvas.Handle,

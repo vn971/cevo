@@ -62,6 +62,7 @@
       <Unit5>
         <Filename Value="database.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Database"/>
       </Unit5>
       <Unit6>
         <Filename Value="gameserver.pas"/>
@@ -83,11 +84,13 @@
       <Unit10>
         <Filename Value="screentools.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ScreenTools"/>
       </Unit10>
       <Unit11>
         <Filename Value="start.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Start"/>
       </Unit11>
       <Unit12>
         <Filename Value="messg.pas"/>
@@ -112,6 +115,7 @@
       <Unit16>
         <Filename Value="localplayer/pvsb.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="PVSB"/>
       </Unit16>
       <Unit17>
         <Filename Value="localplayer/localplayer.pas"/>
@@ -137,6 +141,7 @@
         <Filename Value="localplayer/term.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Term"/>
       </Unit22>
       <Unit23>
         <Filename Value="localplayer/messgex.pas"/>
@@ -157,6 +162,7 @@
         <Filename Value="localplayer/select.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Select"/>
       </Unit26>
       <Unit27>
         <Filename Value="localplayer/cityscreen.pas"/>
@@ -246,11 +252,7 @@
       </Options>
     </Linking>
     <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
       <CustomOptions Value="-fPIC"/>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>

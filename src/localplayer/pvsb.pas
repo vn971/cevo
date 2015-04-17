@@ -5,7 +5,7 @@ unit PVSB;
 interface
 
 uses
-  LCLIntf, LCLType,
+  LCLIntf, LCLType, LMessages,
   Messages, SysUtils;
 
 type
