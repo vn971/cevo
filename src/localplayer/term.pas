@@ -431,7 +431,7 @@ uses
 
 {$R *.lfm}
 
-{$R Res1.res}
+{$R ../res1.res}
 
 const
   lxmax_xxx = 130;
