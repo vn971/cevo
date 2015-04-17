@@ -365,11 +365,19 @@ begin
   for y := 0 to ySizeBig * 2 - 1 do
     if (y0 + y >= 0) and (y0 + y < InnerHeight) then
     begin
+      Offscreen.BeginUpdate();
       PaintLine := OffScreen.ScanLine[y0 + y];
+      Offscreen.EndUpdate();
+      Templates.BeginUpdate();
       CoalLine := Templates.ScanLine[yCoal + y];
+      Templates.EndUpdate();
       for dy := -1 to 1 do
         if ((y + dy) shr 1 >= 0) and ((y + dy) shr 1 < ySizeBig) then
+        begin
+          BigImp.BeginUpdate();
           ImpLine[dy] := BigImp.ScanLine[ySrc + (y + dy) shr 1];
+          BigImp.EndUpdate();
+        end;
       for x := 0 to xSizeBig * 2 - 1 do
       begin
         sum := 0;

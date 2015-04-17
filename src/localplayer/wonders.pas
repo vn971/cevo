@@ -96,8 +96,12 @@ type
     y0Src := (i div 7 + SystemIconLines) * ySizeBig;
     for y := 0 to ySizeBig - 1 do
     begin
+      BigImp.BeginUpdate();
       Src := BigImp.ScanLine[y0Src + y];
+      BigImp.EndUpdate();
+      Offscreen.BeginUpdate();
       Dst := Offscreen.ScanLine[y0Dst + y];
+      Offscreen.EndUpdate();
       for x := 0 to xSizeBig - 1 do
       begin
         darken := ((255 - Src[x0Src + x][0]) * 3 + (255 - Src[x0Src + x][1]) * 15 +
@@ -165,8 +169,10 @@ begin
   ym := ClientHeight div 2;
   for y := 0 to 127 do
   begin
+    Offscreen.BeginUpdate();
     Line[0] := Offscreen.Scanline[ym + y];
     Line[1] := Offscreen.Scanline[ym - 1 - y];
+    Offscreen.EndUpdate();
     for x := 0 to 179 do
     begin
       r := x * x * (32 * 32) + y * y * (45 * 45);

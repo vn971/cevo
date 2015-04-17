@@ -526,7 +526,9 @@ begin
         ydivider := (y * ySizeSmall div (ySizeBig - 2 * cut) + 1) * (ySizeBig - 2 * cut) - y * ySizeSmall;
         if ydivider > ySizeSmall then
           ydivider := ySizeSmall;
+        BigImp.BeginUpdate();
         line := BigImp.ScanLine[cut + iy * ySizeBig + y];
+        BigImp.EndUpdate();
         for x := 0 to xSizeBig - 1 do
         begin
           ir := ix * xSizeSmall + iy * nx * ySizeSmall + x * xSizeSmall div
@@ -553,7 +555,9 @@ begin
   SmallImp.Height := ny;
   for y := 0 to ny - 1 do
   begin
+    SmallImp.BeginUpdate();
     line := SmallImp.ScanLine[y];
+    SmallImp.EndUpdate();
     for x := 0 to nx - 1 do
       for ch := 0 to 2 do
       begin
@@ -3948,7 +3952,9 @@ begin
   for y := 0 to G.ly - 1 do
   begin
     PrevMiniLine := MiniLine;
+    Mini.BeginUpdate();
     MiniLine := Mini.ScanLine[y];
+    Mini.EndUpdate();
     for x := 0 to G.lx - 1 do
       if MyMap[x + G.lx * y] and fTerrain <> fUNKNOWN then
       begin

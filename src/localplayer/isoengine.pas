@@ -338,7 +338,11 @@ begin
   for ySrc := 0 to TerrainIconLines - 1 do
   begin
     for i := 0 to yyt * 3 - 1 do
+    begin
+      Mask24.BeginUpdate();
       MaskLine[i] := Mask24.ScanLine[1 + ySrc * (yyt * 3 + 1) + i];
+      Mask24.EndUpdate();
+    end;
     for xSrc := 0 to 9 - 1 do
     begin
       i := ySrc * 9 + xSrc;
@@ -967,7 +971,9 @@ var
             GrExt[HGrTerrain].Data.Canvas.Handle, 1 + 8 * (xxt * 2 + 1), 1 + yyt + 16 * (yyt * 3 + 1), SRCCOPY);
           for dy := 0 to yyt * 2 - 1 do
           begin
+            Borders.BeginUpdate();
             Line := Borders.ScanLine[p1 * (yyt * 2) + dy];
+            Borders.EndUpdate();
             for dx := 0 to xxt * 2 - 1 do
               if Line[dx, 0] = 99 then
               begin
@@ -1291,7 +1297,9 @@ procedure TIsoMap.Paint(x, y, Loc, nx, ny, CityLoc, CityOwner: integer;
   begin
     for y := y0 to y1 - 1 do
     begin
+      FOutput.BeginUpdate();
       line := FOutput.ScanLine[y];
+      FOutput.EndUpdate();
       y_n := (y - ym) / yyt;
       if abs(y_n) < rShade then
       begin

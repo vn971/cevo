@@ -421,8 +421,10 @@ begin
   end;
   if (Options and gfNoGamma = 0) and (Gamma <> 100) then
   begin
+    bmp.BeginUpdate();
     FirstLine := bmp.ScanLine[0];
     LastLine := bmp.ScanLine[bmp.Height - 1];
+    bmp.EndUpdate();
     if integer(FirstLine) < integer(LastLine) then
       ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
     else
@@ -478,8 +480,10 @@ begin
   end;
   if (Options and gfNoGamma = 0) and (Gamma <> 100) then
   begin
+    bmp.BeginUpdate();
     FirstLine := bmp.ScanLine[0];
     LastLine := bmp.ScanLine[bmp.Height - 1];
+    bmp.EndUpdate();
     if integer(FirstLine) < integer(LastLine) then
       ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
     else
@@ -529,8 +533,12 @@ begin
 
     for y := 0 to Source.Height - 1 do
     begin
+      GrExt[nGrExt].Data.BeginUpdate();
       DataLine := GrExt[nGrExt].Data.ScanLine[y];
+      GrExt[nGrExt].Data.EndUpdate();
+      GrExt[nGrExt].Mask.BeginUpdate();
       MaskLine := GrExt[nGrExt].Mask.ScanLine[y];
+      GrExt[nGrExt].Mask.EndUpdate();
       for x := 0 to xmax - 1 do
       begin
         OriginalColor := cardinal((@DataLine[x])^) and $FFFFFF;
@@ -584,7 +592,11 @@ var
   i: integer;
 begin
   for i := 0 to h - 1 do
+  begin
+    Dst.BeginUpdate();
     BlueLine(@(PLine(Dst.ScanLine[y + i])[x]), w);
+    Dst.EndUpdate();
+  end;
 end;
 
 procedure ImageOp_B(Dst, Src: TBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
@@ -621,8 +633,12 @@ begin
   h := yDst + h;
   while yDst < h do
   begin
+    Dst.BeginUpdate();
     PixelDst := pointer(integer(Dst.ScanLine[yDst]) + 3 * xDst);
+    Dst.EndUpdate();
+    Src.BeginUpdate();
     PixelSrc := pointer(integer(Src.ScanLine[ySrc]) + xSrc);
+    Src.EndUpdate();
     for i := 0 to w - 1 do
     begin
       Brightness := PixelSrc^;
@@ -682,8 +698,12 @@ begin
 
   for iy := 0 to h - 1 do
   begin
+    Src.BeginUpdate();
     SrcLine := Src.ScanLine[ySrc + iy];
+    Src.EndUpdate();
+    Dst.BeginUpdate();
     DstLine := Dst.ScanLine[yDst + iy];
+    Dst.EndUpdate();
     for ix := 0 to w - 1 do
     begin
       trans := SrcLine[xSrc + ix, 0] * 2; // green channel = transparency
@@ -729,7 +749,9 @@ begin
   h := y + h;
   while y < h do
   begin
+    Bmp.BeginUpdate();
     Pixel := pointer(integer(Bmp.ScanLine[y]) + 3 * x);
+    Bmp.EndUpdate();
     for i := 0 to w - 1 do
     begin
       Red := (Pixel[0] * (Color0 and $0000FF) + Pixel[1] *
@@ -861,7 +883,9 @@ var
 begin
   for y := -GlowRange + 1 to Height - 1 + GlowRange - 1 do
   begin
+    dst.BeginUpdate();
     DstLine := dst.ScanLine[y0 + y];
+    dst.EndUpdate();
     for x := -GlowRange + 1 to Width - 1 + GlowRange - 1 do
     begin
       if x < 0 then

@@ -253,7 +253,9 @@ begin
     fillchar(Screwed, sizeof(Screwed), 0);
     for iy := 0 to 39 do
     begin
+      BigImp.BeginUpdate();
       SrcLine := BigImp.ScanLine[iy + yIcon];
+      BigImp.EndUpdate();
       for ix := 0 to 55 do
       begin
         xR := ix * (37 + iy * 5 / 40) / 56;

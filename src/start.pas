@@ -846,7 +846,9 @@ begin
     (hMaintexture - 64) div 2);
   for y := 0 to 63 do
   begin // darken texture for empty slot
+    EmptyPicture.BeginUpdate();
     PictureLine := EmptyPicture.ScanLine[y];
+    EmptyPicture.EndUpdate();
     for x := 0 to 64 * 3 - 1 do
     begin
       i := integer(PictureLine[x]) - 28;
@@ -1028,7 +1030,9 @@ procedure TStartDlg.PaintInfo;
     Mini.Height := MiniHeight;
     for y := 0 to MiniHeight - 1 do
     begin
+      Mini.BeginUpdate();
       MiniLine := Mini.ScanLine[y];
+      Mini.EndUpdate();
       for x := 0 to MiniWidth - 1 do
         for i := 0 to 1 do
         begin
@@ -1064,7 +1068,9 @@ var
       for y := 0 to MiniHeight - 1 do
       begin
         PrevMiniLine := MiniLine;
+        Mini.BeginUpdate();
         MiniLine := Mini.ScanLine[y];
+        Mini.EndUpdate();
         for x := 0 to MiniWidth - 1 do
           for i := 0 to 1 do
           begin

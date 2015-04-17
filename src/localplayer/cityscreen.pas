@@ -441,7 +441,11 @@ procedure TCityDlg.OffscreenPaint;
     i: integer;
   begin
     for i := 0 to h - 1 do
+    begin
+      Offscreen.BeginUpdate();
       RedLine(@(PLine(Offscreen.ScanLine[y + i])[x]), w);
+      Offscreen.EndUpdate();
+    end;
   end;
 
 var

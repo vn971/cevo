@@ -58,8 +58,12 @@ var
 begin
   for iy := 0 to h - 1 do
   begin
+    Src.BeginUpdate();
     SrcLine := Src.ScanLine[ySrc + iy];
+    Src.EndUpdate();
+    Dst.BeginUpdate();
     DstLine := Dst.ScanLine[yDst + iy];
+    Dst.EndUpdate();
     for ix := 0 to w - 1 do
     begin
       trans := SrcLine[xSrc + ix, 0] * 2; // green channel = transparency

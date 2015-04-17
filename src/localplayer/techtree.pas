@@ -163,8 +163,12 @@ begin
     TexHeight := Paper.Height;
     for y := 0 to Image.Height - 1 do
     begin
+      Paper.BeginUpdate();
       SrcLine := Paper.ScanLine[y mod TexHeight];
+      Paper.EndUpdate();
+      Image.BeginUpdate();
       DstLine := Image.ScanLine[y];
+      Image.EndUpdate();
       for x := 0 to Image.Width - 1 do
       begin
         if cardinal((@DstLine[x])^) and $FFFFFF = $7F007F then // transparent
