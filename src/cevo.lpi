@@ -108,6 +108,7 @@
         <Filename Value="back.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Back"/>
       </Unit14>
       <Unit15>
         <Filename Value="log.pas"/>
@@ -140,6 +141,7 @@
       <Unit21>
         <Filename Value="localplayer/isoengine.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="IsoEngine"/>
       </Unit21>
       <Unit22>
         <Filename Value="localplayer/term.pas"/>
