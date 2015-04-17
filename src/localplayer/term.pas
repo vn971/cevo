@@ -4069,13 +4069,22 @@ begin
       exit; {map window not moved}
     offscreen.Canvas.Font.Assign(UniFont[ftSmall]);
     rec := Rect(0, 0, MapWidth, MapHeight);
-    ScrollDC(offscreen.Canvas.Handle, (xwd - xw) * (xxt * 2), (ywd - yw) * yyt, rec, rec, 0, nil);
+
+    // lazarus todo: check correctness. (vn971)
+    // In the original code, "Rgn: HRGN" was 0 and "update: PRect" was Nil.
+    // See also `ScrollWindowEx` below.
+    ScrollWindowEx(
+                   Offscreen.Canvas.Handle,
+                   (xwd - xw) * (xxt * 2),
+                   (ywd - yw) * yyt,
+                   @rec, @rec,
+                   0, nil, 0);
     for DoInvalidate := False to FastScrolling do
     begin
       if DoInvalidate then
       begin
         rec.bottom := MapHeight - overlap;
-        ScrollDC(Canvas.Handle, (xwd - xw) * (xxt * 2), (ywd - yw) * yyt, rec, rec, 0, nil);
+        ScrollWindowEx(Canvas.Handle, (xwd - xw) * (xxt * 2), (ywd - yw) * yyt, @rec, @rec, 0, nil, 0);
         ProcessOptions := prInvalidate;
       end
       else
@@ -4910,7 +4919,7 @@ procedure TMainScreen.Centre(Loc: integer);
 begin
   if FastScrolling and MapValid then
     update;
-  // necessary because ScrollDC for form canvas is called after
+  // necessary because ScrollDC (ScrollWindowEx in lazarus) for form canvas is called after
   xw := (Loc mod G.lx - (MapWidth - xxt * 2 * ((Loc div G.lx) and 1)) div (xxt * 4) + G.lx) mod G.lx;
   if ywmax <= 0 then
     yw := ywcenter
