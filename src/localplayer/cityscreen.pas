@@ -301,7 +301,7 @@ begin
 
   with SmallCityMap.canvas do
   begin
-    brush.Color := Colors.Canvas.Pixels[clkAge0 + Age, cliImp];
+    Brush.Color := ScreenTools.Colors.Canvas.Pixels[clkAge0 + Age, cliImp];
     for i := 0 to 29 do
     begin
       for iix := 28 to nImp - 1 do
@@ -331,7 +331,7 @@ begin
           i := ImpPosition[iix];
         if i < 36 then
         begin
-          brush.Color := Colors.Canvas.Pixels[clkAge0 + Age, cliImpProject];
+          brush.Color := ScreenTools.Colors.Canvas.Pixels[clkAge0 + Age, cliImpProject];
           FillRect(Rect(5 + 16 * (i mod 3) + 48 * (i div 18), 3 + 12 * (i mod 18 div 3),
             13 + 16 * (i mod 3) + 48 * (i div 18), 11 + 12 * (i mod 18 div 3)));
         end;

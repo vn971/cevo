@@ -471,7 +471,7 @@ begin
           end;
           pkSmallIcon, pkSmallIcon_AsPreq:
           begin
-            Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + 20 + i * 24,
+            ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + 20 + i * 24,
               $000000, $000000);
             if HelpLineInfo.Picpix = imPalace then
               BitBlt(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall,
@@ -522,7 +522,7 @@ begin
           end;
           pkDomain:
           begin
-            Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + 36 + x0[i], 2 + 20 + i * 24,
+            ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + 36 + x0[i], 2 + 20 + i * 24,
               $000000, $000000);
             Dump(offscreen, HGrSystem, 8 + x0[i], 2 + i * 24, 36, 20,
               75 + HelpLineInfo.Picpix * 37, 295);
@@ -530,7 +530,7 @@ begin
           end;
           pkAdvIcon, pkAdvIcon_AsPreq:
           begin
-            Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + ySizeSmall + i * 24,
+            ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + ySizeSmall + i * 24,
               $000000, $000000);
             if AdvIcon[HelpLineInfo.Picpix] < 84 then
               BitBlt(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall, ySizeSmall,
@@ -566,7 +566,7 @@ begin
               begin
                 Inc(cnt);
                 Dump(offscreen, HGrSystem, InnerWidth - 38 - 38 * cnt, i * 24 + 1, 36, 20, 75 + j * 37, 295);
-                Frame(offscreen.canvas, InnerWidth - 39 - 38 * cnt, i * 24,
+                ScreenTools.Frame(offscreen.canvas, InnerWidth - 39 - 38 * cnt, i * 24,
                   InnerWidth - 2 - 38 * cnt, i * 24 + 21,
                   $000000, $000000);
               end;
@@ -676,7 +676,7 @@ begin
           pkFeature:
           begin
             DarkGradient(offscreen.Canvas, x0[i] + 8 - 1, 7 + i * 24 - 3, 16, 1);
-            Frame(offscreen.canvas, x0[i] + 8, 7 + i * 24 - 2, x0[i] + 8 + 13, 7 + i * 24 - 2 + 13,
+            ScreenTools.Frame(offscreen.canvas, x0[i] + 8, 7 + i * 24 - 2, x0[i] + 8 + 13, 7 + i * 24 - 2 + 13,
               $C0C0C0, $C0C0C0);
             Sprite(offscreen, HGrSystem, x0[i] + 8 + 2, 7 + i * 24, 10, 10,
               66 + HelpLineInfo.Picpix mod 11 * 11, 137 + HelpLineInfo.Picpix div 11 * 11);
@@ -684,7 +684,7 @@ begin
           end;
           pkExp:
           begin
-            Frame(offscreen.Canvas, 20 - 1, 8 - 4 + i * 24, 20 + 12, 8 + 11 + i * 24, $000000, $000000);
+            ScreenTools.Frame(offscreen.Canvas, 20 - 1, 8 - 4 + i * 24, 20 + 12, 8 + 11 + i * 24, $000000, $000000);
             Dump(offscreen, HGrSystem, 20, 8 - 3 + i * 24, 12, 14, 121 + HelpLineInfo.Picpix * 13, 28);
             x0[i] := 20 + 8 + 11;
           end;
@@ -695,7 +695,7 @@ begin
           end;
           pkGov:
           begin
-            Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + 20 + i * 24,
+            ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + 20 + i * 24,
               $000000, $000000);
             BitBlt(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall,
               ySizeSmall, SmallImp.Canvas.Handle,
