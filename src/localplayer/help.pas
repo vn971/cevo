@@ -83,7 +83,7 @@ type
     HistNo: array[0..MaxHist - 1] of integer;
     HistPos: array[0..MaxHist - 1] of integer;
     HistSearchContent: array[0..MaxHist - 1] of shortstring;
-    procedure line(ca: TCanvas; i: integer; lit: boolean);
+    procedure lineMod(ca: TCanvas; i: integer; lit: boolean);
     procedure Prepare(sbPos: integer = 0);
     procedure WaterSign(x0, y0, iix: integer);
     procedure Search(SearchString: string);
@@ -268,7 +268,7 @@ procedure THelpDlg.OnMouseLeave(var Msg: TMessage);
 begin
   if Sel <> -1 then
   begin
-    line(Canvas, Sel, False);
+    lineMod(Canvas, Sel, False);
     Sel := -1;
   end;
 end;
@@ -279,7 +279,7 @@ begin
   Canvas.Font.Assign(UniFont[ftNormal]);
 end;
 
-procedure THelpDlg.line(ca: TCanvas; i: integer; lit: boolean);
+procedure THelpDlg.lineMod(ca: TCanvas; i: integer; lit: boolean);
 var
   TextColor, x, y: integer;
   TextSize: TSize;
@@ -722,7 +722,7 @@ begin
           else
             x0[i] := x0[i] + 8
         end;
-        line(offscreen.Canvas, i, False);
+        lineMod(offscreen.Canvas, i, False);
       end;
   end;
   MarkUsedOffscreen(InnerWidth, InnerHeight + 13 + 48);
@@ -1794,9 +1794,9 @@ begin
   if Sel <> Sel0 then
   begin
     if Sel0 <> -1 then
-      line(Canvas, Sel0, False);
+      lineMod(Canvas, Sel0, False);
     if Sel <> -1 then
-      line(Canvas, Sel, True);
+      lineMod(Canvas, Sel, True);
   end;
 end;
 

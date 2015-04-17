@@ -64,7 +64,7 @@ type
     Closable, MultiPage: boolean;
     ScienceNationDot: TBitmap;
     procedure InitLines;
-    procedure line(ca: TCanvas; l: integer; NonText, lit: boolean);
+    procedure lineMod(ca: TCanvas; l: integer; NonText, lit: boolean);
     function RenameCity(cix: integer): boolean;
     function RenameModel(mix: integer): boolean;
     procedure OnScroll(var m: TMessage); message WM_VSCROLL;
@@ -152,7 +152,7 @@ procedure TListDlg.OnMouseLeave(var Msg: TMessage);
 begin
   if not Closable and (Sel <> -2) then
   begin
-    line(Canvas, Sel, False, False);
+    lineMod(Canvas, Sel, False, False);
     Sel := -2;
   end;
 end;
@@ -164,7 +164,7 @@ begin
   inherited;
   Canvas.Font.Assign(UniFont[ftNormal]);
   if Sel <> -2 then
-    line(Canvas, Sel, False, True);
+    lineMod(Canvas, Sel, False, True);
   s := '';
   if (Kind = kAdvance) and (MyData.FarTech <> adNone) then
     s := Format(Phrases.Lookup('TECHFOCUS'), [Phrases.Lookup('ADVANCES', MyData.FarTech)])
@@ -185,7 +185,7 @@ begin
   end;
 end;
 
-procedure TListDlg.line(ca: TCanvas; l: integer; NonText, lit: boolean);
+procedure TListDlg.lineMod(ca: TCanvas; l: integer; NonText, lit: boolean);
 // paint a line
 
   procedure DisplayProject(x, y, pix: integer);
@@ -731,7 +731,7 @@ begin
       end;
     for i := -1 to DispLines do
       if (i + sb.si.npos >= 0) and (i + sb.si.npos < Lines[Layer]) then
-        line(offscreen.Canvas, i, True, False);
+        lineMod(Offscreen.Canvas, i, True, False);
   end;
   MarkUsedOffscreen(InnerWidth, 8 + 48 + DispLines * LineDistance);
 end;
@@ -754,9 +754,9 @@ begin
   if Sel <> Sel0 then
   begin
     if Sel0 <> -2 then
-      line(Canvas, Sel0, False, False);
+      lineMod(Canvas, Sel0, False, False);
     if Sel <> -2 then
-      line(Canvas, Sel, False, True);
+      lineMod(Canvas, Sel, False, True);
   end;
 
   if Kind = kScience then
