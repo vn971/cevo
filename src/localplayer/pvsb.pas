@@ -60,14 +60,14 @@ begin
       Result := False
     else
     begin
-      if m.wParamLo in [SB_THUMBPOSITION, SB_THUMBTRACK] then
+      if Lo(m.wParam) in [SB_THUMBPOSITION, SB_THUMBTRACK] then
       begin
-        Result := m.wParamHi <> npos;
-        npos := m.wParamHi;
+        Result := Hi(m.wParam) <> npos;
+        npos := Hi(m.wParam);
       end
       else
       begin
-        case m.wParamLo of
+        case Lo(m.wParam) of
           SB_LINEUP: NewPos := npos - 1;
           SB_LINEDOWN: NewPos := npos + 1;
           SB_PAGEUP: NewPos := npos - integer(nPage);
@@ -80,7 +80,7 @@ begin
         if NewPos > nMax - integer(nPage) + 1 then
           NewPos := nMax - integer(nPage) + 1;
         Result := NewPos <> npos;
-        if (NewPos <> npos) or (m.wParamLo = SB_ENDSCROLL) then
+        if (NewPos <> npos) or (Lo(m.wParam) = SB_ENDSCROLL) then
         begin
           npos := NewPos;
           FMask := SIF_POS;
