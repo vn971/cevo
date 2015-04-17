@@ -18,6 +18,7 @@ type
     SeaArea: TArea;
     AirArea: TArea;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure CloseBtnClick(Sender: TObject);
     procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -25,7 +26,6 @@ type
     procedure OKBtnClick(Sender: TObject);
     procedure PaintBox1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; x, y: integer);
-    procedure FormDestroy(Sender: TObject);
   public
     procedure ShowNewContent(NewMode: integer);
   protected

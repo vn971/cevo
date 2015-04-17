@@ -211,7 +211,7 @@ type
     procedure MovieSpeedBtnClick(Sender: TObject);
 
   public
-    procedure CreateParams(var p: TCreateParams); override;
+    procedure CreateParams(var Params: TCreateParams); override;
     procedure Client(Command, NewPlayer: integer; var Data);
     procedure SetAIName(p: integer; Name: string);
     function ZoomToCity(Loc: integer; NextUnitOnClose: boolean = False;
@@ -3258,16 +3258,24 @@ end;{<<<client}
 
 {*** main part ***}
 
-// lazarus todo:
-// this procedure is never called.
-// Why? Maybe because LCL components do not know what TMainScreen is?
-procedure TMainScreen.CreateParams(var p: TCreateParams);
-var
-  DefaultOptionChecked: integer;
-  Reg: TRegistry;
-  doinit: boolean;
+procedure TMainScreen.CreateParams(var Params: TCreateParams);
 begin
   inherited;
+  if FullScreen then
+  begin
+    Params.Style := $87000000;
+    BorderStyle := bsNone;
+    BorderIcons := [];
+  end;
+end;
+
+procedure TMainScreen.FormCreate(Sender: TObject);
+var
+  i, j: Integer;
+  DefaultOptionChecked: integer;
+  Reg: TRegistry;
+  DoInit: Boolean;
+begin
 
   // define which menu settings to save
   SaveOption[0] := mAlEffectiveMovesOnly.Tag;
@@ -3296,10 +3304,9 @@ begin
     14 + 1 shl 18 + 1 shl 19;
 
   Reg := TRegistry.Create;
-  doinit := True;
+  DoInit := True;
   if Reg.KeyExists('SOFTWARE\cevo\RegVer9') then
   begin
-    doinit := False;
     Reg.OpenKey('SOFTWARE\cevo\RegVer9', False);
     try
       xxt := Reg.ReadInteger('TileWidth') div 2;
@@ -3307,15 +3314,15 @@ begin
       OptionChecked := Reg.ReadInteger('OptionChecked');
       MapOptionChecked := Reg.ReadInteger('MapOptionChecked');
       CityRepMask := cardinal(Reg.ReadInteger('CityReport'));
+      DoInit := False;
     except
-      doinit := True;
     end;
     Reg.closekey;
     if OptionChecked and (7 shl 16) = 0 then
       OptionChecked := OptionChecked or (1 shl 16); // old regver with no scrolling
   end;
-  Reg.Free;
-  if doinit then
+  FreeAndNil(Reg);
+  if DoInit then
   begin
     xxt := 48;
     yyt := 24;
@@ -3324,25 +3331,13 @@ begin
     CityRepMask := cardinal(not chPopIncrease and not chNoGrowthWarning and not chCaptured);
   end;
 
-  if FullScreen then
-  begin
-    p.Style := $87000000;
-    BorderStyle := bsNone;
-    BorderIcons := [];
-  end;
-
   if 1 shl 13 and OptionChecked <> 0 then
     SoundMode := smOff
   else if 1 shl 15 and OptionChecked <> 0 then
     SoundMode := smOnAlt
   else
     SoundMode := smOn;
-end;
 
-procedure TMainScreen.FormCreate(Sender: TObject);
-var
-  i, j: integer;
-begin
   Screen.Cursors[crImpDrag] := LoadCursor(HInstance, 'DRAG');
   Screen.Cursors[crFlatHand] := LoadCursor(HInstance, 'FLATHAND');
 
