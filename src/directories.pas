@@ -43,8 +43,10 @@ initialization
     CreateDir(UserDirectory + 'Maps');
 
   // copy appdata if not done yet
-  if FindFirst(BinariesDirectory + 'AppData\Saved\*.cevo', $21, src) = 0 then
-    repeat
+  if FindFirst(BinariesDirectory + 'AppData' +
+     DirectorySeparator + 'Saved' +
+     DirectorySeparator + '*.cevo', $21, src) = 0
+  then repeat
       if (FindFirst(UserDirectory + 'Saved' + DirectorySeparator + src.Name, $21, dst) <> 0) or
         (dst.Time < src.Time) then
         FileUtil.CopyFile(

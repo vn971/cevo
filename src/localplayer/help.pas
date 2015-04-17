@@ -199,7 +199,7 @@ begin
   CreatePVSB(sb, Handle, 36, 551, 36 + 432);
 
   HelpText := TStringTable.Create;
-  HelpText.LoadFromFile(LocalizedFilePath('Help\help.txt'));
+  HelpText.LoadFromFile(LocalizedFilePath('Help'+DirectorySeparator+'help.txt'));
   hADVHELP := HelpText.Gethandle('ADVHELP');
   hIMPHELP := HelpText.Gethandle('IMPHELP');
   hFEATUREHELP := HelpText.Gethandle('FEATUREHELP');

@@ -81,7 +81,7 @@ var
 procedure Init;
 begin
   StdUnitScript := TStringList.Create;
-  StdUnitScript.LoadFromFile(LocalizedFilePath('Tribes\StdUnits.txt'));
+  StdUnitScript.LoadFromFile(LocalizedFilePath('Tribes'+DirectorySeparator+'StdUnits.txt'));
   nPictureList := 0;
   PictureList := nil;
 end;

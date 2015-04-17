@@ -1256,7 +1256,7 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     if not ok then
     begin
       FindCloseUTF8(SearchRec);
-      ok := FindFirstUTF8(BinariesDirectory + 'Tribes\*.tribe.txt',faArchive + faReadOnly,SearchRec) = 0;
+      ok := FindFirstUTF8(BinariesDirectory + 'Tribes'+DirectorySeparator+'*.tribe.txt',faArchive + faReadOnly,SearchRec) = 0;
     end;
     if ok then
       repeat

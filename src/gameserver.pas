@@ -885,7 +885,7 @@ begin
           if AICredits = '' then
             AICredits := Brain[i].Credits
           else
-            AICredits := AICredits + '\' + Brain[i].Credits;
+            AICredits := AICredits + DirectorySeparator + Brain[i].Credits;
       end
       else
       begin {module no longer used -- unload}

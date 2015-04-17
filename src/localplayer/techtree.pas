@@ -127,7 +127,7 @@ begin
   if Image = nil then
   begin
     Image := TBitmap.Create;
-    LoadGraphicFile(Image, BinariesDirectory + 'Help\AdvTree', gfNoGamma);
+    LoadGraphicFile(Image, BinariesDirectory + 'Help'+DirectorySeparator+'AdvTree', gfNoGamma);
     Image.PixelFormat := pf24bit;
 
     with Image.Canvas do

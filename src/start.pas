@@ -1374,7 +1374,7 @@ var
   f: TSearchRec;
 begin
   FormerGames.Clear;
-  if FindFirstUTF8(UserDirectory + 'Saved\*.cevo',$21,f) = 0 then
+  if FindFirstUTF8(UserDirectory + 'Saved' + DirectorySeparator + '*.cevo',$21,f) = 0 then
     repeat
       i := FormerGames.Count;
       while (i > 0) and (f.Time < integer(FormerGames.Objects[i - 1])) do
@@ -1393,7 +1393,7 @@ var
   f: TSearchRec;
 begin
   Maps.Clear;
-  if FindFirstUTF8(UserDirectory + 'Maps\*.cevo map',$21,f) = 0 then
+  if FindFirstUTF8(UserDirectory + 'Maps'+DirectorySeparator+'*.cevo map',$21,f) = 0 then
     repeat
       Maps.Add(Copy(f.Name, 1, Length(f.Name) - 9));
     until FindNextUTF8(f) <> 0;
@@ -1588,7 +1588,7 @@ begin
       maCredits: DirectHelp(cStartCredits);
       maAIDev:
         ExecuteProcess(
-          BinariesDirectory + 'AI Template\AI development manual.html',[]);
+          BinariesDirectory + 'AI Template'+DirectorySeparator+'AI development manual.html',[]);
       maWeb:
         OpenURL('http://c-evo.org');
     end;
