@@ -5753,7 +5753,6 @@ var
   Ticks0, Ticks: int64;
 begin
   Timer1.Enabled := False;
-  QueryPerformanceCounter(Ticks0);
   with ShowMove do
   begin
     UnitInfo.Owner := Owner;
@@ -5839,7 +5838,6 @@ begin
           Sleep(1);
           Inc(SliceCount);
         end;
-        QueryPerformanceCounter(Ticks);
       until (Ticks - Ticks0) * 12000 >= MoveTime * PerfFreq;
       Ticks0 := Ticks;
     end;
@@ -6251,10 +6249,8 @@ begin
       end;
       ' ':
       begin // test map repaint time
-        QueryPerformanceCounter(time0);
         MapValid := False;
         MainOffscreenPaint;
-        QueryPerformanceCounter(time1);
         SimpleMessage(Format('Map repaint time: %.3f ms', [
 {$IFDEF VER100}
           (time1.LowPart - time0.LowPart)
@@ -7640,6 +7636,5 @@ begin
 end;
 
 initialization
-  QueryPerformanceFrequency(PerfFreq);
 
 end.

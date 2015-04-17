@@ -78,7 +78,6 @@ begin
   Canvas.Font.Assign(UniFont[ftSmall]);
   TitleHeight := 36;
   InitButtons();
-  QueryPerformanceFrequency(PerfFreq);
   LastShowYearTime := 0;
 end;
 
@@ -209,7 +208,6 @@ begin
         Active := -1;
       end; // should not happen
 
-      QueryPerformanceCounter(now);
       if
 {$IFDEF VER100}
       (now.LowPart - LastShowYearTime.LowPart)
@@ -273,7 +271,6 @@ begin
 
     cShowTurnChange:
     begin
-      QueryPerformanceCounter(now);
       if Active >= 0 then
       begin
         ActiveDuration :=

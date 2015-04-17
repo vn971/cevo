@@ -212,11 +212,9 @@ begin
     begin
       MovieCancelled := False;
       Show;
-      QueryPerformanceCounter(Ticks0);
       repeat
         Application.ProcessMessages;
         Sleep(1);
-        QueryPerformanceCounter(Ticks);
       until MovieCancelled or ((Ticks - Ticks0) * 1000 >= 1500 * PerfFreq);
       Hide;
     end;
@@ -559,6 +557,5 @@ end;
 
 
 initialization
-  QueryPerformanceFrequency(PerfFreq);
 
 end.

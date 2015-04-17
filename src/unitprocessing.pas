@@ -662,7 +662,6 @@ Damage: array[0..lxmax*lymax-1] of integer;
 MountainDelay, Resistant: boolean;
 //  tt,tt0: int64;
 begin
-//  QueryPerformanceCounter(tt0);
 
 MaxDamage:=RW[p].Un[uix].Health-1;
 if MaxDamage>a.MaxHostile_MovementLeft then
@@ -887,7 +886,6 @@ if (Loc=a.ToLoc) or (a.ToLoc=maNextCity) and (Loc>=0)
   end
 else result:=eNoWay;
 
-//  QueryPerformanceCounter(tt);{time in s is: (tt-tt0)/PerfFreq}
 end; // GetMoveAdvice
 
 function CanPlaneReturn(p,uix: integer; PlaneReturnData: TPlaneReturnData): boolean;

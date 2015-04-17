@@ -317,7 +317,6 @@ var
   p: integer;
   T: int64;
 begin
-  QueryPerformanceCounter(T);
   PutMessage(1 shl 16 + 2, Format('CLIENT: took %.1f ms', [
 {$IFDEF VER100}
     (T.LowPart - LastClientTime.LowPart)
@@ -1175,7 +1174,6 @@ begin
   StatRequest := False;
   MovieStopped := False;
 {$IFDEF LOADPERF}
-  QueryPerformanceCounter(time_total0);
   time_a := 0;
   time_b := 0;
   time_c := 0;
@@ -1266,9 +1264,6 @@ begin
   assert(started);
 {$IFDEF TEXTLOG}
   CloseFile(TextLog);
-{$ENDIF}
-{$IFDEF LOADPERF}
-  QueryPerformanceCounter(time_total);{time in s is: (time_total-time_total0)/PerfFreq}
 {$ENDIF}
   NoLogChanges;
   NoLogCityTileChanges;
@@ -4487,7 +4482,6 @@ end;{<<<server}
 
 
 initialization
-  QueryPerformanceFrequency(PerfFreq);
   FindFirst(ParamStr(0), $21, ExeInfo);
 
 {$IFOPT O-}
