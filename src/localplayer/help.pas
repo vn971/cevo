@@ -105,7 +105,7 @@ uses
 {$R *.lfm}
 
 type
-  THelpLineInfo = packed record
+  THelpLineInfo = class(TObject)
     Format, Picpix: byte;
     Link: word;
   end;
@@ -117,6 +117,7 @@ var
 begin
   if LinkIndex < 0 then
     LinkIndex := liInvalid;
+
   HelpLineInfo.Format := Format;
   HelpLineInfo.Picpix := Picpix;
   HelpLineInfo.Link := LinkCategory shl 8 + LinkIndex;
@@ -1807,7 +1808,7 @@ begin
     with THelpLineInfo(MainText.Objects[Sel + sb.si.npos]) do
       if Link shr 8 and $3F = hkInternet then
         case Link and $FF of
-          1: ExecuteProcess(BinariesDirectory + 'AI Template\AI development manual.html', []);
+          1: ExecuteProcess(BinariesDirectory + 'AI Template'+DirectorySeparator+'AI development manual.html', []);
           2: OpenURL('http://c-evo.org');
           3: OpenURL('http://c-evo.org/_sg/contact');
         end
