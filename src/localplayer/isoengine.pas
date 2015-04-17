@@ -115,10 +115,10 @@ var
   Border: boolean;
 begin
   Result := False;
-  HGrTerrainNew := LoadGraphicSet(Format('Terrain%dx%d', [xxtNew * 2, yytNew * 2]));
+  HGrTerrainNew := LoadGraphicSet('Terrain' + IntToStr(xxtNew * 2) +'x'+ IntToStr(yytNew * 2));
   if HGrTerrainNew < 0 then
     exit;
-  HGrCitiesNew := LoadGraphicSet(Format('Cities%dx%d', [xxtNew * 2, yytNew * 2]));
+  HGrCitiesNew := LoadGraphicSet('Cities' + IntToStr(xxtNew * 2) +'x'+ IntToStr(yytNew * 2));
   if HGrCitiesNew < 0 then
     exit;
   xxt := xxtNew;
