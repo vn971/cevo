@@ -42,6 +42,7 @@ var
 implementation
 
 uses
+  FileUtil,
   ScreenTools, Protocol, GameServer, Start,
   LocalPlayer in 'localplayer\localplayer.pas',
   NoTerm, Back;

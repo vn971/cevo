@@ -14,6 +14,8 @@
 /target/*.or
 /target/*.ppu
 /target/*.so
+/target/*.lfm
+/target/*.res
 
 #### backups by delphi
 *.~*

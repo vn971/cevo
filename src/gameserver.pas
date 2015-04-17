@@ -99,6 +99,7 @@ function PreviewMap(lm: integer): pointer;
 implementation
 
 uses
+  FileUtil,
   Directories, CityProcessing, UnitProcessing, CmdList,
   Windows, Classes, SysUtils;
 

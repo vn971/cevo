@@ -23,6 +23,7 @@ var
 implementation
 
 uses
+  FileUtil,
   Directories, ScreenTools, Start;
 
 {$R *.lfm}

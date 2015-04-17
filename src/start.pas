@@ -104,6 +104,7 @@ var
 implementation
 
 uses
+  FileUtil,
   Directories, Protocol, Direct, ScreenTools, Inp, Back;
 
 {$R *.lfm}

@@ -97,6 +97,7 @@ var
 implementation
 
 uses
+  FileUtil,
   Directories, ClientTools, Term, Tribes,
   Inp, Messg;
 
