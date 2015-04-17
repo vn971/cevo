@@ -50,7 +50,7 @@ procedure DLine(ca: TCanvas; x0, x1, y: integer; cl0, cl1: TColor);
 procedure Frame(ca: TCanvas; x0, y0, x1, y1: integer; cl0, cl1: TColor);
 procedure RFrame(ca: TCanvas; x0, y0, x1, y1: integer; cl0, cl1: TColor);
 procedure CFrame(ca: TCanvas; x0, y0, x1, y1, Corner: integer; cl: TColor);
-procedure FrameImage(ca: TCanvas; src: TBitmap; x, y, Width, Height, xSrc, ySrc: integer;
+procedure FrameImage(ca: TCanvas; src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc: integer;
   IsControl: boolean = False);
 procedure GlowFrame(dst: TBitmap; x0, y0, Width, Height: integer; cl: TColor);
 procedure InitOrnament;
@@ -58,9 +58,9 @@ procedure InitCityMark(const T: TTexture);
 procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer);
 procedure FillLarge(ca: TCanvas; x0, y0, x1, y1, xm: integer);
 procedure FillSeamless(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer;
-  const Texture: TBitmap);
+  const Texture: TFPImageBitmap);
 procedure FillRectSeamless(ca: TCanvas; x0, y0, x1, y1, xOffset, yOffset: integer;
-  const Texture: TBitmap);
+  const Texture: TFPImageBitmap);
 procedure PaintBackground(Form: TForm; Left, Top, Width, Height: integer);
 procedure Corner(ca: TCanvas; x, y, Kind: integer; const T: TTexture);
 procedure BiColorTextOut(ca: TCanvas; clMain, clBack: TColor; x, y: integer; s: string);
@@ -179,8 +179,7 @@ var
   GrExt: array[0..nGrExtmax - 1] of ^TGrExtDescr;
   HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
-  Colors, Paper, BigImp, LogoBuffer: TBitmap;
-  Templates: TFPImageBitmap;
+  Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
   FullScreen, GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
 
   UniFont: array[TFontType] of TFont;
@@ -947,7 +946,7 @@ begin
   end;
 end;
 
-procedure FrameImage(ca: TCanvas; src: TBitmap; x, y, Width, Height, xSrc, ySrc: integer;
+procedure FrameImage(ca: TCanvas; src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc: integer;
   IsControl: boolean = False);
 begin
   if IsControl then
@@ -1090,7 +1089,7 @@ begin
 end;
 
 procedure FillSeamless(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer;
-  const Texture: TBitmap);
+  const Texture: TFPImageBitmap);
 var
   x, y, x0cut, y0cut, x1cut, y1cut: integer;
 begin
@@ -1125,7 +1124,7 @@ begin
 end;
 
 procedure FillRectSeamless(ca: TCanvas; x0, y0, x1, y1, xOffset, yOffset: integer;
-  const Texture: TBitmap);
+  const Texture: TFPImageBitmap);
 begin
   FillSeamless(ca, x0, y0, x1 - x0, y1 - y0, xOffset, yOffset, Texture);
 end;
@@ -1635,12 +1634,9 @@ initialization
   HGrSystem2 := LoadGraphicSet('System2');
   Templates := LoadAnyGraphics(GraphicsDirectory + 'Templates.bmp', gfNoGamma);
   Templates.PixelFormat := pf24bit;
-  Colors := TBitmap.Create;
-  LoadGraphicFile(Colors, GraphicsDirectory + 'Colors');
-  Paper := TBitmap.Create;
-  LoadGraphicFile(Paper, GraphicsDirectory + 'Paper', gfJPG);
-  BigImp := TBitmap.Create;
-  LoadGraphicFile(BigImp, GraphicsDirectory + 'Icons');
+  Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors.bmp');
+  Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper.jpg');
+  BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons.bmp');
   MainTexture.Image := TBitmap.Create;
   MainTextureAge := -2;
   ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];
