@@ -34,7 +34,7 @@ type
     Domain, MaxLines, Lines, Cut, yDomain, yFeature, yWeight, yTotal, yView, IncCap,
     DecCap: integer;
     code: array[0..nFeature - 1] of integer;
-    Template, Back: TBitmap;
+    Template, Back: TFPImageBitmap;
     function IsFeatureInList(d, i: integer): boolean;
     procedure SetDomain(d: integer);
   end;
@@ -89,8 +89,7 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
-  Template := TBitmap.Create;
-  LoadGraphicFile(Template, GraphicsDirectory + 'MiliRes', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'MiliRes.bmp', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 
