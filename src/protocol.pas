@@ -593,10 +593,10 @@ Imp: array[0..nImp-1] of // city improvements
 (Kind:ikWonder;Preq:adPhilosophy;Cost:500;Maint:0;Expiration:-1), //woLeo
 (Kind:ikWonder;Preq:adNavigation;Cost:300;Maint:0;Expiration:-1), //woMagellan
 (Kind:ikWonder;Preq:adMonotheism;Cost:400;Maint:0;Expiration:-1), //woMich
-(Kind:ikNA;Preq:preNA), //{11}
+(Kind:ikNA;Preq:preNA), // 11
 (Kind:ikWonder;Preq:adTheoryOfGravity;Cost:400;Maint:0;Expiration:-1), //woNewton
 (Kind:ikWonder;Preq:adTheology;Cost:400;Maint:0;Expiration:-1), //woBach
-(Kind:ikNA;Preq:preNA), //{14}
+(Kind:ikNA;Preq:preNA), // 14
 (Kind:ikWonder;Preq:adDemocracy;Cost:500;Maint:0;Expiration:-1), //woLiberty
 (Kind:ikWonder;Preq:adSteel;Cost:800;Maint:0;Expiration:-1), //woEiffel
 (Kind:ikWonder;Preq:adElectronics;Cost:800;Maint:0;Expiration:-1), //woHoover

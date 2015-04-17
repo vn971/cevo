@@ -2665,7 +2665,6 @@ var
   AStr, DStr, ABaseDamage, DBaseDamage: integer;
   CityReport, AltCityReport: TCityReport;
   FormerCLState: TCmdListState;
-  EndTime: int64;
   Adjacent: TVicinity8Loc;
   Radius: TVicinity21Loc;
   ShowShipChange: TShowShipChange;
