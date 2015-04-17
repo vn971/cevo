@@ -41,10 +41,10 @@ procedure Sprite(Canvas: TCanvas; HGr, xDst, yDst, Width, Height, xGr, yGr: inte
 procedure Sprite(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
   overload;
 procedure MakeBlue(Dst: TFPImageBitmap; x, y, w, h: integer);
-procedure ImageOp_B(Dst, Src: TBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
+procedure ImageOp_B(Dst, Src: TFPImageBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
 procedure ImageOp_BCC(Dst, Src: TFPImageBitmap;
   xDst, yDst, xSrc, ySrc, w, h, Color1, Color2: integer);
-procedure ImageOp_CCC(Bmp: TBitmap; x, y, w, h, Color0, Color1, Color2: integer);
+procedure ImageOp_CCC(Bmp: TFPImageBitmap; x, y, w, h, Color0, Color1, Color2: integer);
 procedure SLine(ca: TCanvas; x0, x1, y: integer; cl: TColor);
 procedure DLine(ca: TCanvas; x0, x1, y: integer; cl0, cl1: TColor);
 procedure Frame(ca: TCanvas; x0, y0, x1, y1: integer; cl0, cl1: TColor);
@@ -684,7 +684,7 @@ begin
   end;
 end;
 
-procedure ImageOp_B(Dst, Src: TBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
+procedure ImageOp_B(Dst, Src: TFPImageBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
 // Src is template
 // X channel = background amp (old Dst content), 128=original brightness
 type
@@ -819,7 +819,7 @@ begin
   end;
 end;
 
-procedure ImageOp_CCC(Bmp: TBitmap; x, y, w, h, Color0, Color1, Color2: integer);
+procedure ImageOp_CCC(Bmp: TFPImageBitmap; x, y, w, h, Color0, Color1, Color2: integer);
 // Bmp is template
 // B channel = Color0 amp, 128=original brightness
 // G channel = Color1 amp, 128=original brightness

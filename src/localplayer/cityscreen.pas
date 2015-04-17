@@ -72,7 +72,7 @@ type
     CityAreaInfo: TCityAreaInfo;
     AreaMap: TIsoMap;
     CityMapTemplate, SmallCityMapTemplate, Back, SmallCityMap, ZoomCityMap,
-    Template: TBitmap;
+    Template: TFPImageBitmap;
     IsPort, ProdHint, AllowChange: boolean;
     procedure InitSmallCityMap;
     procedure InitZoomCityMap;
@@ -215,14 +215,11 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
-  Template := TBitmap.Create;
-  LoadGraphicFile(Template, GraphicsDirectory + 'City', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'City.bmp', gfNoGamma);
   Template.PixelFormat := pf8bit;
-  CityMapTemplate := TBitmap.Create;
-  LoadGraphicFile(CityMapTemplate, GraphicsDirectory + 'BigCityMap', gfNoGamma);
+  CityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'BigCityMap.bmp', gfNoGamma);
   CityMapTemplate.PixelFormat := pf8bit;
-  SmallCityMapTemplate := TBitmap.Create;
-  LoadGraphicFile(SmallCityMapTemplate, GraphicsDirectory + 'SmallCityMap', gfNoGamma);
+  SmallCityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'SmallCityMap.bmp', gfNoGamma);
   SmallCityMapTemplate.PixelFormat := pf24bit;
   SmallCityMap := TBitmap.Create;
   SmallCityMap.PixelFormat := pf24bit;
