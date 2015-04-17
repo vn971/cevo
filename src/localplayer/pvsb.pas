@@ -29,8 +29,13 @@ const
 procedure CreatePVSB(var sb: TPVScrollbar; Handle, y0, x1, y1: integer);
 begin
   Inc(Count);
-  sb.h := CreateWindowEx(0, 'SCROLLBAR', PChar('PVSB' + IntToStr(Count)),
-    SBS_VERT or WS_CHILD or SBS_RIGHTALIGN, x1 - 100, y0, 100, y1 - y0, Handle, 0, 0, nil);
+  // lazarus TODO:
+  // make this compile.
+  // Might this help?  http://lists.lazarus.freepascal.org/pipermail/lazarus/2014-February/085887.html
+  //
+  //sb.h := CreateWindowEx(0, 'SCROLLBAR', PChar('PVSB' + IntToStr(Count)),
+  //  SBS_VERT or WS_CHILD or SBS_RIGHTALIGN, x1 - 100, y0, 100, y1 - y0, Handle, 0, 0, nil);
+
   sb.si.cbSize := 28;
 end;
 
