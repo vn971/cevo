@@ -44,7 +44,6 @@ uses
   citytype in 'localplayer\citytype.pas' {citytypedlg},
   enhance in 'localplayer\enhance.pas' {enhancedlg},
   noterm in 'noterm.pas' {notermdlg},
-  //sound in 'sound.pas' {soundplayer},
   battle in 'localplayer\battle.pas' {battledlg},
   rates in 'localplayer\rates.pas' {ratesdlg},
   techtree in 'localplayer\techtree.pas' {techtreedlg};

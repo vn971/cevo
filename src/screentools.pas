@@ -183,6 +183,9 @@ var
 implementation
 
 uses
+  {$ifdef WINDOWS}
+    sound in 'sound.pas',
+  {$endif}
   FileUtil,
   Directories, ButtonBase, ButtonA, ButtonB,
   //JPEGLib does not seem to be needed (was in Steffen-s source code)
@@ -226,6 +229,7 @@ var
 {$ENDIF}
 begin
 {$IFNDEF DEBUG}
+{$ifdef WINDOWS}
   if (Sounds = nil) or (SoundMode = smOff) or (Item = '') then
   begin
     Result := True;
@@ -237,6 +241,7 @@ begin
   if Result then
     //  SndPlaySound(pchar(SoundsDirectory + WAVFileName + '.wav'), SND_ASYNC);
     PlaySound(SoundsDirectory + WAVFileName);
+{$EndIf}
 {$ENDIF}
 end;
 
@@ -247,12 +252,14 @@ var
 {$ENDIF}
 begin
 {$IFNDEF DEBUG}
+{$ifdef WINDOWS}
   if (Sounds = nil) or (SoundMode = smOff) or (Item = '') then
     exit;
   WAVFileName := Sounds.Lookup(Item, Index);
   assert(WAVFileName[1] <> '[');
   if (WAVFileName <> '') and (WAVFileName[1] <> '[') and (WAVFileName <> '*') then
     PrepareSound(SoundsDirectory + WAVFileName);
+{$endif}
 {$ENDIF}
 end;
 
