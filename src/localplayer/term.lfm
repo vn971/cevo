@@ -1,0 +1,795 @@
+object MainScreen: TMainScreen
+  Left = 231
+  Top = 190
+  HorzScrollBar.Visible = False
+  VertScrollBar.Visible = False
+  AutoScroll = False
+  Caption = 'C-evo'
+  ClientHeight = 435
+  ClientWidth = 782
+  Color = clBtnFace
+  Constraints.MinHeight = 480
+  Constraints.MinWidth = 800
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poDefault
+  Scaled = False
+  WindowState = wsMaximized
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  OnKeyUp = FormKeyUp
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
+  OnPaint = FormPaint
+  OnResize = FormResize
+  OnShow = FormShow
+  PixelsPerInch = 120
+  TextHeight = 16
+  object UnitBtn: TButtonB
+    Tag = 14
+    Left = 208
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = PanelBtnClick
+    ButtonIndex = 2
+  end
+  object MapBtn0: TButtonC
+    Tag = 51
+    Left = 16
+    Top = 304
+    Width = 12
+    Height = 12
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = MapBtnClick
+    ButtonIndex = 2
+  end
+  object MapBtn1: TButtonC
+    Tag = 291
+    Left = 16
+    Top = 320
+    Width = 12
+    Height = 12
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = MapBtnClick
+    ButtonIndex = 2
+  end
+  object MapBtn4: TButtonC
+    Tag = 1028
+    Left = 16
+    Top = 368
+    Width = 12
+    Height = 12
+    Visible = False
+    Down = False
+    Permanent = False
+    OnDownChanged = GrWallBtnDownChanged
+    ButtonIndex = 1
+  end
+  object MapBtn5: TButtonC
+    Tag = 1328
+    Left = 16
+    Top = 384
+    Width = 12
+    Height = 12
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = MapBtnClick
+    ButtonIndex = 2
+  end
+  object MapBtn6: TButtonC
+    Tag = 1541
+    Left = 16
+    Top = 400
+    Width = 12
+    Height = 12
+    Visible = False
+    Down = False
+    Permanent = False
+    OnDownChanged = BareBtnDownChanged
+    ButtonIndex = 1
+  end
+  object TerrainBtn: TButtonB
+    Tag = 28
+    Left = 240
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = PanelBtnClick
+    ButtonIndex = 3
+  end
+  object UnitInfoBtn: TButtonB
+    Tag = 15
+    Left = 176
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = UnitInfoBtnClick
+    ButtonIndex = 7
+  end
+  object EOT: TEOTButton
+    Left = 712
+    Top = 368
+    Width = 48
+    Height = 48
+    Visible = False
+    Down = False
+    Permanent = False
+    OnClick = EOTClick
+    ButtonIndex = 0
+  end
+  object MenuArea: TArea
+    Left = 2
+    Top = 1
+    Width = 36
+    Height = 36
+  end
+  object TreasuryArea: TArea
+    Left = 208
+    Top = 1
+    Width = 164
+    Height = 36
+  end
+  object ResearchArea: TArea
+    Left = 384
+    Top = 1
+    Width = 240
+    Height = 36
+  end
+  object ManagementArea: TArea
+    Left = 704
+    Top = 312
+    Width = 56
+    Height = 40
+  end
+  object MovieSpeed1Btn: TButtonB
+    Tag = 256
+    Left = 384
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = True
+    OnClick = MovieSpeedBtnClick
+    ButtonIndex = 24
+  end
+  object MovieSpeed2Btn: TButtonB
+    Tag = 512
+    Left = 416
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = True
+    OnClick = MovieSpeedBtnClick
+    ButtonIndex = 25
+  end
+  object MovieSpeed3Btn: TButtonB
+    Tag = 768
+    Left = 448
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = True
+    OnClick = MovieSpeedBtnClick
+    ButtonIndex = 26
+  end
+  object MovieSpeed4Btn: TButtonB
+    Tag = 1024
+    Left = 480
+    Top = 384
+    Width = 25
+    Height = 25
+    Visible = False
+    Down = False
+    Permanent = True
+    OnClick = MovieSpeedBtnClick
+    ButtonIndex = 27
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = Timer1Timer
+    Left = 8
+    Top = 48
+  end
+  object GamePopup: TPopupMenu
+    AutoPopup = False
+    Left = 40
+    Top = 48
+    object mHelp: TMenuItem
+      Tag = 7
+      ShortCut = 112
+      OnClick = MenuClick
+    end
+    object mTechTree: TMenuItem
+      GroupIndex = 1
+      ShortCut = 84
+      OnClick = MenuClick
+    end
+    object N12: TMenuItem
+      Caption = '-'
+      GroupIndex = 1
+    end
+    object mViewpoint: TMenuItem
+      GroupIndex = 1
+    end
+    object mDebugMap: TMenuItem
+      Tag = 49
+      GroupIndex = 1
+      ShortCut = 16459
+    end
+    object mOptions: TMenuItem
+      Tag = 29
+      GroupIndex = 1
+      object mOwnMovement: TMenuItem
+        Tag = 30
+        GroupIndex = 1
+        object mSlowMoves: TMenuItem
+          Tag = 75
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mFastMoves: TMenuItem
+          Tag = 76
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mVeryFastMoves: TMenuItem
+          Tag = 77
+          RadioItem = True
+          OnClick = Radio
+        end
+        object N7: TMenuItem
+          Caption = '-'
+        end
+        object mEffectiveMovesOnly: TMenuItem
+          Tag = 95
+          OnClick = Toggle
+        end
+      end
+      object mAllyMovement: TMenuItem
+        Tag = 90
+        GroupIndex = 1
+        object mAlSlowMoves: TMenuItem
+          Tag = 91
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mAlFastMoves: TMenuItem
+          Tag = 92
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mAlNoMoves: TMenuItem
+          Tag = 93
+          RadioItem = True
+          OnClick = Radio
+        end
+        object N8: TMenuItem
+          Caption = '-'
+        end
+        object mAlEffectiveMovesOnly: TMenuItem
+          Tag = 94
+          OnClick = Toggle
+        end
+      end
+      object mEnemyMovement: TMenuItem
+        Tag = 74
+        GroupIndex = 1
+        object mEnMoves: TMenuItem
+          Tag = 78
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mEnFastMoves: TMenuItem
+          Tag = 79
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mEnNoMoves: TMenuItem
+          Tag = 53
+          RadioItem = True
+          OnClick = Radio
+        end
+        object N9: TMenuItem
+          Caption = '-'
+        end
+        object mEnAttacks: TMenuItem
+          Tag = 52
+          OnClick = Toggle
+        end
+      end
+      object N11: TMenuItem
+        Caption = '-'
+        GroupIndex = 1
+      end
+      object mRepList: TMenuItem
+        Tag = 65
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = Radio
+      end
+      object mRepScreens: TMenuItem
+        Tag = 66
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = Radio
+      end
+      object mRep: TMenuItem
+        Tag = 34
+        GroupIndex = 1
+        object mRep0: TMenuItem
+          OnClick = mRepClicked
+        end
+        object mRep1: TMenuItem
+          Tag = 256
+          OnClick = mRepClicked
+        end
+        object mRep2: TMenuItem
+          Tag = 512
+          OnClick = mRepClicked
+        end
+        object mRep3: TMenuItem
+          Tag = 768
+          OnClick = mRepClicked
+        end
+        object mRep4: TMenuItem
+          Tag = 1024
+          OnClick = mRepClicked
+        end
+        object mRep5: TMenuItem
+          Tag = 1280
+          OnClick = mRepClicked
+        end
+        object mRep6: TMenuItem
+          Tag = 1536
+          OnClick = mRepClicked
+        end
+        object mRep7: TMenuItem
+          Tag = 1792
+          OnClick = mRepClicked
+        end
+        object mRep8: TMenuItem
+          Tag = 2048
+          OnClick = mRepClicked
+        end
+        object mRep9: TMenuItem
+          Tag = 2304
+          OnClick = mRepClicked
+        end
+        object mRep10: TMenuItem
+          Tag = 2560
+          OnClick = mRepClicked
+        end
+        object mRep11: TMenuItem
+          Tag = 2816
+          OnClick = mRepClicked
+        end
+        object mRep12: TMenuItem
+          Tag = 3072
+          OnClick = mRepClicked
+        end
+        object mRep13: TMenuItem
+          Tag = 3328
+          OnClick = mRepClicked
+        end
+        object mRep14: TMenuItem
+          Tag = 3584
+          OnClick = mRepClicked
+        end
+        object mRep15: TMenuItem
+          Tag = 3840
+          OnClick = mRepClicked
+        end
+      end
+      object N10: TMenuItem
+        Caption = '-'
+        GroupIndex = 1
+      end
+      object mWaitTurn: TMenuItem
+        Tag = 32
+        GroupIndex = 1
+        OnClick = Toggle
+      end
+      object mScrolling: TMenuItem
+        Tag = 84
+        GroupIndex = 1
+        object mScrollSlow: TMenuItem
+          Tag = 85
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mScrollFast: TMenuItem
+          Tag = 86
+          RadioItem = True
+          OnClick = Radio
+        end
+        object mScrollOff: TMenuItem
+          Tag = 87
+          RadioItem = True
+          OnClick = Radio
+        end
+      end
+      object mTileSize: TMenuItem
+        Tag = 96
+        GroupIndex = 1
+        object mSmallTiles: TMenuItem
+          Caption = '40px'
+          RadioItem = True
+          OnClick = mSmallTilesClick
+        end
+        object mNormalTiles: TMenuItem
+          Caption = '60px'
+          RadioItem = True
+          OnClick = mNormalTilesClick
+        end
+      end
+      object mSound: TMenuItem
+        Tag = 80
+        GroupIndex = 1
+        object mSoundOn: TMenuItem
+          Tag = 82
+          RadioItem = True
+          OnClick = mSoundOnClick
+        end
+        object mSoundOnAlt: TMenuItem
+          Tag = 83
+          RadioItem = True
+          Visible = False
+          OnClick = mSoundOnAltClick
+        end
+        object mSoundOff: TMenuItem
+          Tag = 81
+          RadioItem = True
+          OnClick = mSoundOffClick
+        end
+      end
+      object N6: TMenuItem
+        Caption = '-'
+        GroupIndex = 1
+      end
+      object mTest: TMenuItem
+        Tag = 8
+        GroupIndex = 1
+        object mJump: TMenuItem
+          Tag = 54
+          ShortCut = 16458
+          OnClick = MenuClick
+        end
+        object mRun: TMenuItem
+          Tag = 63
+          ShortCut = 16466
+          OnClick = MenuClick
+        end
+        object mNames: TMenuItem
+          Tag = 67
+          ShortCut = 16462
+          OnClick = mNamesClick
+        end
+        object mLocCodes: TMenuItem
+          Tag = 27
+          ShortCut = 16460
+          OnClick = mShowClick
+        end
+        object mLog: TMenuItem
+          Tag = 10
+          ShortCut = 16461
+          OnClick = mLogClick
+        end
+      end
+    end
+    object mManip: TMenuItem
+      Tag = 56
+      GroupIndex = 1
+      object mManip0: TMenuItem
+        Tag = 57
+        OnClick = mManipClick
+      end
+      object mManip1: TMenuItem
+        Tag = 314
+        OnClick = mManipClick
+      end
+      object mManip2: TMenuItem
+        Tag = 571
+        OnClick = mManipClick
+      end
+      object mManip3: TMenuItem
+        Tag = 828
+        OnClick = mManipClick
+      end
+      object mManip4: TMenuItem
+        Tag = 1085
+        OnClick = mManipClick
+      end
+      object mManip5: TMenuItem
+        Tag = 1342
+        OnClick = mManipClick
+      end
+      object mManip6: TMenuItem
+        Tag = 1604
+        OnClick = mManipClick
+      end
+    end
+    object mMacro: TMenuItem
+      Tag = 42
+      GroupIndex = 1
+      object mEnhanceDef: TMenuItem
+        Tag = 40
+        OnClick = MenuClick
+      end
+      object mCityTypes: TMenuItem
+        Tag = 11
+        OnClick = MenuClick
+      end
+    end
+    object mRandomMap: TMenuItem
+      Tag = 71
+      GroupIndex = 1
+      ShortCut = 16466
+      OnClick = MenuClick
+    end
+    object N3: TMenuItem
+      Caption = '-'
+      GroupIndex = 1
+    end
+    object mWebsite: TMenuItem
+      Tag = 88
+      GroupIndex = 1
+      OnClick = MenuClick
+    end
+    object N2: TMenuItem
+      Caption = '-'
+      GroupIndex = 1
+    end
+    object mResign: TMenuItem
+      Tag = 2
+      GroupIndex = 1
+      ShortCut = 16465
+      OnClick = MenuClick
+    end
+  end
+  object UnitPopup: TPopupMenu
+    AutoPopup = False
+    Left = 104
+    Top = 48
+    object mdisband: TMenuItem
+      Tag = 72
+      ShortCut = 16452
+      OnClick = MenuClick
+    end
+    object mUtilize: TMenuItem
+      ShortCut = 90
+      OnClick = MenuClick
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object mcity: TMenuItem
+      ShortCut = 66
+      OnClick = MenuClick
+    end
+    object mPillage: TMenuItem
+      Tag = 19
+      ShortCut = 16464
+      OnClick = MenuClick
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object mhome: TMenuItem
+      ShortCut = 72
+      OnClick = MenuClick
+    end
+    object mLoad: TMenuItem
+      Tag = 24
+      ShortCut = 76
+      OnClick = MenuClick
+    end
+    object mUnload: TMenuItem
+      Tag = 70
+      ShortCut = 85
+      OnClick = MenuClick
+    end
+    object mSelectTransport: TMenuItem
+      Tag = 73
+      ShortCut = 16468
+      OnClick = MenuClick
+    end
+    object mGoOn: TMenuItem
+      Tag = 13
+      ShortCut = 71
+      OnClick = MenuClick
+    end
+    object mCancel: TMenuItem
+      Tag = 1
+      ShortCut = 16451
+      OnClick = MenuClick
+    end
+    object mRecover: TMenuItem
+      Tag = 69
+      ShortCut = 86
+      OnClick = MenuClick
+    end
+    object mwait: TMenuItem
+      Tag = 25
+      ShortCut = 87
+      OnClick = MenuClick
+    end
+    object mnoorders: TMenuItem
+      Tag = 26
+      ShortCut = 32
+      OnClick = MenuClick
+    end
+    object mstay: TMenuItem
+      Tag = 22
+      ShortCut = 83
+      OnClick = MenuClick
+    end
+    object mCentre: TMenuItem
+      Tag = 12
+      ShortCut = 67
+      OnClick = MenuClick
+    end
+  end
+  object StatPopup: TPopupMenu
+    AutoPopup = False
+    Left = 72
+    Top = 48
+    object mUnitStat: TMenuItem
+      Tag = 9
+      ShortCut = 113
+      OnClick = MenuClick
+    end
+    object mCityStat: TMenuItem
+      Tag = 37
+      ShortCut = 114
+      OnClick = MenuClick
+    end
+    object mScienceStat: TMenuItem
+      Tag = 38
+      ShortCut = 115
+      OnClick = MenuClick
+    end
+    object mEUnitStat: TMenuItem
+      Tag = 50
+      ShortCut = 116
+      OnClick = MenuClick
+    end
+    object mDiagram: TMenuItem
+      Tag = 21
+      ShortCut = 117
+      OnClick = MenuClick
+    end
+    object mWonders: TMenuItem
+      Tag = 6
+      ShortCut = 118
+      OnClick = MenuClick
+    end
+    object mShips: TMenuItem
+      Tag = 41
+      ShortCut = 119
+      OnClick = MenuClick
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object mNations: TMenuItem
+      Tag = 55
+      ShortCut = 120
+      OnClick = MenuClick
+    end
+    object mEmpire: TMenuItem
+      Tag = 3
+      ShortCut = 121
+      OnClick = MenuClick
+    end
+    object mRevolution: TMenuItem
+      Tag = 89
+      OnClick = MenuClick
+    end
+  end
+  object EditPopup: TPopupMenu
+    Left = 168
+    Top = 48
+    object mCreateUnit: TMenuItem
+      Tag = 47
+    end
+  end
+  object TerrainPopup: TPopupMenu
+    Left = 136
+    Top = 48
+    object mtrans: TMenuItem
+      Tag = 273
+      ShortCut = 79
+      OnClick = MenuClick
+    end
+    object mAfforest: TMenuItem
+      Tag = 301
+      ShortCut = 77
+      OnClick = MenuClick
+    end
+    object mClear: TMenuItem
+      Tag = 298
+      ShortCut = 73
+      OnClick = MenuClick
+    end
+    object mfort: TMenuItem
+      Tag = 276
+      ShortCut = 70
+      OnClick = MenuClick
+    end
+    object mAirBase: TMenuItem
+      Tag = 272
+      ShortCut = 65
+      OnClick = MenuClick
+    end
+    object mCanal: TMenuItem
+      Tag = 279
+      ShortCut = 78
+      OnClick = MenuClick
+    end
+    object mmine: TMenuItem
+      Tag = 302
+      ShortCut = 77
+      OnClick = MenuClick
+    end
+    object mFarm: TMenuItem
+      Tag = 300
+      ShortCut = 73
+      OnClick = MenuClick
+    end
+    object mirrigation: TMenuItem
+      Tag = 299
+      ShortCut = 73
+      OnClick = MenuClick
+    end
+    object mrr: TMenuItem
+      Tag = 297
+      ShortCut = 82
+      OnClick = MenuClick
+    end
+    object mroad: TMenuItem
+      Tag = 296
+      ShortCut = 82
+      OnClick = MenuClick
+    end
+    object mpollution: TMenuItem
+      Tag = 274
+      ShortCut = 80
+      OnClick = MenuClick
+    end
+    object mEnhance: TMenuItem
+      Tag = 295
+      ShortCut = 69
+      OnClick = MenuClick
+    end
+  end
+end

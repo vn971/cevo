@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Inp;
 
@@ -30,7 +30,7 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
 procedure TInputDlg.FormCreate(Sender: TObject);
 begin

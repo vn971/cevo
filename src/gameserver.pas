@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 //{$DEFINE TEXTLOG}
 //{$DEFINE LOADPERF}
 unit GameServer;
@@ -204,7 +204,7 @@ begin
   Brain[bixRandom].Initialized := False;
   nBrain := bixFirstAI;
   bixBeginner := bixFirstAI;
-  if FindFirst(AiDirectory + '*.ai.txt', $21, f) = 0 then
+  if FindFirstUTF8(AiDirectory + '*.ai.txt',$21,f) = 0 then
     repeat
       with Brain[nBrain] do
       begin
@@ -247,7 +247,7 @@ begin
         (Brain[nBrain].ServerVersion <= Version) and
         ((Brain[nBrain].Flags and fDotNet = 0) or (@DotNetClient <> nil)) then
         Inc(nBrain);
-    until FindNext(f) <> 0;
+    until FindNextUTF8(f) <> 0;
 end;
 
 procedure Done;
@@ -3220,7 +3220,7 @@ begin {>>>server}
             LogChanges;
             SaveGame(LogFileName, False);
           end;
-          DeleteFile(SavePath + '~' + LogFileName);
+          DeleteFileUTF8(SavePath + '~' + LogFileName);
           EndGame;
           case Command of
             sBreak: Notify(ntStartGoRefresh);

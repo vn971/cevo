@@ -1,0 +1,48 @@
+object InputDlg: TInputDlg
+  Left = 514
+  Top = 236
+  BorderStyle = bsNone
+  ClientHeight = 99
+  ClientWidth = 232
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  OldCreateOrder = False
+  Position = poDefaultPosOnly
+  Scaled = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnPaint = FormPaint
+  OnShow = FormShow
+  PixelsPerInch = 120
+  TextHeight = 16
+  object OKBtn: TButtonA
+    Left = 66
+    Top = 67
+    Width = 100
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = OKBtnClick
+  end
+  object EInput: TEdit
+    Left = 16
+    Top = 40
+    Width = 200
+    Height = 19
+    BorderStyle = bsNone
+    Color = clBlack
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 4176863
+    Font.Height = -15
+    Font.Name = 'Times New Roman'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+    OnKeyPress = EInputKeyPress
+  end
+end

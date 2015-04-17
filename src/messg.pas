@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Messg;
 
@@ -69,7 +69,7 @@ procedure SoundMessage(SimpleText, SoundItem: string);
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
 constructor TDrawDlg.Create(AOwner: TComponent);
 begin

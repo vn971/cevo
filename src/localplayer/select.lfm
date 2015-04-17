@@ -1,0 +1,84 @@
+object ListDlg: TListDlg
+  Left = 290
+  Top = 145
+  BorderIcons = []
+  BorderStyle = bsNone
+  ClientHeight = 262
+  ClientWidth = 381
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  OldCreateOrder = False
+  Position = poDefaultPosOnly
+  Scaled = False
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  OnMouseDown = PaintBox1MouseDown
+  OnMouseMove = PaintBox1MouseMove
+  OnPaint = FormPaint
+  OnShow = FormShow
+  PixelsPerInch = 120
+  TextHeight = 16
+  object CloseBtn: TButtonB
+    Left = 343
+    Top = 6
+    Width = 25
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = CloseBtnClick
+    ButtonIndex = 0
+  end
+  object Layer2Btn: TButtonB
+    Tag = 2
+    Left = 344
+    Top = 224
+    Width = 25
+    Height = 25
+    Down = False
+    Permanent = True
+    OnClick = ModeBtnClick
+    ButtonIndex = 9
+  end
+  object Layer1Btn: TButtonB
+    Tag = 1
+    Left = 312
+    Top = 224
+    Width = 25
+    Height = 25
+    Down = False
+    Permanent = True
+    OnClick = ModeBtnClick
+    ButtonIndex = 14
+  end
+  object Layer0Btn: TButtonB
+    Left = 280
+    Top = 224
+    Width = 25
+    Height = 25
+    Down = False
+    Permanent = True
+    OnClick = ModeBtnClick
+    ButtonIndex = 10
+  end
+  object ToggleBtn: TButtonB
+    Left = 13
+    Top = 6
+    Width = 25
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = ToggleBtnClick
+    ButtonIndex = 15
+  end
+  object Popup: TPopupMenu
+    Left = 16
+    Top = 48
+  end
+end

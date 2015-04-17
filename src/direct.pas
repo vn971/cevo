@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Direct;
 
@@ -46,7 +46,7 @@ uses
   LocalPlayer in 'localplayer\localplayer.pas',
   NoTerm, Back;
 
-{$R *.DFM}
+{$R *.lfm}
 
 procedure Notify(ID: integer);
 begin
@@ -224,7 +224,7 @@ begin
         Close;
       end;
     end
-    else if (FileExists(ParamStr(1))) then
+    else if (FileExistsUTF8(ParamStr(1))) then
     begin
       Quick := True;
       if not LoadGame(ExtractFilePath(ParamStr(1)), ExtractFileName(

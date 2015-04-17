@@ -1,0 +1,79 @@
+object MessgExDlg: TMessgExDlg
+  Left = 463
+  Top = 164
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'C-evo'
+  ClientHeight = 134
+  ClientWidth = 418
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  OldCreateOrder = False
+  Position = poDefaultPosOnly
+  Scaled = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
+  OnPaint = FormPaint
+  OnShow = FormShow
+  PixelsPerInch = 120
+  TextHeight = 16
+  object Button1: TButtonA
+    Left = 43
+    Top = 104
+    Width = 100
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = Button1Click
+  end
+  object Button2: TButtonA
+    Left = 159
+    Top = 104
+    Width = 100
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = Button2Click
+  end
+  object Button3: TButtonA
+    Left = 275
+    Top = 104
+    Width = 100
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = Button3Click
+  end
+  object RemoveBtn: TButtonB
+    Left = 384
+    Top = 104
+    Width = 25
+    Height = 25
+    Down = False
+    Permanent = False
+    OnClick = RemoveBtnClick
+    ButtonIndex = 0
+  end
+  object EInput: TEdit
+    Left = 125
+    Top = 64
+    Width = 168
+    Height = 19
+    TabStop = False
+    BorderStyle = bsNone
+    Color = clBlack
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 4176863
+    Font.Height = -15
+    Font.Name = 'Times New Roman'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+  end
+end

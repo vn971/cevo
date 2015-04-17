@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Start;
 
@@ -106,7 +106,7 @@ implementation
 uses
   Directories, Protocol, Direct, ScreenTools, Inp, Back;
 
-{$R *.DFM}
+{$R *.lfm}
 
 const
   // predefined world size
@@ -267,9 +267,9 @@ begin
   Reg.Free;
 
   ActionsOffered := [maManual, maCredits, maWeb];
-  if FileExists(BinariesDirectory + 'Configurator.exe') then
+  if FileExistsUTF8(BinariesDirectory + 'Configurator.exe') then
     include(ActionsOffered, maConfig);
-  if FileExists(BinariesDirectory + 'AI Template\AI development manual.html') then
+  if FileExistsUTF8(BinariesDirectory + 'AI Template\AI development manual.html') then
     include(ActionsOffered, maAIDev);
 
   bixDefault := -1;
@@ -1366,14 +1366,14 @@ var
   f: TSearchRec;
 begin
   FormerGames.Clear;
-  if FindFirst(UserDirectory + 'Saved\*.cevo', $21, f) = 0 then
+  if FindFirstUTF8(UserDirectory + 'Saved\*.cevo',$21,f) = 0 then
     repeat
       i := FormerGames.Count;
       while (i > 0) and (f.Time < integer(FormerGames.Objects[i - 1])) do
         Dec(i);
       FormerGames.InsertObject(i, Copy(f.Name, 1, Length(f.Name) - 5),
         TObject(f.Time));
-    until FindNext(f) <> 0;
+    until FindNextUTF8(f) <> 0;
   ListIndex[2] := FormerGames.Count - 1;
   if (ShowTab = 2) and (FormerGames.Count > 0) then
     ShowTab := 3;
@@ -1385,10 +1385,10 @@ var
   f: TSearchRec;
 begin
   Maps.Clear;
-  if FindFirst(UserDirectory + 'Maps\*.cevo map', $21, f) = 0 then
+  if FindFirstUTF8(UserDirectory + 'Maps\*.cevo map',$21,f) = 0 then
     repeat
       Maps.Add(Copy(f.Name, 1, Length(f.Name) - 9));
-    until FindNext(f) <> 0;
+    until FindNextUTF8(f) <> 0;
   Maps.Sort;
   Maps.Insert(0, Phrases.Lookup('RANMAP'));
   ListIndex[0] := Maps.IndexOf(Copy(MapFileName, 1, Length(MapFileName) - 9));

@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Directories;
 
@@ -21,7 +21,7 @@ uses
 function LocalizedFilePath(path: string): string;
 begin
   Result := UserDirectory + 'Localization\' + path;
-  if not FileExists(Result) then
+  if not FileExistsUTF8(Result) then
     Result := BinariesDirectory + path;
 end;
 
@@ -41,8 +41,8 @@ initialization
     UserDirectory := BinariesDirectory
   else
   begin
-    if not DirectoryExists(AppUserDirectory + '\C-evo') then
-      CreateDir(AppUserDirectory + '\C-evo');
+    if not DirectoryExistsUTF8(AppUserDirectory + '\C-evo') then
+      CreateDirUTF8(AppUserDirectory + '\C-evo');
     UserDirectory := AppUserDirectory + '\C-evo\';
   end;
   if not DirectoryExists(UserDirectory + 'Saved') then

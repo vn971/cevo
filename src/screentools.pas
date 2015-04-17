@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit ScreenTools;
 
@@ -1445,7 +1445,7 @@ initialization
   if FileExists(UserDirectory + 'Localization\Language.txt') then
   begin
     Phrases.LoadFromFile(UserDirectory + 'Localization\Language.txt');
-    if FileExists(UserDirectory + 'Localization\Language2.txt') then
+    if FileExistsUTF8(UserDirectory + 'Localization\Language2.txt') then
       Phrases2.LoadFromFile(UserDirectory + 'Localization\Language2.txt')
     else
     begin

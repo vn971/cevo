@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE ../switches.pas}
 
 unit Term;
 
@@ -427,7 +427,7 @@ uses
   Registry;
 
 
-{$R *.DFM}
+{$R *.lfm}
 
 {$R Res1.res}
 
@@ -717,7 +717,7 @@ end;
 
 function CreateTribe(p: integer; FileName: string; Original: boolean): boolean;
 begin
-  if not FileExists(LocalizedFilePath('Tribes\' + FileName + '.tribe.txt')) then
+  if not FileExistsUTF8(LocalizedFilePath('Tribes\' + FileName + '.tribe.txt')) then
   begin
     Result := False;
     exit;
@@ -1243,20 +1243,19 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     ok: boolean;
   begin
     UnusedTribeFiles.Clear;
-    ok := FindFirst(UserDirectory + 'Localization\' + 'Tribes\*.tribe.txt',
-      faArchive + faReadOnly, SearchRec) = 0;
+    ok := FindFirstUTF8(UserDirectory + 'Localization\' + 'Tribes\*.tribe.txt',faArchive + faReadOnly,SearchRec) = 0;
     if not ok then
     begin
-      FindClose(SearchRec);
-      ok := FindFirst(BinariesDirectory + 'Tribes\*.tribe.txt', faArchive + faReadOnly, SearchRec) = 0;
+      FindCloseUTF8(SearchRec);
+      ok := FindFirstUTF8(BinariesDirectory + 'Tribes\*.tribe.txt',faArchive + faReadOnly,SearchRec) = 0;
     end;
     if ok then
       repeat
         SearchRec.Name := Copy(SearchRec.Name, 1, Length(SearchRec.Name) - 10);
         if GetTribeInfo(SearchRec.Name, Name, Color) then
           UnusedTribeFiles.AddObject(SearchRec.Name, TObject(Color));
-      until FindNext(SearchRec) <> 0;
-    FindClose(SearchRec);
+      until FindNextUTF8(SearchRec) <> 0;
+    FindCloseUTF8(SearchRec);
   end;
 
   function ChooseUnusedTribe: integer;

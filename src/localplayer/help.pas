@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE ../switches.pas}
 
 unit Help;
 
@@ -100,7 +100,7 @@ uses
   Directories, ClientTools, Term, Tribes,
   Inp, Messg;
 
-{$R *.DFM}
+{$R *.lfm}
 
 type
   THelpLineInfo = packed record
@@ -1085,12 +1085,12 @@ var
   begin
     List := TStringList.Create;
     plus := TStringList.Create;
-    if FindFirst(GraphicsDirectory + '*.credits.txt', $27, sr) = 0 then
+    if FindFirstUTF8(GraphicsDirectory + '*.credits.txt',$27,sr) = 0 then
       repeat
         plus.LoadFromFile(GraphicsDirectory + sr.Name);
         List.AddStrings(plus);
-      until FindNext(sr) <> 0;
-    FindClose(sr);
+      until FindNextUTF8(sr) <> 0;
+    FindCloseUTF8(sr);
     plus.Free;
 
     List.Sort;

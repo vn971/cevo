@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE switches.pas}
 
 unit Back;
 
@@ -25,7 +25,7 @@ implementation
 uses
   Directories, ScreenTools, Start;
 
-{$R *.DFM}
+{$R *.lfm}
 
 procedure TBackground.FormCreate(Sender: TObject);
 begin
@@ -37,8 +37,8 @@ begin
   img := nil;
   if FullScreen then
   begin
-    if FileExists(GraphicsDirectory + 'Background.bmp') or
-      FileExists(GraphicsDirectory + 'Background.png') then
+    if FileExistsUTF8(GraphicsDirectory + 'Background.bmp') or
+      FileExistsUTF8(GraphicsDirectory + 'Background.png') then
     begin
       img := TBitmap.Create;
       LoadGraphicFile(img, GraphicsDirectory + 'Background');
