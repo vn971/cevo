@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Diplomacy;
+unit diplomacy;
 
 interface
 

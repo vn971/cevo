@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit NatStat;
+unit natstat;
 
 interface
 

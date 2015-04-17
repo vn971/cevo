@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit ScreenTools;
+unit screentools;
 
 interface
 

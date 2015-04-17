@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit Select;
+unit select;
 
 interface
 

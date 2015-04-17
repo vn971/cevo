@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit CityType;
+unit citytype;
 
 interface
 

@@ -1,5 +1,5 @@
 {$INCLUDE switches.pas}
-unit Battle;
+unit battle;
 
 interface
 

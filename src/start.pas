@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Start;
+unit start;
 
 interface
 

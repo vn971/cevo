@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit ClientTools;
+unit clienttools;
 
 interface
 

@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit MessgEx;
+unit messgex;
 
 interface
 

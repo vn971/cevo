@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit CityScreen;
+unit cityscreen;
 
 interface
 

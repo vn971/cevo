@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit BaseWin;
+unit basewin;
 
 interface
 

@@ -1,7 +1,7 @@
 {$INCLUDE switches.pas}
 {$HINTS OFF}
 
-unit Protocol;
+unit protocol;
 
 interface
 

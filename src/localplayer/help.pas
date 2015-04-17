@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit Help;
+unit help;
 
 interface
 

@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit Diagram;
+unit diagram;
 
 interface
 

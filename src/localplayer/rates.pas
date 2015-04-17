@@ -1,5 +1,5 @@
 {$INCLUDE switches.pas}
-unit Rates;
+unit rates;
 
 interface
 

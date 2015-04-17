@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit PVSB;
+unit pvsb;
 
 interface
 

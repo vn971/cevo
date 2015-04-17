@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit NoTerm;
+unit noterm;
 
 interface
 

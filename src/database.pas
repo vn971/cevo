@@ -1,7 +1,7 @@
 {$INCLUDE switches.pas}
 //{$DEFINE TEXTLOG}
 //{$DEFINE LOADPERF}
-unit Database;
+unit database;
 
 interface
 

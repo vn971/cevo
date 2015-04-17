@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Directories;
+unit directories;
 
 interface
 

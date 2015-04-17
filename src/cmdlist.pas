@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit CmdList;
+unit cmdlist;
 
 interface
 

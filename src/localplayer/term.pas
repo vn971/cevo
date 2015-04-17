@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit Term;
+unit term;
 
 interface
 

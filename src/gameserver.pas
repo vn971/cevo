@@ -1,7 +1,7 @@
 {$INCLUDE switches.pas}
 //{$DEFINE TEXTLOG}
 //{$DEFINE LOADPERF}
-unit GameServer;
+unit gameserver;
 
 interface
 

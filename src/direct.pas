@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Direct;
+unit direct;
 
 interface
 

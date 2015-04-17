@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Nego;
+unit nego;
 
 interface
 

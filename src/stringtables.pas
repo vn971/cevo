@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit StringTables;
+unit stringtables;
 
 interface
 

@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit UnitStat;
+unit unitstat;
 
 interface
 

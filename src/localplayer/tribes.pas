@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Tribes;
+unit tribes;
 
 interface
 

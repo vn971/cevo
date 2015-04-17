@@ -30,6 +30,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <LaunchingApplication Use="True"/>
       </local>
     </RunParams>
     <RequiredPackages Count="1">
@@ -45,12 +46,10 @@
       <Unit1>
         <Filename Value="stringtables.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="StringTables"/>
       </Unit1>
       <Unit2>
         <Filename Value="directories.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Directories"/>
       </Unit2>
       <Unit3>
         <Filename Value="protocol.pas"/>
@@ -67,7 +66,6 @@
       <Unit6>
         <Filename Value="gameserver.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="GameServer"/>
       </Unit6>
       <Unit7>
         <Filename Value="cityprocessing.pas"/>
@@ -85,19 +83,16 @@
       <Unit10>
         <Filename Value="screentools.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ScreenTools"/>
       </Unit10>
       <Unit11>
         <Filename Value="start.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Start"/>
       </Unit11>
       <Unit12>
         <Filename Value="messg.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Messg"/>
       </Unit12>
       <Unit13>
         <Filename Value="inp.pas"/>
@@ -108,7 +103,6 @@
         <Filename Value="back.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Back"/>
       </Unit14>
       <Unit15>
         <Filename Value="log.pas"/>
@@ -118,7 +112,6 @@
       <Unit16>
         <Filename Value="localplayer/pvsb.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="PVSB"/>
       </Unit16>
       <Unit17>
         <Filename Value="localplayer/localplayer.pas"/>
@@ -131,23 +124,19 @@
       <Unit19>
         <Filename Value="localplayer/diplomacy.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Diplomacy"/>
       </Unit19>
       <Unit20>
         <Filename Value="localplayer/tribes.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Tribes"/>
       </Unit20>
       <Unit21>
         <Filename Value="localplayer/isoengine.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="IsoEngine"/>
       </Unit21>
       <Unit22>
         <Filename Value="localplayer/term.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Term"/>
       </Unit22>
       <Unit23>
         <Filename Value="localplayer/messgex.pas"/>
@@ -162,19 +151,16 @@
         <Filename Value="localplayer/help.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Help"/>
       </Unit25>
       <Unit26>
         <Filename Value="localplayer/select.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Select"/>
       </Unit26>
       <Unit27>
         <Filename Value="localplayer/cityscreen.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="CityScreen"/>
       </Unit27>
       <Unit28>
         <Filename Value="localplayer/unitstat.pas"/>
@@ -205,7 +191,6 @@
         <Filename Value="localplayer/nego.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Nego"/>
       </Unit33>
       <Unit34>
         <Filename Value="localplayer/citytype.pas"/>
@@ -226,13 +211,11 @@
         <Filename Value="localplayer/battle.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Battle"/>
       </Unit37>
       <Unit38>
         <Filename Value="localplayer/rates.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Rates"/>
       </Unit38>
       <Unit39>
         <Filename Value="localplayer/techtree.pas"/>

@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit TechTree;
+unit techtree;
 
 interface
 

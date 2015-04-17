@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Back;
+unit back;
 
 interface
 

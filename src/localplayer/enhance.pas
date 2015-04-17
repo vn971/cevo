@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-unit Enhance;
+unit enhance;
 
 interface
 

@@ -1,6 +1,6 @@
 {$INCLUDE ../switches.pas}
 
-unit Wonders;
+unit wonders;
 
 interface
 
