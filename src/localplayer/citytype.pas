@@ -43,7 +43,7 @@ implementation
 
 uses Help;
 
-{$R *.DFM}
+{$R *.lfm}
 
 const
   xList = 7;

@@ -18,7 +18,7 @@ type
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
 
 type

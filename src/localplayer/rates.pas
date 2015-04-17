@@ -32,7 +32,7 @@ implementation
 uses
   ClientTools, Term, Tribes;
 
-{$R *.DFM}
+{$R *.lfm}
 
 const
   MessageLineSpacing = 20;

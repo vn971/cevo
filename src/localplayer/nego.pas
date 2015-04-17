@@ -98,7 +98,7 @@ implementation
 uses
 Messg,ClientTools,Diplomacy, Inp, Select, NatStat, Help,Tribes, MessgEx;
 
-{$R *.DFM}
+{$R *.lfm}
 
 const
 xPadC=140; yPadC=427;

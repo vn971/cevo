@@ -46,7 +46,7 @@ implementation
 
 uses GameServer, log, Start;
 
-{$R *.DFM}
+{$R *.lfm}
 
 const
   UpdateInterval = 0.1; // seconds

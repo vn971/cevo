@@ -38,7 +38,7 @@ implementation
 uses
   Term, ClientTools, IsoEngine;
 
-{$R *.DFM}
+{$R *.lfm}
 
 const
   Border = 3;

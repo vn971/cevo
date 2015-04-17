@@ -1,0 +1,39 @@
+object TechTreeDlg: TTechTreeDlg
+  Left = 1162
+  Top = 481
+  Cursor = 3
+  BorderIcons = []
+  BorderStyle = bsNone
+  ClientHeight = 482
+  ClientWidth = 611
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  OldCreateOrder = False
+  Position = poDefault
+  Scaled = False
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
+  OnPaint = FormPaint
+  OnShow = FormShow
+  PixelsPerInch = 120
+  TextHeight = 16
+  object CloseBtn: TButtonB
+    Left = 568
+    Top = 16
+    Width = 25
+    Height = 25
+    Cursor = crArrow
+    Down = False
+    Permanent = False
+    OnClick = CloseBtnClick
+    ButtonIndex = 0
+  end
+end
