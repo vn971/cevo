@@ -31,6 +31,7 @@ procedure BtnFrame(ca: TCanvas; p: TRect; const T: TTexture);
 procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
 function LoadGraphicFile(bmp: TBitmap; Path: string; Options: integer = 0): boolean;
+function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
 function LoadGraphicSet(Name: string): integer;
@@ -448,6 +449,71 @@ begin
       ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
     else
       ApplyGamma(pointer(LastLine), @FirstLine[bmp.Width]);
+  end;
+end;
+
+function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
+type
+  TLine = array[0..9999, 0..2] of byte;
+var
+  FirstLine, LastLine: ^TLine;
+  png: TPortableNetworkGraphic;
+  jpg: TJPEGImage;
+  bmp: TBitmap;
+begin
+  Result:=nil;
+  if (copy(Path, Length(Path) - 3, 4) = '.jpg') or (copy(Path, Length(Path) - 4, 5) = '.jpeg') then
+  begin
+    jpg := TJPEGImage.Create;
+    try
+      jpg.LoadFromFile(Path);
+      Result := jpg;
+    except
+    end;
+  end
+  else if copy(Path, Length(Path) - 3, 4) = '.png' then
+  begin
+    png := TPortableNetworkGraphic.Create;
+    try
+      png.LoadFromFile(Path);
+      Result := png;
+    except
+    end;
+  end
+  else if copy(Path, Length(Path) - 3, 4) = '.bmp' then
+  begin
+    bmp := TBitmap.Create;
+    try
+      bmp.LoadFromFile(Path);
+      Result := bmp;
+    except
+    end;
+  end;
+
+  if Result=nil then
+  begin
+    WriteLn('ERROR, graphics file not found: ', Path);
+    if Options and gfNoError = 0 then
+      Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'), [Path])),
+        'C-evo', 0);
+    exit;
+  end;
+
+  if Options and gfNoGamma = 0 then
+  begin
+    Result.PixelFormat := pf24bit;
+  end;
+
+  if (Options and gfNoGamma = 0) and (Gamma <> 100) then
+  begin
+    Result.BeginUpdate();
+    FirstLine := Result.ScanLine[0];
+    LastLine := Result.ScanLine[Result.Height - 1];
+    Result.EndUpdate();
+    if integer(FirstLine) < integer(LastLine) then
+      ApplyGamma(pointer(FirstLine), @LastLine[Result.Width])
+    else
+      ApplyGamma(pointer(LastLine), @FirstLine[Result.Width]);
   end;
 end;
 

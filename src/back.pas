@@ -15,7 +15,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-    img: TBitmap;
+    img: TFPImageBitmap;
   end;
 
 var
@@ -39,11 +39,7 @@ begin
   img := nil;
   if FullScreen then
   begin
-    if FileExistsUTF8(GraphicsDirectory + 'Background'+GraphicsFileExtension) then
-    begin
-      img := TBitmap.Create;
-      LoadGraphicFile(img, GraphicsDirectory + 'Background');
-    end;
+    img := LoadAnyGraphics(GraphicsDirectory + 'Background.png');
   end
   else
   begin
