@@ -628,6 +628,7 @@ begin
 {$ENDIF}
   Best := 0;
   Result := -1;
+  BestDist := -1;
   with RW[p].City[cix] do
   begin
     V21_to_Loc(Loc, Radius);
@@ -648,7 +649,7 @@ begin
             dy := V21 shr 2 - 3;
             dx := V21 and 3 shl 1 - 3 + (dy + 3) and 1;
             Dist := abs(dx) + abs(dy) + abs(abs(dx) - abs(dy)) shr 1;
-            if (Resources > Best) or (Resources = Best) and (Dist < BestDist) then
+            if (Resources > Best) or (Resources = Best) and ((Dist < BestDist) or (BestDist < 0)) then
             begin
               Result := Loc1;
               Best := Resources;

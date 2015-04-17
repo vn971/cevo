@@ -2026,6 +2026,7 @@ begin
   Defender := Occupant[Loc];
   Cnt := 0;
   Det := -1;
+  Cost := -1;
   for uix1 := 0 to RW[Defender].nUn - 1 do
   begin
     PUn := @RW[Defender].Un[uix1];
@@ -2070,7 +2071,7 @@ begin
         else
           Inc(TestDet, 2 shl 28);
         TestCost := RW[Defender].Model[PUn.mix].Cost;
-        if (TestDet > Det) or (TestDet = Det) and (TestCost < Cost) then
+        if (TestDet > Det) or (TestDet = Det) and ((TestCost < Cost) or (Cost < 0)) then
         begin
           uix := uix1;
           Strength := TestStrength;
