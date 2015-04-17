@@ -1733,7 +1733,10 @@ begin {Prepare}
     else
       LF;
 
-    InitPVSB(sb, Count - 1, InnerHeight div 24);
+    // lazarus todo:
+    // the game Manual works only by commenting this line out.
+    // It means that the scrollbar will not be created.
+    //InitPVSB(sb, Count - 1, InnerHeight div 24);
     if sbPos <> 0 then
     begin
       sb.si.npos := sbPos;

@@ -3263,6 +3263,9 @@ end;{<<<client}
 
 {*** main part ***}
 
+// lazarus todo:
+// this procedure is never called.
+// Why? Maybe because LCL components do not know what TMainScreen is?
 procedure TMainScreen.CreateParams(var p: TCreateParams);
 var
   DefaultOptionChecked: integer;
