@@ -209,6 +209,9 @@ begin
         Active := -1;
       end; // should not happen
 
+      // lazarus todo: fix this hack...
+      if PerfFreq = 0 then
+         PerfFreq:=1;
       if
 {$IFDEF VER100}
       (now.LowPart - LastShowYearTime.LowPart)

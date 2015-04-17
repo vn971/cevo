@@ -319,6 +319,9 @@ var
   p: integer;
   T: int64;
 begin
+  // lazarus todo: fix this hack...
+  if PerfFreq=0 then
+     PerfFreq:=1;
   PutMessage(1 shl 16 + 2, Format('CLIENT: took %.1f ms', [
 {$IFDEF VER100}
     (T.LowPart - LastClientTime.LowPart)
