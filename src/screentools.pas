@@ -397,14 +397,14 @@ type
   TLine = array[0..9999, 0..2] of byte;
 var
   FirstLine, LastLine: ^TLine;
-  jtex: tjpegimage;
+  jpg: TJPEGImage;
 begin
   Result := True;
   if Options and gfJPG <> 0 then
   begin
-    jtex := tjpegimage.Create;
+    jpg := TJPEGImage.Create;
     try
-      jtex.loadfromfile(Path + '.jpg');
+      jpg.LoadFromFile(Path + '.jpg');
     except
       Result := False;
     end;
@@ -412,11 +412,11 @@ begin
     begin
       if Options and gfNoGamma = 0 then
         bmp.PixelFormat := pf24bit;
-      bmp.Width := jtex.Width;
-      bmp.Height := jtex.Height;
-      bmp.canvas.draw(0, 0, jtex);
+      bmp.Width := jpg.Width;
+      bmp.Height := jpg.Height;
+      bmp.Canvas.Draw(0, 0, jpg);
     end;
-    jtex.Free;
+    jpg.Free;
   end
   else
   begin
