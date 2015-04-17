@@ -126,7 +126,7 @@ var
 begin
   if Image = nil then
   begin
-    Image := LoadAnyGraphics(BinariesDirectory + 'Help'+DirectorySeparator+'AdvTree.bmp', gfNoGamma);
+    Image := LoadAnyGraphics(BinariesDirectory + 'Help'+DirectorySeparator+'AdvTree', gfNoGamma);
     Image.PixelFormat := pf24bit;
 
     with Image.Canvas do

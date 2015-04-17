@@ -39,7 +39,7 @@ begin
   img := nil;
   if FullScreen then
   begin
-    img := LoadAnyGraphics(GraphicsDirectory + 'Background.png');
+    img := LoadAnyGraphics(GraphicsDirectory + 'Background');
   end
   else
   begin

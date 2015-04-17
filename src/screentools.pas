@@ -402,31 +402,37 @@ var
   bmp: TBitmap;
 begin
   Result:=nil;
-  if (copy(Path, Length(Path) - 3, 4) = '.jpg') or (copy(Path, Length(Path) - 4, 5) = '.jpeg') then
-  begin
-    jpg := TJPEGImage.Create;
-    try
-      jpg.LoadFromFile(Path);
-      Result := jpg;
-    except
-    end;
-  end
-  else if copy(Path, Length(Path) - 3, 4) = '.png' then
+
+  if Result=nil then
   begin
     png := TPortableNetworkGraphic.Create;
     try
-      png.LoadFromFile(Path);
+      png.LoadFromFile(Path + '.png');
       Result := png;
     except
+      FreeAndNil(png);
     end;
-  end
-  else if copy(Path, Length(Path) - 3, 4) = '.bmp' then
+  end;
+
+  if Result=nil then
+  begin
+    jpg := TJPEGImage.Create;
+    try
+      jpg.LoadFromFile(Path + '.jpg');
+      Result := jpg;
+    except
+      FreeAndNil(jpg);
+    end;
+  end;
+
+  if Result=nil then
   begin
     bmp := TBitmap.Create;
     try
-      bmp.LoadFromFile(Path);
+      bmp.LoadFromFile(Path + '.bmp');
       Result := bmp;
     except
+      FreeAndNil(bmp);
     end;
   end;
 
@@ -1442,7 +1448,7 @@ begin
     begin
       MainTextureAge := Age;
       FreeAndNil(Image);
-      Image := LoadAnyGraphics(GraphicsDirectory + 'Texture' + IntToStr(Age + 1) + '.jpg');
+      Image := LoadAnyGraphics(GraphicsDirectory + 'Texture' + IntToStr(Age + 1));
       clBevelLight := Colors.Canvas.Pixels[clkAge0 + Age, cliBevelLight];
       clBevelShade := Colors.Canvas.Pixels[clkAge0 + Age, cliBevelShade];
       clTextLight := Colors.Canvas.Pixels[clkAge0 + Age, cliTextLight];
@@ -1572,11 +1578,11 @@ initialization
   nGrExt := 0;
   HGrSystem := LoadGraphicSet('System');
   HGrSystem2 := LoadGraphicSet('System2');
-  Templates := LoadAnyGraphics(GraphicsDirectory + 'Templates.bmp', gfNoGamma);
+  Templates := LoadAnyGraphics(GraphicsDirectory + 'Templates', gfNoGamma);
   Templates.PixelFormat := pf24bit;
-  Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors.bmp');
-  Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper.jpg');
-  BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons.bmp');
+  Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors');
+  Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
+  BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
   MainTexture.Image := TBitmap.Create;
   MainTextureAge := -2;
   ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];

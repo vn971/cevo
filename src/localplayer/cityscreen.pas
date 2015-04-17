@@ -215,11 +215,11 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
-  Template := LoadAnyGraphics(GraphicsDirectory + 'City.bmp', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'City', gfNoGamma);
   Template.PixelFormat := pf8bit;
-  CityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'BigCityMap.bmp', gfNoGamma);
+  CityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'BigCityMap', gfNoGamma);
   CityMapTemplate.PixelFormat := pf8bit;
-  SmallCityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'SmallCityMap.bmp', gfNoGamma);
+  SmallCityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'SmallCityMap', gfNoGamma);
   SmallCityMapTemplate.PixelFormat := pf24bit;
   SmallCityMap := TBitmap.Create;
   SmallCityMap.PixelFormat := pf24bit;

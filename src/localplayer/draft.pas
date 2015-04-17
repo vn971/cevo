@@ -89,7 +89,7 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
-  Template := LoadAnyGraphics(GraphicsDirectory + 'MiliRes.bmp', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'MiliRes', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 

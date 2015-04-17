@@ -1182,7 +1182,7 @@ begin
   else
   begin
     FreeAndNil(AILogo[p]);
-    AILogo[p] := LoadAnyGraphics(BinariesDirectory + Name + '.bmp', gfNoError);
+    AILogo[p] := LoadAnyGraphics(BinariesDirectory + Name, gfNoError);
   end;
 end;
 

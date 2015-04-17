@@ -93,7 +93,7 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
-  Template := LoadAnyGraphics(GraphicsDirectory + 'Nation.bmp', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'Nation', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 

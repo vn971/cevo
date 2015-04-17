@@ -81,7 +81,7 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := 5 * wCommon;
   Back.Height := hMax;
-  Template := LoadAnyGraphics(GraphicsDirectory + 'Unit.bmp', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'Unit', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 

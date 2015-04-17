@@ -369,7 +369,7 @@ begin
     GrExt[HGrSystem2].Data.Canvas.Handle, 131, 46, SRCCOPY);
   for i := bixFirstAI to nBrain - 1 do
   begin
-    BrainPicture[i] := LoadAnyGraphics(AiDirectory + Brain[i].FileName + '.bmp', gfNoError);
+    BrainPicture[i] := LoadAnyGraphics(AiDirectory + Brain[i].FileName, gfNoError);
     if BrainPicture[i]=nil then
     begin
       BrainPicture[i].Width := 64;
@@ -1185,7 +1185,7 @@ begin
         MapFileName := List.Items[List.ItemIndex] + '.cevo map';
       FreeAndNil(Mini);
       Mini := LoadAnyGraphics(UserDirectory + 'Maps' + DirectorySeparator +
-        Copy(MapFileName, 1, Length(MapFileName) - 9) + '.bmp', gfNoError);
+        Copy(MapFileName, 1, Length(MapFileName) - 9), gfNoError);
       if Mini <> nil then
       begin
         if Mini.Width div 2 > MaxWidthMapLogo then
