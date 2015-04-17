@@ -56,6 +56,7 @@
       <Unit3>
         <Filename Value="protocol.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Protocol"/>
       </Unit3>
       <Unit4>
         <Filename Value="cmdlist.pas"/>
@@ -122,6 +123,7 @@
       <Unit16>
         <Filename Value="localplayer/pvsb.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="PVSB"/>
       </Unit16>
       <Unit17>
         <Filename Value="localplayer/localplayer.pas"/>
@@ -142,6 +144,7 @@
       <Unit21>
         <Filename Value="localplayer/isoengine.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="IsoEngine"/>
       </Unit21>
       <Unit22>
         <Filename Value="localplayer/term.pas"/>
@@ -158,6 +161,7 @@
       <Unit24>
         <Filename Value="localplayer/basewin.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="BaseWin"/>
       </Unit24>
       <Unit25>
         <Filename Value="localplayer/help.pas"/>
@@ -211,36 +215,43 @@
         <Filename Value="localplayer/nego.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Nego"/>
       </Unit33>
       <Unit34>
         <Filename Value="localplayer/citytype.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="CityType"/>
       </Unit34>
       <Unit35>
         <Filename Value="localplayer/enhance.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Enhance"/>
       </Unit35>
       <Unit36>
         <Filename Value="noterm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="NoTerm"/>
       </Unit36>
       <Unit37>
         <Filename Value="localplayer/battle.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Battle"/>
       </Unit37>
       <Unit38>
         <Filename Value="localplayer/rates.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Rates"/>
       </Unit38>
       <Unit39>
         <Filename Value="localplayer/techtree.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="TechTree"/>
       </Unit39>
     </Units>
   </ProjectOptions>

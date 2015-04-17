@@ -51,7 +51,7 @@ begin
     ShowWindow(sb.h, SW_SHOW);
 end;
 
-function ProcessPVSB;
+function ProcessPVSB(var sb: TPVScrollbar; const m: TMessage): boolean;
 var
   NewPos: integer;
 begin
