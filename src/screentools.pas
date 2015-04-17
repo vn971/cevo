@@ -9,7 +9,7 @@ uses
   {$ifdef WINDOWS}
     windows,
   {$endif}
-  LCLIntf, LCLType, LMessages,
+  LCLIntf, LCLType, LMessages, LazLogger,
   Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus;
 
 type
@@ -438,7 +438,7 @@ begin
 
   if Result=nil then
   begin
-    WriteLn('ERROR, graphics file not found: ', Path);
+    DebugLn('ERROR, graphics file not found: ', Path);
     if Options and gfNoError = 0 then
       Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'), [Path])),
         'C-evo', 0);
@@ -538,13 +538,9 @@ begin
   if i = nGrExt then
   begin
     FileName := GraphicsDirectory + Name;
-    Source := TBitmap.Create;
-    try
-      Source.LoadFromFile(FileName + GraphicsFileExtension)
-    except
+    Source := LoadAnyGraphics(FileName, gfNoGamma);
+    if (Source = nil) then begin
       Result := -1;
-      Application.MessageBox(PChar(
-        Format(Phrases.Lookup('FILENOTFOUND'), [FileName])), 'C-evo', 0);
       exit;
     end;
 
