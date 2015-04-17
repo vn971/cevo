@@ -45,7 +45,7 @@ type
     pView, AgePrepared, LinesDown: integer;
     SelfReport, CurrentReport: PEnemyReport;
     ShowContact, ContactEnabled: boolean;
-    Back, Template: TBitmap;
+    Back, Template: TFPImageBitmap;
     ReportText: TStringList;
     procedure GenerateReportText;
   end;
@@ -93,8 +93,7 @@ begin
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
-  Template := TBitmap.Create;
-  LoadGraphicFile(Template, GraphicsDirectory + 'Nation', gfNoGamma);
+  Template := LoadAnyGraphics(GraphicsDirectory + 'Nation.bmp', gfNoGamma);
   Template.PixelFormat := pf8bit;
 end;
 

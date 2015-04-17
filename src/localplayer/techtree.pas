@@ -25,7 +25,7 @@ type
     procedure CloseBtnClick(Sender: TObject);
   private
     xOffset, yOffset, xDown, yDown: integer;
-    Image: TBitmap;
+    Image: TFPImageBitmap;
     dragging: boolean;
   end;
 
@@ -126,8 +126,7 @@ var
 begin
   if Image = nil then
   begin
-    Image := TBitmap.Create;
-    LoadGraphicFile(Image, BinariesDirectory + 'Help'+DirectorySeparator+'AdvTree', gfNoGamma);
+    Image := LoadAnyGraphics(BinariesDirectory + 'Help'+DirectorySeparator+'AdvTree.bmp', gfNoGamma);
     Image.PixelFormat := pf24bit;
 
     with Image.Canvas do
