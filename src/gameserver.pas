@@ -1519,6 +1519,7 @@ end;
 procedure BeforeTurn;
 var
   i, p1, uix, cix, V21, Loc1, Cost, Job0, nAlive, nAppliers, ad,
+  advanceCopy,
   OldLoc, SiegedTiles, nUpdateLoc: integer;
   UpdateLoc: array[0..numax - 1] of integer;
   Radius: TVicinity21Loc;
@@ -1550,8 +1551,9 @@ begin
         begin
           SeeTech(pTurn, ad);
           Inc(nTech[pTurn]);
+          advanceCopy:=ad;
           if Mode >= moMovie then
-            CallPlayer(cShowGreatLibTech, pTurn, ad);
+            CallPlayer(cShowGreatLibTech, pTurn, advanceCopy);
           // do not call CallPlayer(pTurn) while map is invalid
         end;
       end;
