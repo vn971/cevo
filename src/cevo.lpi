@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
     <Version Value="9"/>
@@ -31,7 +31,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="/usr/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="1">
@@ -51,12 +50,10 @@
       <Unit2>
         <Filename Value="directories.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Directories"/>
       </Unit2>
       <Unit3>
         <Filename Value="protocol.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Protocol"/>
       </Unit3>
       <Unit4>
         <Filename Value="cmdlist.pas"/>
@@ -69,7 +66,6 @@
       <Unit6>
         <Filename Value="gameserver.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="GameServer"/>
       </Unit6>
       <Unit7>
         <Filename Value="cityprocessing.pas"/>
@@ -83,47 +79,39 @@
         <Filename Value="direct.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Direct"/>
       </Unit9>
       <Unit10>
         <Filename Value="screentools.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ScreenTools"/>
       </Unit10>
       <Unit11>
         <Filename Value="start.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Start"/>
       </Unit11>
       <Unit12>
         <Filename Value="messg.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Messg"/>
       </Unit12>
       <Unit13>
         <Filename Value="inp.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Inp"/>
       </Unit13>
       <Unit14>
         <Filename Value="back.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Back"/>
       </Unit14>
       <Unit15>
         <Filename Value="log.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="log"/>
       </Unit15>
       <Unit16>
         <Filename Value="localplayer/pvsb.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="PVSB"/>
       </Unit16>
       <Unit17>
         <Filename Value="localplayer/localplayer.pas"/>
@@ -144,24 +132,20 @@
       <Unit21>
         <Filename Value="localplayer/isoengine.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="IsoEngine"/>
       </Unit21>
       <Unit22>
         <Filename Value="localplayer/term.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Term"/>
       </Unit22>
       <Unit23>
         <Filename Value="localplayer/messgex.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="MessgEx"/>
       </Unit23>
       <Unit24>
         <Filename Value="localplayer/basewin.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="BaseWin"/>
       </Unit24>
       <Unit25>
         <Filename Value="localplayer/help.pas"/>
@@ -173,92 +157,78 @@
         <Filename Value="localplayer/select.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Select"/>
       </Unit26>
       <Unit27>
         <Filename Value="localplayer/cityscreen.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="CityScreen"/>
       </Unit27>
       <Unit28>
         <Filename Value="localplayer/unitstat.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="UnitStat"/>
       </Unit28>
       <Unit29>
         <Filename Value="localplayer/draft.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Draft"/>
       </Unit29>
       <Unit30>
         <Filename Value="localplayer/natstat.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="NatStat"/>
       </Unit30>
       <Unit31>
         <Filename Value="localplayer/diagram.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Diagram"/>
       </Unit31>
       <Unit32>
         <Filename Value="localplayer/wonders.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Wonders"/>
       </Unit32>
       <Unit33>
         <Filename Value="localplayer/nego.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Nego"/>
       </Unit33>
       <Unit34>
         <Filename Value="localplayer/citytype.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="CityType"/>
       </Unit34>
       <Unit35>
         <Filename Value="localplayer/enhance.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Enhance"/>
       </Unit35>
       <Unit36>
         <Filename Value="noterm.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="NoTerm"/>
       </Unit36>
       <Unit37>
         <Filename Value="localplayer/battle.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Battle"/>
       </Unit37>
       <Unit38>
         <Filename Value="localplayer/rates.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="Rates"/>
       </Unit38>
       <Unit39>
         <Filename Value="localplayer/techtree.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UnitName Value="TechTree"/>
       </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <SearchPaths>
-      <IncludeFiles Value="localplayer"/>
+      <IncludeFiles Value="localplayer;$(ProjOutDir)"/>
       <OtherUnitFiles Value="localplayer"/>
       <UnitOutputDirectory Value="../target"/>
     </SearchPaths>
