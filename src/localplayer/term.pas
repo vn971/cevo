@@ -424,7 +424,7 @@ uses
   Directories, IsoEngine, CityScreen, Draft, MessgEx, Select, CityType, Help,
   UnitStat, Diplomacy, Inp, log, Diagram, NatStat, Wonders, Enhance, Nego, Battle, Rates,
   TechTree,
-  Registry, ShellAPI;
+  Registry;
 
 
 {$R *.DFM}
@@ -6522,7 +6522,7 @@ begin
     end;
   end
   else if Sender = mWebsite then
-    ShellExecute(Handle, 'open', 'http://c-evo.org', '', '', SW_SHOWNORMAL)
+    OpenURL('http://c-evo.org')
   else if Sender = mRandomMap then
   begin
     if not Edited or (SimpleQuery(mkYesNo, Phrases.Lookup('MAP_RANDOM'), '') = mrOk) then
