@@ -184,8 +184,9 @@ implementation
 
 uses
   FileUtil,
-  Directories, Sound, ButtonBase, ButtonA, ButtonB,
-  Registry, JPEG;
+  Directories, ButtonBase, ButtonA, ButtonB,
+  //JPEGLib does not seem to be needed (was in Steffen-s source code)
+  Registry;
 
 var
   StartResolution: TDeviceMode;

@@ -5,14 +5,13 @@
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="cevo"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N LFM="False"/>
@@ -46,10 +45,12 @@
       <Unit1>
         <Filename Value="stringtables.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="StringTables"/>
       </Unit1>
       <Unit2>
         <Filename Value="directories.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Directories"/>
       </Unit2>
       <Unit3>
         <Filename Value="protocol.pas"/>
@@ -62,11 +63,11 @@
       <Unit5>
         <Filename Value="database.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Database"/>
       </Unit5>
       <Unit6>
         <Filename Value="gameserver.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="GameServer"/>
       </Unit6>
       <Unit7>
         <Filename Value="cityprocessing.pas"/>
@@ -96,6 +97,7 @@
         <Filename Value="messg.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Messg"/>
       </Unit12>
       <Unit13>
         <Filename Value="inp.pas"/>
@@ -128,10 +130,12 @@
       <Unit19>
         <Filename Value="localplayer/diplomacy.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Diplomacy"/>
       </Unit19>
       <Unit20>
         <Filename Value="localplayer/tribes.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Tribes"/>
       </Unit20>
       <Unit21>
         <Filename Value="localplayer/isoengine.pas"/>
@@ -168,6 +172,7 @@
         <Filename Value="localplayer/cityscreen.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="CityScreen"/>
       </Unit27>
       <Unit28>
         <Filename Value="localplayer/unitstat.pas"/>
@@ -198,6 +203,7 @@
         <Filename Value="localplayer/nego.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Nego"/>
       </Unit33>
       <Unit34>
         <Filename Value="localplayer/citytype.pas"/>
@@ -218,11 +224,13 @@
         <Filename Value="localplayer/battle.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Battle"/>
       </Unit37>
       <Unit38>
         <Filename Value="localplayer/rates.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="Rates"/>
       </Unit38>
       <Unit39>
         <Filename Value="localplayer/techtree.pas"/>
@@ -241,14 +249,23 @@
     <Parsing>
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
+        <AllowLabel Value="False"/>
+        <CPPInline Value="False"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
-        <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
