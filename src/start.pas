@@ -69,7 +69,7 @@ type
     procedure AutoEnemyDownBtnClick(Sender: TObject);
     procedure ReplayBtnClick(Sender: TObject);
   public
-    BrainPicture: array[0..maxBrain - 1] of TBitmap;
+    BrainPicture: array[0..maxBrain - 1] of TFPImageBitmap;
     EmptyPicture: TBitmap;
     procedure UpdateFormerGames;
     procedure UpdateMaps;
@@ -369,8 +369,8 @@ begin
     GrExt[HGrSystem2].Data.Canvas.Handle, 131, 46, SRCCOPY);
   for i := bixFirstAI to nBrain - 1 do
   begin
-    BrainPicture[i] := TBitmap.Create;
-    if not LoadGraphicFile(BrainPicture[i], AiDirectory + Brain[i].FileName, gfNoError) then
+    BrainPicture[i] := LoadAnyGraphics(AiDirectory + Brain[i].FileName + '.bmp', gfNoError);
+    if BrainPicture[i]=nil then
     begin
       BrainPicture[i].Width := 64;
       BrainPicture[i].Height := 64;
