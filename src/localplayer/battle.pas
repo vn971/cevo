@@ -37,6 +37,7 @@ procedure PaintBattleOutcome(ca: TCanvas; xm, ym, uix, ToLoc: integer;
 implementation
 
 uses
+  Types,
   Term, ClientTools, IsoEngine;
 
 {$R *.lfm}

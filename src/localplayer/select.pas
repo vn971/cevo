@@ -86,6 +86,7 @@ var
 implementation
 
 uses
+  Types,
   CityScreen, Help, UnitStat, Tribes, Inp;
 
 {$R *.lfm}

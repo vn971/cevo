@@ -3,7 +3,8 @@ unit Sound;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, MMSystem;
+  LCLIntf, LCLType, LMessages,
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, MMSystem;
 
 function PrepareSound(FileName: string): integer;
 procedure PlaySound(FileName: string);
