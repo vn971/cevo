@@ -39,8 +39,7 @@ begin
   img := nil;
   if FullScreen then
   begin
-    if FileExistsUTF8(GraphicsDirectory + 'Background.bmp') or
-      FileExistsUTF8(GraphicsDirectory + 'Background.png') then
+    if FileExistsUTF8(GraphicsDirectory + 'Background'+GraphicsFileExtension) then
     begin
       img := TBitmap.Create;
       LoadGraphicFile(img, GraphicsDirectory + 'Background');

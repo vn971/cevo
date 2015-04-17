@@ -5,7 +5,9 @@ unit Directories;
 interface
 
 var
-  BinariesDirectory, AiDirectory, GraphicsDirectory, SoundsDirectory,
+  BinariesDirectory,
+  AiDirectory, GraphicsDirectory, SoundsDirectory,
+  GraphicsFileExtension,
   UserDirectory: String;
 
 function LocalizedFilePath(path: string): string;
@@ -30,6 +32,7 @@ var
   src, dst: TSearchRec;
 
 initialization
+  GraphicsFileExtension := '.bmp';
   BinariesDirectory := ExtractFilePath(ParamStr(0));
   AiDirectory := BinariesDirectory + 'AI' + DirectorySeparator;
   GraphicsDirectory := BinariesDirectory + 'Graphics' + DirectorySeparator;

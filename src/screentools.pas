@@ -403,7 +403,7 @@ begin
   else
   begin
     try
-      bmp.LoadFromFile(Path + '.bmp');
+      bmp.LoadFromFile(Path + GraphicsFileExtension);
     except
       Result := False;
     end;
@@ -462,7 +462,7 @@ begin
   else
   begin
     try
-      bmp.LoadFromFile(LocalizedFilePath(Path + '.bmp'));
+      bmp.LoadFromFile(LocalizedFilePath(Path + GraphicsFileExtension));
     except
       Result := False;
     end;
@@ -510,7 +510,7 @@ begin
     FileName := GraphicsDirectory + Name;
     Source := TBitmap.Create;
     try
-      Source.LoadFromFile(FileName + '.bmp')
+      Source.LoadFromFile(FileName + GraphicsFileExtension)
     except
       Result := -1;
       Application.MessageBox(PChar(

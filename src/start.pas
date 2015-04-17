@@ -1770,8 +1770,8 @@ begin
       end;
       if Page <> pgLoad then
         try // rename map picture
-          AssignFile(f, UserDirectory + 'Maps' + DirectorySeparator + List.Items[List.ItemIndex] + '.bmp');
-          Rename(f, UserDirectory + 'Maps' + DirectorySeparator + NewName + '.bmp');
+          AssignFile(f, UserDirectory + 'Maps' + DirectorySeparator + List.Items[List.ItemIndex] + GraphicsFileExtension);
+          Rename(f, UserDirectory + 'Maps' + DirectorySeparator + NewName + GraphicsFileExtension);
         except
         end;
       if ok then
