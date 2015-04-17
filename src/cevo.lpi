@@ -73,7 +73,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="41">
       <Unit0>
         <Filename Value="cevo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -257,6 +257,10 @@
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
       </Unit39>
+      <Unit40>
+        <Filename Value="area.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit40>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
