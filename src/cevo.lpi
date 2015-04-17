@@ -73,7 +73,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="41">
+    <Units Count="50">
       <Unit0>
         <Filename Value="cevo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -261,6 +261,45 @@
         <Filename Value="area.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit40>
+      <Unit41>
+        <Filename Value="buttona.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="buttonb.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="buttonbase.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="buttonc.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="buttonn.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="eotbutton.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="switches.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="sound.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SoundPlayer"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="ipq.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit49>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
