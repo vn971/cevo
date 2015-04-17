@@ -6,6 +6,9 @@ interface
 
 uses
   StringTables,
+  {$ifdef WINDOWS}
+    windows,
+  {$endif}
   LCLIntf, LCLType, LMessages,
   Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus;
 
@@ -192,7 +195,9 @@ uses
   Registry;
 
 var
-  StartResolution: TDeviceMode;
+  {$ifdef WINDOWS}
+    StartResolution: TDeviceMode;
+  {$endif}
   ResolutionChanged: boolean;
 
   Gamma: integer; // global gamma correction (cent)
@@ -200,6 +205,7 @@ var
 
 
 function ChangeResolution(x, y, bpp, freq: integer): boolean;
+{$ifdef WINDOWS}
 var
   DevMode: TDeviceMode;
 begin
@@ -214,11 +220,16 @@ begin
   if Result then
     ResolutionChanged := True;
 end;
+{$else}
+begin end;
+{$EndIf}
 
 procedure RestoreResolution;
 begin
+  {$ifdef WINDOWS}
   if ResolutionChanged then
     ChangeDisplaySettings(StartResolution, 0);
+  {$endif}
   ResolutionChanged := False;
 end;
 
@@ -1469,8 +1480,9 @@ initialization
       GammaLUT[i] := p;
     end;
   end;
-
-  EnumDisplaySettings(nil, $FFFFFFFF, StartResolution);
+  {$ifdef WINDOWS}
+    EnumDisplaySettings(nil, $FFFFFFFF, StartResolution);
+  {$endif}
   ResolutionChanged := False;
 
   Phrases := TStringTable.Create;
