@@ -82,7 +82,7 @@ type
     ListIndex: array[0..3] of integer;
     MapFileName: string;
     FormerGames, Maps: TStringList;
-    LogoBuffer, Mini: TBitmap; {game world sample preview}
+    LogoBuffer, Mini: TFPImageBitmap; {game world sample preview}
     MiniColors: array[0..11, 0..1] of TColor;
     //    BookDate: string;
     DiffUpBtn: array[0..8] of TButtonC;
@@ -1183,8 +1183,10 @@ begin
       MiniMode := mmPicture;
       if Page = pgEditMap then
         MapFileName := List.Items[List.ItemIndex] + '.cevo map';
-      if LoadGraphicFile(Mini, UserDirectory + 'Maps' + DirectorySeparator + Copy(MapFileName,
-        1, Length(MapFileName) - 9), gfNoError) then
+      FreeAndNil(Mini);
+      Mini := LoadAnyGraphics(UserDirectory + 'Maps' + DirectorySeparator +
+        Copy(MapFileName, 1, Length(MapFileName) - 9) + '.bmp', gfNoError);
+      if Mini <> nil then
       begin
         if Mini.Width div 2 > MaxWidthMapLogo then
           Mini.Width := MaxWidthMapLogo * 2;

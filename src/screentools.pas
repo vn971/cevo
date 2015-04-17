@@ -40,7 +40,7 @@ procedure Sprite(Canvas: TCanvas; HGr, xDst, yDst, Width, Height, xGr, yGr: inte
   overload;
 procedure Sprite(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
   overload;
-procedure MakeBlue(Dst: TBitmap; x, y, w, h: integer);
+procedure MakeBlue(Dst: TFPImageBitmap; x, y, w, h: integer);
 procedure ImageOp_B(Dst, Src: TBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
 procedure ImageOp_BCC(Dst, Src: TFPImageBitmap;
   xDst, yDst, xSrc, ySrc, w, h, Color1, Color2: integer);
@@ -52,7 +52,7 @@ procedure RFrame(ca: TCanvas; x0, y0, x1, y1: integer; cl0, cl1: TColor);
 procedure CFrame(ca: TCanvas; x0, y0, x1, y1, Corner: integer; cl: TColor);
 procedure FrameImage(ca: TCanvas; src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc: integer;
   IsControl: boolean = False);
-procedure GlowFrame(dst: TBitmap; x0, y0, Width, Height: integer; cl: TColor);
+procedure GlowFrame(dst: TFPImageBitmap; x0, y0, Width, Height: integer; cl: TColor);
 procedure InitOrnament;
 procedure InitCityMark(const T: TTexture);
 procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer);
@@ -656,7 +656,7 @@ begin
     GrExt[HGr].Data.Canvas.Handle, xGr, yGr, SRCCOPY);
 end;
 
-procedure MakeBlue(Dst: TBitmap; x, y, w, h: integer);
+procedure MakeBlue(Dst: TFPImageBitmap; x, y, w, h: integer);
 type
   TLine = array[0..99999, 0..2] of byte;
   PLine = ^TLine;
@@ -959,7 +959,7 @@ begin
   BitBlt(ca.Handle, x, y, Width, Height, src.Canvas.Handle, xSrc, ySrc, SRCCOPY);
 end;
 
-procedure GlowFrame(dst: TBitmap; x0, y0, Width, Height: integer; cl: TColor);
+procedure GlowFrame(dst: TFPImageBitmap; x0, y0, Width, Height: integer; cl: TColor);
 type
   TLine = array[0..649, 0..2] of byte;
 var
