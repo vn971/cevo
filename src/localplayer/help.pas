@@ -97,7 +97,8 @@ var
 implementation
 
 uses
-  Directories, ClientTools, Term, Tribes, ShellAPI, Inp, Messg;
+  Directories, ClientTools, Term, Tribes,
+  Inp, Messg;
 
 {$R *.DFM}
 
@@ -1796,13 +1797,9 @@ begin
     with THelpLineInfo(MainText.Objects[Sel + sb.si.npos]) do
       if Link shr 8 and $3F = hkInternet then
         case Link and $FF of
-          1: ShellExecute(Handle, 'open', PChar(
-              BinariesDirectory + 'AI Template\AI development manual.html'), '', '',
-              SW_SHOWNORMAL);
-          2: ShellExecute(Handle, 'open', 'http://c-evo.org', '', '',
-              SW_SHOWNORMAL);
-          3: ShellExecute(Handle, 'open', 'http://c-evo.org/_sg/contact', '', '',
-              SW_SHOWNORMAL);
+          1: ExecuteProcess(BinariesDirectory + 'AI Template\AI development manual.html', []);
+          2: OpenURL('http://c-evo.org');
+          3: OpenURL('http://c-evo.org/_sg/contact');
         end
       else
       begin
