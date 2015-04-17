@@ -11,7 +11,9 @@
 /target/*.a
 /target/*.compiled
 /target/*.o
+/target/*.or
 /target/*.ppu
+/target/*.so
 
 #### backups by delphi
 *.~*
