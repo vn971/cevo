@@ -10,12 +10,13 @@
 #### compilation output (Lazarus)
 /target/*.a
 /target/*.compiled
+/target/*.lfm
 /target/*.o
 /target/*.or
 /target/*.ppu
-/target/*.so
-/target/*.lfm
 /target/*.res
+/target/*.so
+/target/cevo
 
 #### backups by delphi
 *.~*

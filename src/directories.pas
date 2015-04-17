@@ -15,7 +15,7 @@ implementation
 
 uses
   FileUtil,
-  LCLIntf, LCLType, LMessages, // replacement for "windows" unit
+  LCLIntf, LCLType, // replacement for "windows" unit
   SysUtils;
 
 function LocalizedFilePath(path: string): string;
@@ -27,7 +27,6 @@ end;
 
 
 var
-  AppUserDirectory: string;
   src, dst: TSearchRec;
 
 initialization
@@ -36,15 +35,8 @@ initialization
   GraphicsDirectory := BinariesDirectory + 'Graphics' + DirectorySeparator;
   SoundsDirectory := BinariesDirectory + 'Sounds' + DirectorySeparator;
 
-  AppUserDirectory := GetAppConfigDir(False);
-  if AppUserDirectory = '' then
-    UserDirectory := BinariesDirectory
-  else
-  begin
-    if not DirectoryExistsUTF8(AppUserDirectory + DirectorySeparator + 'C-evo') then
-      CreateDirUTF8(AppUserDirectory + DirectorySeparator + 'C-evo');
-    UserDirectory := AppUserDirectory + DirectorySeparator + 'C-evo' + DirectorySeparator;
-  end;
+  UserDirectory:=GetAppConfigDir(False);
+  CreateDirUTF8(UserDirectory);
   if not DirectoryExists(UserDirectory + 'Saved') then
     CreateDir(UserDirectory + 'Saved');
   if not DirectoryExists(UserDirectory + 'Maps') then
