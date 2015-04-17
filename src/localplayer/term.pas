@@ -723,7 +723,7 @@ end;
 
 function CreateTribe(p: integer; FileName: string; Original: boolean): boolean;
 begin
-  if not FileExistsUTF8(LocalizedFilePath('Tribes\' + FileName + '.tribe.txt')) then
+  if not FileExistsUTF8(LocalizedFilePath('Tribes' + DirectorySeparator + FileName + '.tribe.txt')) then
   begin
     Result := False;
     exit;
@@ -1249,7 +1249,10 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     ok: boolean;
   begin
     UnusedTribeFiles.Clear;
-    ok := FindFirstUTF8(UserDirectory + 'Localization\' + 'Tribes\*.tribe.txt',faArchive + faReadOnly,SearchRec) = 0;
+    ok := FindFirstUTF8(
+      UserDirectory + 'Localization' + DirectorySeparator +
+      'Tribes' + DirectorySeparator + '*.tribe.txt',
+      faArchive + faReadOnly,SearchRec) = 0;
     if not ok then
     begin
       FindCloseUTF8(SearchRec);

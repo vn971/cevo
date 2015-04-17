@@ -894,7 +894,7 @@ begin
     pgLoad:
     begin //load
       FileName := List.Items[List.ItemIndex];
-      if LoadGame(UserDirectory + 'Saved\', FileName + '.cevo', LoadTurn, False) then
+      if LoadGame(UserDirectory + 'Saved' + DirectorySeparator, FileName + '.cevo', LoadTurn, False) then
         UnlistBackupFile(FileName)
       else
         SimpleMessage(Phrases.Lookup('LOADERR'));
@@ -985,7 +985,7 @@ begin
         Reg.closekey;
         Reg.Free;
 
-        StartNewGame(UserDirectory + 'Saved\', FileName + '.cevo', MapFileName,
+        StartNewGame(UserDirectory + 'Saved' + DirectorySeparator, FileName + '.cevo', MapFileName,
           lxpre[WorldSize], lypre[WorldSize], StartLandMass, MaxTurn);
         UnlistBackupFile(FileName);
       end;
@@ -1129,7 +1129,7 @@ begin
 
     pgLoad:
     begin
-      AssignFile(LogFile, UserDirectory + 'Saved\' + List.Items[List.ItemIndex] + '.cevo');
+      AssignFile(LogFile, UserDirectory + 'Saved' + DirectorySeparator + List.Items[List.ItemIndex] + '.cevo');
       try
         Reset(LogFile, 4);
         BlockRead(LogFile, s[1], 2); {file id}
@@ -1183,7 +1183,7 @@ begin
       MiniMode := mmPicture;
       if Page = pgEditMap then
         MapFileName := List.Items[List.ItemIndex] + '.cevo map';
-      if LoadGraphicFile(Mini, UserDirectory + 'Maps\' + Copy(MapFileName,
+      if LoadGraphicFile(Mini, UserDirectory + 'Maps' + DirectorySeparator + Copy(MapFileName,
         1, Length(MapFileName) - 9), gfNoError) then
       begin
         if Mini.Width div 2 > MaxWidthMapLogo then
@@ -1200,7 +1200,7 @@ begin
         MiniHeight := MaxHeightMapLogo;
       end;
 
-      AssignFile(MapFile, UserDirectory + 'Maps\' + MapFileName);
+      AssignFile(MapFile, UserDirectory + 'Maps' + DirectorySeparator + MapFileName);
       try
         Reset(MapFile, 4);
         BlockRead(MapFile, s[1], 2); {file id}
@@ -1755,23 +1755,23 @@ begin
           exit;
         end;
       if Page = pgLoad then
-        AssignFile(f, UserDirectory + 'Saved\' + List.Items[List.ItemIndex] + '.cevo')
+        AssignFile(f, UserDirectory + 'Saved' + DirectorySeparator + List.Items[List.ItemIndex] + '.cevo')
       else
-        AssignFile(f, UserDirectory + 'Maps\' + List.Items[List.ItemIndex] + '.cevo map');
+        AssignFile(f, UserDirectory + 'Maps' + DirectorySeparator + List.Items[List.ItemIndex] + '.cevo map');
       ok := True;
       try
         if Page = pgLoad then
-          Rename(f, UserDirectory + 'Saved\' + NewName + '.cevo')
+          Rename(f, UserDirectory + 'Saved' + DirectorySeparator + NewName + '.cevo')
         else
-          Rename(f, UserDirectory + 'Maps\' + NewName + '.cevo map');
+          Rename(f, UserDirectory + 'Maps' + DirectorySeparator + NewName + '.cevo map');
       except
         //      Play('INVALID');
         ok := False
       end;
       if Page <> pgLoad then
         try // rename map picture
-          AssignFile(f, UserDirectory + 'Maps\' + List.Items[List.ItemIndex] + '.bmp');
-          Rename(f, UserDirectory + 'Maps\' + NewName + '.bmp');
+          AssignFile(f, UserDirectory + 'Maps' + DirectorySeparator + List.Items[List.ItemIndex] + '.bmp');
+          Rename(f, UserDirectory + 'Maps' + DirectorySeparator + NewName + '.bmp');
         except
         end;
       if ok then
@@ -1805,9 +1805,9 @@ begin
     if MessgDlg.ModalResult = mrOk then
     begin
       if Page = pgLoad then
-        AssignFile(f, UserDirectory + 'Saved\' + List.Items[List.ItemIndex] + '.cevo')
+        AssignFile(f, UserDirectory + 'Saved' + DirectorySeparator + List.Items[List.ItemIndex] + '.cevo')
       else
-        AssignFile(f, UserDirectory + 'Maps\' + List.Items[List.ItemIndex] + '.cevo map');
+        AssignFile(f, UserDirectory + 'Maps' + DirectorySeparator + List.Items[List.ItemIndex] + '.cevo map');
       Erase(f);
       iDel := List.ItemIndex;
       if Page = pgLoad then
@@ -1992,7 +1992,7 @@ end;
 
 procedure TStartDlg.ReplayBtnClick(Sender: TObject);
 begin
-  LoadGame(UserDirectory + 'Saved\', List.Items[List.ItemIndex] + '.cevo', LastTurn, True);
+  LoadGame(UserDirectory + 'Saved' + DirectorySeparator, List.Items[List.ItemIndex] + '.cevo', LastTurn, True);
   SlotAvailable := -1;
 end;
 

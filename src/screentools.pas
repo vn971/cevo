@@ -513,7 +513,7 @@ begin
     except
       Result := -1;
       Application.MessageBox(PChar(
-        Format(Phrases.Lookup('FILENOTFOUND'), ['Graphics\' + Name])), 'C-evo', 0);
+        Format(Phrases.Lookup('FILENOTFOUND'), [FileName])), 'C-evo', 0);
       exit;
     end;
 
@@ -1468,21 +1468,21 @@ initialization
   Phrases := TStringTable.Create;
   Phrases2 := TStringTable.Create;
   Phrases2FallenBackToEnglish := False;
-  if FileExists(UserDirectory + 'Localization\Language.txt') then
+  if FileExists(UserDirectory + 'Localization' + DirectorySeparator + 'language.txt') then
   begin
-    Phrases.LoadFromFile(UserDirectory + 'Localization\Language.txt');
-    if FileExistsUTF8(UserDirectory + 'Localization\Language2.txt') then
-      Phrases2.LoadFromFile(UserDirectory + 'Localization\Language2.txt')
+    Phrases.LoadFromFile(UserDirectory + 'Localization'+ DirectorySeparator +'language.txt');
+    if FileExistsUTF8(UserDirectory + 'Localization' + DirectorySeparator + 'language2.txt') then
+      Phrases2.LoadFromFile(UserDirectory + 'Localization' + DirectorySeparator + 'language2.txt')
     else
     begin
-      Phrases2.LoadFromFile(BinariesDirectory + 'Language2.txt');
+      Phrases2.LoadFromFile(BinariesDirectory + 'language2.txt');
       Phrases2FallenBackToEnglish := True;
     end;
   end
   else
   begin
-    Phrases.LoadFromFile(BinariesDirectory + 'Language.txt');
-    Phrases2.LoadFromFile(BinariesDirectory + 'Language2.txt');
+    Phrases.LoadFromFile(BinariesDirectory + 'language.txt');
+    Phrases2.LoadFromFile(BinariesDirectory + 'language2.txt');
   end;
   Sounds := TStringTable.Create;
   if not Sounds.LoadFromFile(SoundsDirectory + 'sound.txt') then
@@ -1500,7 +1500,7 @@ initialization
   LogoBuffer.Height := hBBook;
 
   section := ftNormal;
-  AssignFile(fontscript, LocalizedFilePath('Fonts.txt'));
+  AssignFile(fontscript, LocalizedFilePath('fonts.txt'));
   try
     Reset(fontscript);
     while not EOF(fontscript) do

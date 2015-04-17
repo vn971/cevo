@@ -230,7 +230,7 @@ begin
   Name := '';
   Color := $FFFFFF;
   found := 0;
-  AssignFile(TribeScript, LocalizedFilePath('Tribes\' + FileName + '.tribe.txt'));
+  AssignFile(TribeScript, LocalizedFilePath('Tribes' + DirectorySeparator + FileName + '.tribe.txt'));
   Reset(TribeScript);
   while not EOF(TribeScript) do
   begin
@@ -264,7 +264,7 @@ begin
   for variant := 'a' to 'z' do
     Name[variant] := '';
   Script := TStringList.Create;
-  Script.LoadFromFile(LocalizedFilePath('Tribes\' + FileName + '.tribe.txt'));
+  Script.LoadFromFile(LocalizedFilePath('Tribes' + DirectorySeparator + FileName + '.tribe.txt'));
   CityLine0 := 0;
   nCityLines := 0;
   for line := 0 to Script.Count - 1 do

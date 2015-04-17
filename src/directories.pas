@@ -20,7 +20,7 @@ uses
 
 function LocalizedFilePath(path: string): string;
 begin
-  Result := UserDirectory + 'Localization\' + path;
+  Result := UserDirectory + 'Localization' + DirectorySeparator + path;
   if not FileExistsUTF8(Result) then
     Result := BinariesDirectory + path;
 end;
@@ -32,18 +32,18 @@ var
 
 initialization
   BinariesDirectory := ExtractFilePath(ParamStr(0));
-  AiDirectory := BinariesDirectory + 'AI\';
-  GraphicsDirectory := BinariesDirectory + 'Graphics\';
-  SoundsDirectory := BinariesDirectory + 'Sounds\';
+  AiDirectory := BinariesDirectory + 'AI' + DirectorySeparator;
+  GraphicsDirectory := BinariesDirectory + 'Graphics' + DirectorySeparator;
+  SoundsDirectory := BinariesDirectory + 'Sounds' + DirectorySeparator;
 
   AppUserDirectory := GetAppConfigDir(False);
   if AppUserDirectory = '' then
     UserDirectory := BinariesDirectory
   else
   begin
-    if not DirectoryExistsUTF8(AppUserDirectory + '\C-evo') then
-      CreateDirUTF8(AppUserDirectory + '\C-evo');
-    UserDirectory := AppUserDirectory + '\C-evo\';
+    if not DirectoryExistsUTF8(AppUserDirectory + DirectorySeparator + 'C-evo') then
+      CreateDirUTF8(AppUserDirectory + DirectorySeparator + 'C-evo');
+    UserDirectory := AppUserDirectory + DirectorySeparator + 'C-evo' + DirectorySeparator;
   end;
   if not DirectoryExists(UserDirectory + 'Saved') then
     CreateDir(UserDirectory + 'Saved');
@@ -53,10 +53,10 @@ initialization
   // copy appdata if not done yet
   if FindFirst(BinariesDirectory + 'AppData\Saved\*.cevo', $21, src) = 0 then
     repeat
-      if (FindFirst(UserDirectory + 'Saved\' + src.Name, $21, dst) <> 0) or
+      if (FindFirst(UserDirectory + 'Saved' + DirectorySeparator + src.Name, $21, dst) <> 0) or
         (dst.Time < src.Time) then
         FileUtil.CopyFile(
-          BinariesDirectory + 'AppData\Saved\' + src.Name,
-          UserDirectory + 'Saved\' + src.Name, False);
+          BinariesDirectory + 'AppData' + DirectorySeparator + 'Saved' + DirectorySeparator + src.Name,
+          UserDirectory + 'Saved' + DirectorySeparator + src.Name, False);
     until FindNext(src) <> 0;
 end.

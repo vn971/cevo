@@ -531,7 +531,7 @@ var
   MapFile: TFileStream;
   s: string[255];
 begin
-  MapFile := TFileStream.Create(UserDirectory + 'Maps\' + FileName, fmCreate or
+  MapFile := TFileStream.Create(UserDirectory + 'Maps' + DirectorySeparator + FileName, fmCreate or
     fmShareExclusive);
   MapFile.Position := 0;
   s := 'cEvoMap'#0;
@@ -554,7 +554,7 @@ begin
   Result := False;
   MapFile := nil;
   try
-    MapFile := TFileStream.Create(UserDirectory + 'Maps\' + FileName,
+    MapFile := TFileStream.Create(UserDirectory + 'Maps' + DirectorySeparator + FileName,
       fmOpenRead or fmShareExclusive);
     MapFile.Position := 0;
     MapFile.Read(s[1], 8); {file id}
