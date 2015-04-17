@@ -6,7 +6,7 @@ interface
 
 uses
   Protocol, ClientTools, Term, ScreenTools, IsoEngine, PVSB, BaseWin,
-  LCLIntf, LCLType,
+  LCLIntf, LCLType, LMessages,
   Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, ButtonB, ButtonBase, Menus;
 
@@ -68,7 +68,7 @@ type
     function RenameCity(cix: integer): boolean;
     function RenameModel(mix: integer): boolean;
     procedure OnScroll(var m: TMessage); message WM_VSCROLL;
-    procedure OnMouseWheel(var m: TMessage); message WM_MOUSEWHEEL;
+    procedure OnMouseWheel(var m: TMessage); message LM_MOUSEWHEEL;
     procedure OnMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
   end;
 

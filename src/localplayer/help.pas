@@ -88,8 +88,8 @@ type
     procedure WaterSign(x0, y0, iix: integer);
     procedure Search(SearchString: string);
     procedure OnScroll(var m: TMessage); message WM_VSCROLL;
-    procedure OnMouseWheel(var m: TMessage); message WM_MOUSEWHEEL;
-    procedure OnMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure OnMouseWheel(var m: TMessage); message LM_MOUSEWHEEL;
+    procedure OnMouseLeave(var Msg: TMessage); message LM_MOUSELEAVE;
   end;
 
 var
