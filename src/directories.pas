@@ -6,7 +6,7 @@ interface
 
 var
   BinariesDirectory, AiDirectory, GraphicsDirectory, SoundsDirectory,
-  UserDirectory: string;
+  UserDirectory: String;
 
 function LocalizedFilePath(path: string): string;
 
@@ -14,16 +14,9 @@ function LocalizedFilePath(path: string): string;
 implementation
 
 uses
-  FileUtil, // copy files
+  FileUtil,
   LCLIntf, LCLType, LMessages, // replacement for "windows" unit
   SysUtils;
-
-function DirectoryExists(path: string): boolean;
-var
-  f: TSearchRec;
-begin
-  Result := FindFirst(path, faDirectory, f) = 0;
-end;
 
 function LocalizedFilePath(path: string): string;
 begin
