@@ -6,6 +6,7 @@ interface
 
 uses
   Messg,
+  Clipbrd,
   LCLIntf, LCLType, LMessages,
   Messages, SysUtils, Classes, Graphics, Controls, Forms;
 

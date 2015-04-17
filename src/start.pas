@@ -914,7 +914,7 @@ begin
         end;
 
         if (AutoDiff < 0) and (bixView[0] = bixNoTerm) then
-          FileName := 'Round' + IntToStr(GetCurrentProcessID())
+          FileName := 'Round' + IntToStr(GetProcessID())
         else
         begin
           Inc(GameCount);
