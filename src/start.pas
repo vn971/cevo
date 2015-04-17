@@ -104,8 +104,7 @@ var
 implementation
 
 uses
-  Directories, Protocol, Direct, ScreenTools, Inp, Back,
-  ShellAPI;
+  Directories, Protocol, Direct, ScreenTools, Inp, Back;
 
 {$R *.DFM}
 
@@ -1573,16 +1572,17 @@ begin
     case SelectedAction of
       maConfig:
       begin
-        ShellExecute(Handle, 'open', PChar(BinariesDirectory + 'Configurator.exe'),
-          PChar('-r"' + ParamStr(0) + '"'), '', SW_SHOWNORMAL);
+        ExecuteProcess(BinariesDirectory + 'Configurator.exe',
+          ['-r"' + ParamStr(0) + '"']);
         Close;
       end;
       maManual: DirectHelp(cStartHelp);
       maCredits: DirectHelp(cStartCredits);
-      maAIDev: ShellExecute(Handle, 'open',
-          PChar(BinariesDirectory + 'AI Template\AI development manual.html'), '', '',
-          SW_SHOWNORMAL);
-      maWeb: ShellExecute(Handle, 'open', 'http://c-evo.org', '', '', SW_SHOWNORMAL)
+      maAIDev:
+        ExecuteProcess(
+          BinariesDirectory + 'AI Template\AI development manual.html',[]);
+      maWeb:
+        OpenURL('http://c-evo.org');
     end;
   end
   else if (AutoDiff < 0) and ((page = pgStartRandom) or (page = pgStartMap) and
