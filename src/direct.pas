@@ -110,17 +110,7 @@ begin
     end;
     ntLoadError:
     begin
-      if OpenClipboard(Handle) then
-      begin // copy file path to clipboard
-        NotifyMessage := NotifyMessage + #0;
-        hMem := GlobalAlloc(GMEM_MOVEABLE or GMEM_DDESHARE, Length(NotifyMessage));
-        p := GlobalLock(hMem);
-        if p <> nil then
-          move(NotifyMessage[1], p^, Length(NotifyMessage));
-        GlobalUnlock(hMem);
-        SetClipboardData(CF_TEXT, hMem);
-        CloseClipboard;
-      end;
+      Clipboard.AsText := NotifyMessage;
       with MessgDlg do
       begin
         MessgText := Phrases.Lookup('LOADERROR');
