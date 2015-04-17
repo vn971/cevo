@@ -117,7 +117,7 @@ var
 begin
   if LinkIndex < 0 then
     LinkIndex := liInvalid;
-
+  HelpLineInfo := THelpLineInfo.Create;
   HelpLineInfo.Format := Format;
   HelpLineInfo.Picpix := Picpix;
   HelpLineInfo.Link := LinkCategory shl 8 + LinkIndex;
