@@ -30,7 +30,6 @@ function MovementToString(Movement: integer): string;
 procedure BtnFrame(ca: TCanvas; p: TRect; const T: TTexture);
 procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
-function LoadGraphicFile(bmp: TBitmap; Path: string; Options: integer = 0): boolean;
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
@@ -390,65 +389,6 @@ begin
   begin
     Start^ := GammaLUT[Start^];
     Inc(Start);
-  end;
-end;
-
-function LoadGraphicFile(bmp: TBitmap; Path: string; Options: integer): boolean;
-type
-  TLine = array[0..9999, 0..2] of byte;
-var
-  FirstLine, LastLine: ^TLine;
-  jpg: TJPEGImage;
-begin
-  Result := True;
-  if Options and gfJPG <> 0 then
-  begin
-    jpg := TJPEGImage.Create;
-    try
-      jpg.LoadFromFile(Path + '.jpg');
-    except
-      Result := False;
-    end;
-    if Result then
-    begin
-      if Options and gfNoGamma = 0 then
-        bmp.PixelFormat := pf24bit;
-      bmp.Width := jpg.Width;
-      bmp.Height := jpg.Height;
-      bmp.Canvas.Draw(0, 0, jpg);
-    end;
-    jpg.Free;
-  end
-  else
-  begin
-    try
-      bmp.LoadFromFile(Path + GraphicsFileExtension);
-    except
-      Result := False;
-    end;
-    if Result then
-    begin
-      if Options and gfNoGamma = 0 then
-        bmp.PixelFormat := pf24bit;
-    end;
-  end;
-  if not Result then
-  begin
-    if Options and gfNoError = 0 then
-      Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'), [Path])),
-        'C-evo', 0);
-    exit;
-  end;
-  if (Options and gfNoGamma = 0) and (Gamma <> 100) then
-  begin
-    bmp.BeginUpdate();
-    FirstLine := bmp.ScanLine[0];
-    LastLine := bmp.ScanLine[bmp.Height - 1];
-    bmp.EndUpdate();
-    if integer(FirstLine) < integer(LastLine) then
-      ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
-    else
-      ApplyGamma(pointer(LastLine), @FirstLine[bmp.Width]);
   end;
 end;
 
