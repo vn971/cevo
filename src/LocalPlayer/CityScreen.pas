@@ -239,6 +239,7 @@ begin
   SmallCityMap.Free;
   ZoomCityMap.Free;
   CityMapTemplate.Free;
+  SmallCityMapTemplate.Free;
   Template.Free;
   Back.Free;
 end;
