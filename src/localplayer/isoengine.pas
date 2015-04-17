@@ -22,7 +22,7 @@ type
       UseBlink: boolean = False; CityAllowClick: boolean = False);
     procedure PaintUnit(x, y: integer; const UnitInfo: TUnitInfo; Status: integer);
     procedure PaintCity(x, y: integer; const CityInfo: TCityInfo; accessory: boolean = True);
-    procedure BitBlt(Src: TBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
+    procedure BitBlt(Src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
 
     procedure AttackBegin(const ShowMove: TShowMove);
     procedure AttackEffect(const ShowMove: TShowMove);
@@ -474,7 +474,7 @@ begin
   FOutput.Canvas.TextRect(Rect(FLeft, FTop, FRight, FBottom), x, y, s);
 end;
 
-procedure TIsoMap.BitBlt(Src: TBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
+procedure TIsoMap.BitBlt(Src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
 begin
   if x < FLeft then
   begin

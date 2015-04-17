@@ -11,11 +11,11 @@ type
   TButtonB = class(TButtonBase)
     constructor Create(aOwner: TComponent); override;
   private
-    FMask: TBitmap;
+    FMask: TFPImageBitmap;
     FIndex: integer;
     procedure SetIndex(x: integer);
   public
-    property Mask: TBitmap read FMask write FMask;
+    property Mask: TFPImageBitmap read FMask write FMask;
   published
     property Visible;
     property ButtonIndex: integer read FIndex write SetIndex;

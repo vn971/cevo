@@ -160,7 +160,7 @@ const
 type
   TGrExtDescr = record {don't use dynamic strings here!}
     Name: string[31];
-    Data, Mask: TBitmap;
+    Data, Mask: TFPImageBitmap;
     pixUsed: array[byte] of byte;
   end;
 
@@ -528,7 +528,7 @@ type
 var
   i, x, y, xmax, OriginalColor: integer;
   FileName: string;
-  Source: TBitmap;
+  Source: TFPImageBitmap;
   DataLine, MaskLine: ^TLine;
 begin
   i := 0;

@@ -10,7 +10,7 @@ type
     constructor Create(aOwner: TComponent); override;
   protected
     FDown, FPermanent: boolean;
-    FGraphic: TBitmap;
+    FGraphic: TFPImageBitmap;
     //    FDownSound, FUpSound: string;
     ClickProc: TNotifyEvent;
     DownChangedProc: TNotifyEvent;
@@ -25,7 +25,7 @@ type
   private
     Active: boolean;
   public
-    property Graphic: TBitmap read FGraphic write FGraphic;
+    property Graphic: TFPImageBitmap read FGraphic write FGraphic;
     //    property DownSound: string read FDownSound write FDownSound;
     //    property UpSound: string read FUpSound write FUpSound;
   published

@@ -11,7 +11,7 @@ type
     constructor Create(aOwner: TComponent); override;
   private
     FPossible, FLit: boolean;
-    FGraphic, FMask, FBackGraphic: TBitmap;
+    FGraphic, FMask, FBackGraphic: TFPImageBitmap;
     FIndex, BackIndex: integer;
     FSmartHint: string;
     ChangeProc: TNotifyEvent;
@@ -23,9 +23,9 @@ type
     property Possible: boolean read FPossible write SetPossible;
     property Lit: boolean read FLit write SetLit;
     property SmartHint: string read FSmartHint write SetSmartHint;
-    property Graphic: TBitmap read FGraphic write FGraphic;
-    property Mask: TBitmap read FMask write FMask;
-    property BackGraphic: TBitmap read FBackGraphic write FBackGraphic;
+    property Graphic: TFPImageBitmap read FGraphic write FGraphic;
+    property Mask: TFPImageBitmap read FMask write FMask;
+    property BackGraphic: TFPImageBitmap read FBackGraphic write FBackGraphic;
     property ButtonIndex: integer read FIndex write SetIndex;
     property OnClick: TNotifyEvent read ChangeProc write ChangeProc;
   protected
