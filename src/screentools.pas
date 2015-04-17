@@ -14,7 +14,7 @@ uses
 
 type
   TTexture = record
-    Image: TBitmap;
+    Image: TFPImageBitmap;
     clBevelLight, clBevelShade, clTextLight, clTextShade, clLitText, clMark,
     clPage, clCover: TColor
   end;
@@ -42,7 +42,7 @@ procedure Sprite(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer
   overload;
 procedure MakeBlue(Dst: TBitmap; x, y, w, h: integer);
 procedure ImageOp_B(Dst, Src: TBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
-procedure ImageOp_BCC(Dst, Src: TBitmap;
+procedure ImageOp_BCC(Dst, Src: TFPImageBitmap;
   xDst, yDst, xSrc, ySrc, w, h, Color1, Color2: integer);
 procedure ImageOp_CCC(Bmp: TBitmap; x, y, w, h, Color0, Color1, Color2: integer);
 procedure SLine(ca: TCanvas; x0, x1, y: integer; cl: TColor);
@@ -179,7 +179,8 @@ var
   GrExt: array[0..nGrExtmax - 1] of ^TGrExtDescr;
   HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
-  Templates, Colors, Paper, BigImp, LogoBuffer: TBitmap;
+  Colors, Paper, BigImp, LogoBuffer: TBitmap;
+  Templates: TFPImageBitmap;
   FullScreen, GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
 
   UniFont: array[TFontType] of TFont;
@@ -750,7 +751,7 @@ begin
   end;
 end;
 
-procedure ImageOp_BCC(Dst, Src: TBitmap;
+procedure ImageOp_BCC(Dst, Src: TFPImageBitmap;
   xDst, yDst, xSrc, ySrc, w, h, Color1, Color2: integer);
 // Src is template
 // B channel = background amp (old Dst content), 128=original brightness
@@ -1501,7 +1502,8 @@ begin
     with MainTexture do
     begin
       MainTextureAge := Age;
-      LoadGraphicFile(Image, GraphicsDirectory + 'Texture' + IntToStr(Age + 1), gfJPG);
+      FreeAndNil(Image);
+      Image := LoadAnyGraphics(GraphicsDirectory + 'Texture' + IntToStr(Age + 1) + '.jpg');
       clBevelLight := Colors.Canvas.Pixels[clkAge0 + Age, cliBevelLight];
       clBevelShade := Colors.Canvas.Pixels[clkAge0 + Age, cliBevelShade];
       clTextLight := Colors.Canvas.Pixels[clkAge0 + Age, cliTextLight];
@@ -1631,8 +1633,7 @@ initialization
   nGrExt := 0;
   HGrSystem := LoadGraphicSet('System');
   HGrSystem2 := LoadGraphicSet('System2');
-  Templates := TBitmap.Create;
-  LoadGraphicFile(Templates, GraphicsDirectory + 'Templates', gfNoGamma);
+  Templates := LoadAnyGraphics(GraphicsDirectory + 'Templates.bmp', gfNoGamma);
   Templates.PixelFormat := pf24bit;
   Colors := TBitmap.Create;
   LoadGraphicFile(Colors, GraphicsDirectory + 'Colors');

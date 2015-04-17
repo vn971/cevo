@@ -21,11 +21,11 @@ type
     procedure SetButtonIndexFast(x: integer);
     procedure SetBack(ca: TCanvas; x, y: integer);
   private
-    FTemplate: TBitmap;
+    FTemplate: TFPImageBitmap;
     FIndex: integer;
     procedure SetIndex(x: integer);
   public
-    property Template: TBitmap read FTemplate write FTemplate;
+    property Template: TFPImageBitmap read FTemplate write FTemplate;
   published
     property Visible;
     property ButtonIndex: integer read FIndex write SetIndex;
@@ -44,7 +44,7 @@ begin
   RegisterComponents('Samples', [TEOTButton]);
 end;
 
-procedure ImageOp_CBC(Dst, Src: TBitmap;
+procedure ImageOp_CBC(Dst, Src: TFPImageBitmap;
   xDst, yDst, xSrc, ySrc, w, h, Color0, Color2: integer);
 // Src is template
 // B channel = Color0 amp
