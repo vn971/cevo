@@ -14,23 +14,9 @@ function LocalizedFilePath(path: string): string;
 implementation
 
 uses
-  ShlObj, Windows, SysUtils;
-
-function GetSpecialDirectory(const CSIDL: integer): string;
-var
-  RecPath: PChar;
-begin
-  RecPath := StrAlloc(MAX_PATH);
-  try
-    FillChar(RecPath^, MAX_PATH, 0);
-    if SHGetSpecialFolderPath(0, RecPath, CSIDL, False) then
-      Result := RecPath
-    else
-      Result := '';
-  finally
-    StrDispose(RecPath);
-  end;
-end;
+  FileUtil, // copy files
+  LCLIntf, LCLType, LMessages, // replacement for "windows" unit
+  SysUtils;
 
 function DirectoryExists(path: string): boolean;
 var
@@ -57,7 +43,7 @@ initialization
   GraphicsDirectory := BinariesDirectory + 'Graphics\';
   SoundsDirectory := BinariesDirectory + 'Sounds\';
 
-  AppUserDirectory := GetSpecialDirectory(CSIDL_APPDATA);
+  AppUserDirectory := GetAppConfigDir(False);
   if AppUserDirectory = '' then
     UserDirectory := BinariesDirectory
   else
@@ -76,7 +62,8 @@ initialization
     repeat
       if (FindFirst(UserDirectory + 'Saved\' + src.Name, $21, dst) <> 0) or
         (dst.Time < src.Time) then
-        CopyFile(PChar(BinariesDirectory + 'AppData\Saved\' + src.Name),
-          PChar(UserDirectory + 'Saved\' + src.Name), False);
+        FileUtil.CopyFile(
+          BinariesDirectory + 'AppData\Saved\' + src.Name,
+          UserDirectory + 'Saved\' + src.Name, False);
     until FindNext(src) <> 0;
 end.
