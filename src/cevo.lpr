@@ -1,6 +1,6 @@
 {$INCLUDE switches.pas}
 
-library cevo;
+program cevo;
 
 uses
 {$IFNDEF FPC}
@@ -51,9 +51,7 @@ uses
 
 {$R *.res}
 
-procedure Run(clientPtr: pointer); stdcall;
 begin
-DotNetClient:=TClientCall(clientPtr);
 Application.Initialize;
 Application.Title := '';
 Application.CreateForm(TDirectDlg, DirectDlg);
@@ -63,10 +61,4 @@ Application.CreateForm(TInputDlg, InputDlg);
 Application.CreateForm(TBackground, Background);
 Application.CreateForm(TLogDlg, LogDlg);
 Application.Run;
-end;
-
-exports
-Run name 'Run';
-
 end.
-
