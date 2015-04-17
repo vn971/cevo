@@ -77,7 +77,7 @@ type
   TVicinity8Loc = array[0..7] of integer;
   TVicinity21Loc = array[0..27] of integer;
 
-procedure MaskD(var x; Count, Mask: cardinal);
+procedure MaskD(var x: array of Cardinal; Count, Mask: cardinal);
 procedure IntServer(Command, Player, Subject: integer; var Data);
 procedure CompactLists(p: integer);
 procedure ClearTestFlags(ClearFlags: integer);
@@ -170,13 +170,11 @@ var
   UnBuilt: array[0..nPl - 1] of integer; {number of units built}
 
 
-procedure MaskD(var x; Count, Mask: cardinal); register;
-asm
-         SUB     EAX,4
-         @r:
-         AND     [EAX+EDX*4],ECX
-         DEC     EDX
-         JNZ     @r
+procedure MaskD(var x: array of Cardinal; Count, Mask: cardinal);
+var i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    x[i]:=x[i] and Mask;
 end;
 
 procedure CompactLists(p: integer);
