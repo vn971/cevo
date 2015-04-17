@@ -67,7 +67,7 @@ begin
     Brush.Color := $000000;
     FillRect(Rect(Left, Top, Left + Width, Top + 200));
     Brush.Style := bsClear;
-    Frame(Canvas, Left - 1, Top - 1, Left + Width, Top + 200, MainTexture.clBevelShade,
+    ScreenTools.Frame(Canvas, Left - 1, Top - 1, Left + Width, Top + 200, MainTexture.clBevelShade,
       MainTexture.clBevelLight);
     RFrame(Canvas, Left - 2, Top - 2, Left + Width + 1, Top + 200 + 1, MainTexture.clBevelShade,
       MainTexture.clBevelLight);

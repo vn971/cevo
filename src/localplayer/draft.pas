@@ -324,7 +324,7 @@ begin
                 yFeature + 2 + LinePitch * i + 1, 10, 10, 88, 115);
         end; // if not (code[i] in AutoFeature)
         DarkGradient(offscreen.Canvas, xFeature + 17, yFeature + LinePitch * i, 16, 1);
-        Frame(offscreen.canvas, xFeature + 18, yFeature + 1 + LinePitch * i,
+        ScreenTools.Frame(offscreen.canvas, xFeature + 18, yFeature + 1 + LinePitch * i,
           xFeature + 20 - 2 + 13, yFeature + 2 + 1 - 2 + 13 + LinePitch * i, $C0C0C0, $C0C0C0);
         Sprite(offscreen, HGrSystem, xFeature + 20, yFeature + 2 + 1 + LinePitch * i,
           10, 10, 66 + code[i] mod 11 * 11, 137 + code[i] div 11 * 11);

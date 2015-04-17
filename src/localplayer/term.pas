@@ -4222,7 +4222,7 @@ begin
     begin
       if supervising then
       begin
-        Frame(Panel.Canvas, ClientWidth - xPalace - 1, yPalace - 1,
+        ScreenTools.Frame(Panel.Canvas, ClientWidth - xPalace - 1, yPalace - 1,
           ClientWidth - xPalace + xSizeBig, yPalace + ySizeBig, $B0B0B0, $FFFFFF);
         RFrame(Panel.Canvas, ClientWidth - xPalace - 2, yPalace - 2,
           ClientWidth - xPalace + xSizeBig + 1, yPalace + ySizeBig + 1, $FFFFFF, $B0B0B0);
@@ -4238,11 +4238,11 @@ begin
     end;
 
     if GameMode = cMovie then
-      Frame(Panel.Canvas, xMini + 1, yMini + 1, xMini + 2 + G.lx * 2, yMini + 2 + G.ly, $000000, $000000)
+      ScreenTools.Frame(Panel.Canvas, xMini + 1, yMini + 1, xMini + 2 + G.lx * 2, yMini + 2 + G.ly, $000000, $000000)
     else
     begin
-      Frame(Panel.Canvas, xMini + 1, yMini + 1, xMini + 2 + G.lx * 2, yMini + 2 + G.ly, $B0B0B0, $FFFFFF);
-      RFrame(Panel.Canvas, xMini, yMini, xMini + 3 + G.lx * 2, yMini + 3 + G.ly, $FFFFFF, $B0B0B0);
+      ScreenTools.Frame(Panel.Canvas, xMini + 1, yMini + 1, xMini + 2 + G.lx * 2, yMini + 2 + G.ly, $B0B0B0, $FFFFFF);
+      ScreenTools.RFrame(Panel.Canvas, xMini, yMini, xMini + 3 + G.lx * 2, yMini + 3 + G.ly, $FFFFFF, $B0B0B0);
     end;
     CopyMiniToPanel;
     if ClientMode <> cEditMap then // MapBtn icons
@@ -4338,9 +4338,9 @@ begin
             1 + xSrc * (xxt * 2 + 1), 1 + ySrc * (yyt * 3 + 1));
           if BrushTypes[i] = BrushType then
           begin
-            Frame(Panel.Canvas, xTroop + 2 + x, yTroop + 7 - yyt div 2, xTroop + 2 * xxt + x,
+            ScreenTools.Frame(Panel.Canvas, xTroop + 2 + x, yTroop + 7 - yyt div 2, xTroop + 2 * xxt + x,
               yTroop + 2 * yyt + 11, $000000, $000000);
-            Frame(Panel.Canvas, xTroop + 1 + x, yTroop + 6 - yyt div 2, xTroop + 2 * xxt - 1 + x,
+            ScreenTools.Frame(Panel.Canvas, xTroop + 1 + x, yTroop + 6 - yyt div 2, xTroop + 2 * xxt - 1 + x,
               yTroop + 2 * yyt + 10, MainTexture.clMark, MainTexture.clMark);
           end;
         end;
@@ -4468,9 +4468,9 @@ begin
                       x := (Count - TrRow * sb.si.npos) * TrPitch;
                       if uix = UnFocus then
                       begin
-                        Frame(Panel.Canvas, xTroop + 4 + x, yTroop + 3, xTroop + 64 + x,
+                        ScreenTools.Frame(Panel.Canvas, xTroop + 4 + x, yTroop + 3, xTroop + 64 + x,
                           yTroop + 47, $000000, $000000);
-                        Frame(Panel.Canvas, xTroop + 3 + x, yTroop + 2, xTroop + 63 + x,
+                        ScreenTools.Frame(Panel.Canvas, xTroop + 3 + x, yTroop + 2, xTroop + 63 + x,
                           yTroop + 46, MainTexture.clMark, MainTexture.clMark);
                       end
                       else if (unx.Master >= 0) and (unx.Master = UnFocus) then
@@ -4618,9 +4618,9 @@ begin
     MoveTo(0, TopBarHeight - 3);
     LineTo(ClientWidth, TopBarHeight - 3);
     Pen.Color := MainTexture.clBevelLight;
-    frame(TopBar.Canvas, 40, -1, xTreasurySection - 1, TopBarHeight - 7,
+    ScreenTools.Frame(TopBar.Canvas, 40, -1, xTreasurySection - 1, TopBarHeight - 7,
       MainTexture.clBevelShade, MainTexture.clBevelLight);
-    frame(TopBar.Canvas, xResearchSection + 332, -1, ClientWidth, TopBarHeight - 7,
+    ScreenTools.Frame(TopBar.Canvas, xResearchSection + 332, -1, ClientWidth, TopBarHeight - 7,
       MainTexture.clBevelShade, MainTexture.clBevelLight);
   end;
   if GameMode <> cMovie then

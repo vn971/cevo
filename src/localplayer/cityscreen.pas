@@ -951,7 +951,7 @@ begin
       $FFFFFF, $B0B0B0);
     if prodhint then
     begin
-      Frame(offscreen.canvas, xView + 9 - 1, yView + 5 - 1, xView + 9 + xSizeBig, yView +
+      ScreenTools.Frame(offscreen.canvas, xView + 9 - 1, yView + 5 - 1, xView + 9 + xSizeBig, yView +
         5 + ySizeBig, $B0B0B0, $FFFFFF);
       RFrame(offscreen.canvas, xView + 9 - 2, yView + 5 - 2, xView + 9 + xSizeBig + 1,
         yView + 5 + ySizeBig + 1, $FFFFFF, $B0B0B0);
@@ -1551,7 +1551,7 @@ begin
           back.Canvas.Handle, xView + 5, yView + 3, SRCCOPY);
         BitBlt(canvas.Handle, xView + 5 + 62, yView + 3, 2, 42,
           back.Canvas.Handle, xView + 5 + 62, yView + 3, SRCCOPY);
-        Frame(canvas, xView + 9 - 1, yView + 5 - 1, xView + 9 + xSizeBig, yView + 5 + ySizeBig, $B0B0B0, $FFFFFF);
+        ScreenTools.Frame(canvas, xView + 9 - 1, yView + 5 - 1, xView + 9 + xSizeBig, yView + 5 + ySizeBig, $B0B0B0, $FFFFFF);
         RFrame(canvas, xView + 9 - 2, yView + 5 - 2, xView + 9 + xSizeBig + 1, yView + 5 +
           ySizeBig + 1, $FFFFFF, $B0B0B0);
         Brush.Color := $000000;
