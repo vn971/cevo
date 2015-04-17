@@ -6,6 +6,7 @@ unit GameServer;
 interface
 
 uses
+  dynlibs, // allows "FreeLibrary"
   Protocol, Database;
 
 const
