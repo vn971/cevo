@@ -179,7 +179,8 @@ var
   HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
   Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
-  FullScreen, GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
+  FullScreen: Boolean = False; // lazarus todo: stop using this hardcoded fullscreen override
+  GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
 
   UniFont: array[TFontType] of TFont;
 

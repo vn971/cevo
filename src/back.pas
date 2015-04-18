@@ -37,7 +37,7 @@ end;
 procedure TBackground.FormShow(Sender: TObject);
 begin
   img := nil;
-  if FullScreen then
+  if FullScreen or True then // lazarus todo: stop using this hardcoded fullscreen override
   begin
     img := LoadAnyGraphics(GraphicsDirectory + 'Background');
   end

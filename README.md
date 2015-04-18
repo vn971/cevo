@@ -4,14 +4,14 @@ This "README" is targeted to developers
 This is a short developer README.
 
 If you're not a developer,
-you would probably want to check the "master" branch
+you would probably want to check the [master](./tree/master) branch
 of this repository.
 
 This branch's goal is to port C-Evo
 to the free development environment called "Lazarus".
 Apart from switching to a free IDE,
-it will also make the project be cross-compilable.
-That is, you could launch the game on Linux/MacOs.
+it will also make the project cross-compilable.
+That is, you would be able to launch the game on Linux/MacOS.
 
 
 Current status:

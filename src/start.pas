@@ -240,7 +240,6 @@ begin
     Reg.closekey;
   end;
 
-  FullScreen := True;
   if FirstStart then
   begin
     WorldSize := DefaultWorldSize;
@@ -267,6 +266,7 @@ begin
     Reg.closekey;
   end;
   Reg.Free;
+  FullScreen := False; // lazarus todo: stop using this hardcoded fullscreen override
 
   ActionsOffered := [maManual, maCredits, maWeb];
   if FileExistsUTF8(BinariesDirectory + 'Configurator.exe') then
