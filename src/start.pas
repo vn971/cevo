@@ -1536,6 +1536,8 @@ end;
 procedure TStartDlg.ChangeTab(NewTab: integer);
 begin
   Tab := NewTab;
+  List.Items.Assign(Maps);
+  List.Items.Assign(FormerGames);
   case Tab of
     1: List.Items.Assign(Maps);
     3: List.Items.Assign(FormerGames);
