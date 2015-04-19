@@ -30,6 +30,7 @@ function MovementToString(Movement: integer): string;
 procedure BtnFrame(ca: TCanvas; p: TRect; const T: TTexture);
 procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
+procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; SrcCanvas: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
@@ -190,7 +191,7 @@ uses
   {$ifdef WINDOWS}
     sound in 'sound.pas',
   {$endif}
-  FileUtil,
+  IntfGraphics, FPimage, FileUtil,
   Directories, ButtonBase, ButtonA, ButtonB,
   //JPEGLib does not seem to be needed (was in Steffen-s source code)
   Registry;
@@ -391,6 +392,27 @@ begin
     Start^ := GammaLUT[Start^];
     Inc(Start);
   end;
+end;
+
+procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; SrcCanvas: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
+var
+  img: TFPImageBitmap;
+  x,y: Integer;
+  color: TFPColor;
+begin
+  img:=TBitmap.Create;
+  img.Width:=Width;
+  img.Height:=Height;
+  BitBlt(img.Canvas.Handle, 0, 0, Width, Height, SrcCanvas.Handle, XSrc, YSrc, Rop);
+  for x:=0 to img.Width-1 do
+    for y:=0 to img.Height-1 do
+    begin
+      color:=img.Canvas.Colors[x,y];
+      if (color.red <> 0) or (color.green <> 0) or (color.blue <> 0) then begin
+        DestCanvas.Colors[x + destX, y+destY]:=color;
+      end;
+    end;
+  FreeAndNil(img);
 end;
 
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;

@@ -562,8 +562,7 @@ begin
   // logo part 1
   ImageOp_BCC(LogoBuffer, Templates, 10, 27, 155, 38 + 27, 26, 9, $BFBF20, $4040DF);
   // logo part 2
-  BitBlt(Canvas.Handle, 6, 3 + 2 * integer(Tab <> 0), 36, 36,
-    LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBlt_cevo_hack(Canvas, 6, 3 + 2 * integer(Tab <> 0), 36, 36, LogoBuffer.Canvas, 0, 0, SRCCOPY);
 
   if page = pgMain then
   begin
