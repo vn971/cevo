@@ -17,9 +17,9 @@ That is, you would be able to launch the game on Linux/MacOS.
 Current status:
 ----
 
-* After about 70 commits, the compilation works almost fully!
+* After about 70 commits made, the project compiles successfully.
 
-The project compiles and is able to start itself in both Linux and Windows.
+It is able to start itself in both Linux and Windows.
 
 * There are a pair things I could not manage to cross-compile, yet.
 
@@ -52,18 +52,24 @@ only the most hard ones are left.
 I don't really advise to go that way...
 Better start with graphics (see below).
 
-* Fix graphics issues.
+* Fix the "black color" issue.
 
-The main reason for incompatibilities, as I see it,
-is because of the project specifics.
-It used a lot of 32bit-only and windows-only code.
-(Personal note: hell, project even used assembly code!
-I already fixed that though, moved to a pure Pascal code.)
-So this is not only history, but the things that should be worked on, too.
-I suspect the main reason of bugs to be the `ScanLine` method usage.
+The current version of the code has issues with transparency
+and image drawing. As far as I understood,
+things get painted as black instead of transparent in some cases.
+It's not clear (to me) why it works in some cases and does not in others.
+The goal is to fix that, of course.
+The method `BitBlt` may or may not be relevant (I'm suspicious about it, but I don't know).
+
+* Fix other graphics issues.
+
+The old code used a lot of 32bit-only and windows-only code.
+(It even used assembly, but I already migrated that to Pascal.)
+This should probably be worked on.
+The most suspicious thing I see is `ScanLine` method usage.
 After doing `ScalLine`, the code goes to raw byte manipulation using pointer arithmetics.
 By doing pointer arithmetics the code assumes some implementation details
-about the internal data structure. This is probably broken.
+about the internal data structure. This might be broken.
 
 You should understand what the code really meant to do,
 and write it in pure correct Pascal code. Using methods, properties, loops etc.
