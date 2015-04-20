@@ -1,14 +1,14 @@
 #NORMAL
-Times New Roman, 18
+Times New Roman, 14
 
 #SMALL
-Times New Roman, 15B
+Times New Roman, 11B
 
 #TINY
-Times New Roman, 13B
+Times New Roman, 10B
 
 #CAPTION
-Times New Roman, 21
+Times New Roman, 16
 
 #BUTTON
-Times New Roman, 17B
+Times New Roman, 13B
