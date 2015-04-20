@@ -3880,9 +3880,9 @@ begin
   if (Width <= 0) or (Height <= 0) or (Width + xMap <= 0) or (Height + yMap <= 0) then
     exit;
 
-  NoMap.BitBlt(Panel, -xMap - MapOffset, -yMap + MapHeight - overlap, xMidPanel, overlap,
+  NoMap.BitBlt_to_isoengine(Panel, -xMap - MapOffset, -yMap + MapHeight - overlap, xMidPanel, overlap,
     0, 0, SRCCOPY);
-  NoMap.BitBlt(Panel, -xMap - MapOffset + xRightPanel, -yMap + MapHeight - overlap,
+  NoMap.BitBlt_to_isoengine(Panel, -xMap - MapOffset + xRightPanel, -yMap + MapHeight - overlap,
     Panel.Width - xRightPanel, overlap, xRightPanel, 0, SRCCOPY);
   if yMap < 0 then
   begin

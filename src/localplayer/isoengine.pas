@@ -22,7 +22,7 @@ type
       UseBlink: boolean = False; CityAllowClick: boolean = False);
     procedure PaintUnit(x, y: integer; const UnitInfo: TUnitInfo; Status: integer);
     procedure PaintCity(x, y: integer; const CityInfo: TCityInfo; accessory: boolean = True);
-    procedure BitBlt(Src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
+    procedure BitBlt_to_isoengine(Src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
 
     procedure AttackBegin(const ShowMove: TShowMove);
     procedure AttackEffect(const ShowMove: TShowMove);
@@ -474,7 +474,7 @@ begin
   FOutput.Canvas.TextRect(Rect(FLeft, FTop, FRight, FBottom), x, y, s);
 end;
 
-procedure TIsoMap.BitBlt(Src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
+procedure TIsoMap.BitBlt_to_isoengine(Src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc, Rop: integer);
 begin
   if x < FLeft then
   begin
@@ -495,14 +495,14 @@ begin
   if (Width <= 0) or (Height <= 0) then
     exit;
 
-  LCLIntf.BitBlt(FOutput.Canvas.Handle, x, y, Width, Height, Src.Canvas.Handle, xSrc,
+  BitBlt(FOutput.Canvas.Handle, x, y, Width, Height, Src.Canvas.Handle, xSrc,
     ySrc, Rop);
 end;
 
 procedure TIsoMap.Sprite(HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
-  BitBlt(GrExt[HGr].Mask, xDst, yDst, Width, Height, xGr, yGr, SRCAND);
-  BitBlt(GrExt[HGr].Data, xDst, yDst, Width, Height, xGr, yGr, SRCPAINT);
+  BitBlt_to_isoengine(GrExt[HGr].Mask, xDst, yDst, Width, Height, xGr, yGr, SRCAND);
+  BitBlt_to_isoengine(GrExt[HGr].Data, xDst, yDst, Width, Height, xGr, yGr, SRCPAINT);
 end;
 
 procedure TIsoMap.TSprite(xDst, yDst, grix: integer; PureBlack: boolean = False);
@@ -534,9 +534,9 @@ begin
   if (Width <= 0) or (Height <= 0) then
     exit;
 
-  LCLIntf.BitBlt(OutDC, xDst, yDst, Width, Height, MaskDC, xSrc, ySrc, SRCAND);
+  BitBlt(OutDC, xDst, yDst, Width, Height, MaskDC, xSrc, ySrc, SRCAND);
   if not PureBlack then
-    LCLIntf.BitBlt(OutDC, xDst, yDst, Width, Height, DataDC, xSrc, ySrc, SRCPAINT);
+    BitBlt(OutDC, xDst, yDst, Width, Height, DataDC, xSrc, ySrc, SRCPAINT);
 end;
 
 procedure TIsoMap.PaintUnit(x, y: integer; const UnitInfo: TUnitInfo; Status: integer);
@@ -582,7 +582,7 @@ begin
       begin
         xGr := 121 + j mod 7 * 9;
         yGr := 1 + j div 7 * 9;
-        BitBlt(GrExt[HGrSystem].Mask, x + xsh + 3, y + ysh + 9, 8, 8, xGr, yGr, SRCAND);
+        BitBlt_to_isoengine(GrExt[HGrSystem].Mask, x + xsh + 3, y + ysh + 9, 8, 8, xGr, yGr, SRCAND);
         Sprite(HGrSystem, x + xsh + 2, y + ysh + 8, 8, 8, xGr, yGr);
       end;
       with Tribe[Owner].ModelPicture[mixShow] do
@@ -781,30 +781,30 @@ begin
   if Conn = 0 then
     exit;
 
-  BitBlt(GrExt[HGrTerrain].Data, x + xxt div 2, y, xxt, yyt,
+  BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + xxt div 2, y, xxt, yyt,
     1 + (Conn shr 6 + Conn and 1 shl 2) * (xxt * 2 + 1),
     1 + yyt + (16 + Tile and fTerrain) * (yyt * 3 + 1), SRCPAINT);
-  BitBlt(GrExt[HGrTerrain].Data, x + xxt, y + yyt div 2, xxt, yyt,
+  BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + xxt, y + yyt div 2, xxt, yyt,
     1 + (Conn and 7) * (xxt * 2 + 1) + xxt,
     1 + yyt * 2 + (16 + Tile and fTerrain) * (yyt * 3 + 1), SRCPAINT);
-  BitBlt(GrExt[HGrTerrain].Data, x + xxt div 2, y + yyt, xxt, yyt,
+  BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + xxt div 2, y + yyt, xxt, yyt,
     1 + (Conn shr 2 and 7) * (xxt * 2 + 1) + xxt,
     1 + yyt + (16 + Tile and fTerrain) * (yyt * 3 + 1), SRCPAINT);
-  BitBlt(GrExt[HGrTerrain].Data, x, y + yyt div 2, xxt, yyt,
+  BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x, y + yyt div 2, xxt, yyt,
     1 + (Conn shr 4 and 7) * (xxt * 2 + 1),
     1 + yyt * 2 + (16 + Tile and fTerrain) * (yyt * 3 + 1), SRCPAINT);
   Conn := Connection4(Loc, fTerrain, fUNKNOWN); {dither to black}
   if Conn and 1 <> 0 then
-    BitBlt(GrExt[HGrTerrain].Mask, x + xxt, y, xxt, yyt, 1 + 7 * (xxt * 2 + 1) + xxt,
+    BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x + xxt, y, xxt, yyt, 1 + 7 * (xxt * 2 + 1) + xxt,
       1 + yyt + 15 * (yyt * 3 + 1), SRCAND);
   if Conn and 2 <> 0 then
-    BitBlt(GrExt[HGrTerrain].Mask, x + xxt, y + yyt, xxt, yyt, 1 + 7 * (xxt * 2 + 1) + xxt,
+    BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x + xxt, y + yyt, xxt, yyt, 1 + 7 * (xxt * 2 + 1) + xxt,
       1 + yyt * 2 + 15 * (yyt * 3 + 1), SRCAND);
   if Conn and 4 <> 0 then
-    BitBlt(GrExt[HGrTerrain].Mask, x, y + yyt, xxt, yyt, 1 + 7 * (xxt * 2 + 1),
+    BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x, y + yyt, xxt, yyt, 1 + 7 * (xxt * 2 + 1),
       1 + yyt * 2 + 15 * (yyt * 3 + 1), SRCAND);
   if Conn and 8 <> 0 then
-    BitBlt(GrExt[HGrTerrain].Mask, x, y, xxt, yyt, 1 + 7 * (xxt * 2 + 1),
+    BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x, y, xxt, yyt, 1 + 7 * (xxt * 2 + 1),
       1 + yyt + 15 * (yyt * 3 + 1), SRCAND);
 end;
 
@@ -967,7 +967,7 @@ var
       begin
         if BordersOK and (1 shl p1) = 0 then
         begin
-          LCLIntf.BitBlt(Borders.Canvas.Handle, 0, p1 * (yyt * 2), xxt * 2, yyt * 2,
+          BitBlt(Borders.Canvas.Handle, 0, p1 * (yyt * 2), xxt * 2, yyt * 2,
             GrExt[HGrTerrain].Data.Canvas.Handle, 1 + 8 * (xxt * 2 + 1), 1 + yyt + 16 * (yyt * 3 + 1), SRCCOPY);
           for dy := 0 to yyt * 2 - 1 do
           begin
@@ -997,9 +997,9 @@ var
                 p2 := MyRO.Territory[Loc1];
               if p2 <> p1 then
               begin
-                BitBlt(GrExt[HGrTerrain].Mask, x + dx * xxt, y + dy * yyt, xxt, yyt,
+                BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x + dx * xxt, y + dy * yyt, xxt, yyt,
                   1 + 8 * (xxt * 2 + 1) + dx * xxt, 1 + yyt + 16 * (yyt * 3 + 1) + dy * yyt, SRCAND);
-                BitBlt(Borders, x + dx * xxt, y + dy * yyt, xxt, yyt, dx * xxt, p1 * (yyt * 2) + dy * yyt, SRCPAINT);
+                BitBlt_to_isoengine(Borders, x + dx * xxt, y + dy * yyt, xxt, yyt, dx * xxt, p1 * (yyt * 2) + dy * yyt, SRCPAINT);
               end;
             end;
           end;
@@ -1436,7 +1436,7 @@ begin
                   aix := 1;
                   bix := 0;
                 end;
-              BitBlt(OceanPatch, x + dx * xxt, y + dy * yyt, xxt, yyt,
+              BitBlt_to_isoengine(OceanPatch, x + dx * xxt, y + dy * yyt, xxt, yyt,
                 Aix * (xxt * 2) + (dx + dy + 1) and 1 * xxt, bix * yyt, SRCCOPY);
             end;
           end
@@ -1482,13 +1482,13 @@ begin
               else
                 Bix := Aix;
             if Aix = -1 then
-              BitBlt(GrExt[HGrTerrain].Data, x + dx * xxt, y + dy * yyt, xxt, yyt,
+              BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + dx * xxt, y + dy * yyt, xxt, yyt,
                 1 + 6 * (xxt * 2 + 1) + (dx + dy + 1) and 1 * xxt, 1 + yyt, SRCCOPY) // arctic <-> ocean
             else if bix = -1 then
-              BitBlt(GrExt[HGrTerrain].Data, x + dx * xxt, y + dy * yyt, xxt,
+              BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + dx * xxt, y + dy * yyt, xxt,
                 yyt, 1 + 6 * (xxt * 2 + 1) + xxt - (dx + dy + 1) and 1 * xxt, 1 + yyt * 2, SRCCOPY) // arctic <-> ocean
             else
-              BitBlt(LandPatch, x + dx * xxt, y + dy * yyt, xxt, yyt,
+              BitBlt_to_isoengine(LandPatch, x + dx * xxt, y + dy * yyt, xxt, yyt,
                 Aix * (xxt * 2) + (dx + dy + 1) and 1 * xxt, bix * yyt, SRCCOPY);
           end;
       end;
