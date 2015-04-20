@@ -1,4 +1,26 @@
-All source code is under Public Domain.
+    C-evo, a free empire building game with nice&small rules and strong emphasis on AI creation.
 
-Audio and graphics are free to play and to redistribute, but may have a different license.
-Please check out the in-game manual and http://c-evo.org for details. (The manual can also be seen in target/Help/help.txt)
+    Copyright (C) 2015  Vasya Novikov. (See my personal note below.)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+    Audio and graphics are free to play and to redistribute, but may have a different license.
+    Please check out the in-game manual and http://c-evo.org for details. (The manual can also be seen in target/Help/help.txt)
+
+
+    Personal note on Copyright.
+    If you would like to do any kind of contribution, please add your name to the copyright list.
+    This way no single person would have full copyrights,
+    making the project fully GPL on both formal and ethical grounds.

@@ -1,3 +1,3 @@
-*.txt      eol=crlf
 *.cfg      eol=crlf
+/target/*.txt      eol=crlf
 *.bat      eol=crlf
