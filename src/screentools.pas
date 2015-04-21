@@ -53,7 +53,6 @@ procedure CFrame(ca: TCanvas; x0, y0, x1, y1, Corner: integer; cl: TColor);
 procedure FrameImage(ca: TCanvas; src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc: integer;
   IsControl: boolean = False);
 procedure GlowFrame(dst: TFPImageBitmap; x0, y0, Width, Height: integer; cl: TColor);
-procedure InitOrnament;
 procedure InitCityMark(const T: TTexture);
 procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer);
 procedure FillLarge(ca: TCanvas; x0, y0, x1, y1, xm: integer);
@@ -180,6 +179,7 @@ var
   HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
   Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
+  wondersTransparent, system2transparent: TFPImageBitmap;
   FullScreen: Boolean = False; // lazarus todo: stop using this hardcoded fullscreen override
   GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
 
@@ -969,28 +969,6 @@ begin
   end;
 end;
 
-procedure InitOrnament;
-var
-  x, y, p, light, shade: integer;
-begin
-  if InitOrnamentDone then
-    exit;
-  light := MainTexture.clBevelLight;
-  // and $FCFCFC shr 2*3+MainTexture.clBevelShade and $FCFCFC shr 2;
-  shade := MainTexture.clBevelShade and $FCFCFC shr 2 * 3 +
-    MainTexture.clBevelLight and $FCFCFC shr 2;
-  for x := 0 to wOrna - 1 do
-    for y := 0 to hOrna - 1 do
-    begin
-      p := GrExt[HGrSystem2].Data.Canvas.Pixels[xOrna + x, yOrna + y];
-      if p = $0000FF then
-        GrExt[HGrSystem2].Data.Canvas.Pixels[xOrna + x, yOrna + y] := light
-      else if p = $FF0000 then
-        GrExt[HGrSystem2].Data.Canvas.Pixels[xOrna + x, yOrna + y] := shade;
-    end;
-  InitOrnamentDone := True;
-end;
-
 procedure InitCityMark(const T: TTexture);
 var
   x, y, intensity: integer;
@@ -1602,6 +1580,8 @@ initialization
   Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors');
   Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
   BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
+  wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'Icons-transparent');
+  system2transparent := LoadAnyGraphics(GraphicsDirectory + 'System2-transparent');
   MainTexture.Image := TBitmap.Create;
   MainTextureAge := -2;
   ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];
@@ -1623,6 +1603,8 @@ finalization
     Sounds.Free;
   LogoBuffer.Free;
   BigImp.Free;
+  system2transparent.Free;
+  wondersTransparent.Free;
   Paper.Free;
   Templates.Free;
   Colors.Free;

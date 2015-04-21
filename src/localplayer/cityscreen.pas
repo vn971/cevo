@@ -966,13 +966,13 @@ begin
     end
     else if AllowChange and (c.Status and 7 <> 0) then
     begin // city type autobuild
-      FrameImage(offscreen.canvas, bigimp, xView + 9, yView + 5, xSizeBig, ySizeBig,
+      FrameImage(offscreen.canvas, wondersTransparent, xView + 9, yView + 5, xSizeBig, ySizeBig,
         (c.Status and 7 - 1 + 3) * xSizeBig, 0,
         (cix >= 0) and (ClientMode < scContact));
     end
     else if c.Project and cpImp = 0 then
     begin // project is unit
-      FrameImage(offscreen.canvas, bigimp, xView + 9, yView + 5, xSizeBig, ySizeBig, 0, 0,
+      FrameImage(offscreen.canvas, wondersTransparent, xView + 9, yView + 5, xSizeBig, ySizeBig, 0, 0,
         AllowChange and (ClientMode < scContact));
       with Tribe[cOwner].ModelPicture[c.Project and cpIndex] do
         Sprite(offscreen, HGr, xView + 5, yView + 1, 64, 44,
@@ -1564,13 +1564,13 @@ begin
     begin
       if AllowChange and (c.Status and 7 <> 0) then
       begin // city type autobuild
-        FrameImage(canvas, bigimp, xView + 9, yView + 5, xSizeBig, ySizeBig,
+        FrameImage(canvas, wondersTransparent, xView + 9, yView + 5, xSizeBig, ySizeBig,
           (c.Status and 7 - 1 + 3) * xSizeBig, 0, True);
       end
       else if c.Project and cpImp = 0 then
       begin // project is unit
         BitBlt(canvas.Handle, xView + 9, yView + 5, xSizeBig, ySizeBig,
-          bigimp.Canvas.Handle, 0, 0, SRCCOPY);
+          wondersTransparent.Handle, 0, 0, SRCCOPY);
         with Tribe[cOwner].ModelPicture[c.Project and cpIndex] do
           Sprite(canvas, HGr, xView + 5, yView + 1, 64, 44,
             pix mod 10 * 65 + 1, pix div 10 * 49 + 1);

@@ -470,7 +470,7 @@ const
     GlowFrame(LogoBuffer, 8, 8, 34, 34, $202020);
     BitBlt(Canvas.Handle, xActionIcon - 2, y - 2, 50, 50, LogoBuffer.Canvas.Handle,
       0, 0, SRCCOPY);
-    BitBlt(Canvas.Handle, xActionIcon, y, 40, 40, BigImp.Canvas.Handle,
+    BitBlt(Canvas.Handle, xActionIcon, y, 40, 40, wondersTransparent.Canvas.Handle,
       (IconIndex mod 7) * xSizeBig + 8,
       (IconIndex div 7) * ySizeBig, SRCCOPY);
     RFrame(Canvas, xActionIcon - 1, y - 1, xActionIcon + 40, y + 40, $000000, $000000);
@@ -562,7 +562,7 @@ begin
   // logo part 1
   ImageOp_BCC(LogoBuffer, Templates, 10, 27, 155, 38 + 27, 26, 9, $BFBF20, $4040DF);
   // logo part 2
-  BitBlt_cevo_hack(Canvas, 6, 3 + 2 * integer(Tab <> 0), 36, 36, LogoBuffer.Canvas, 0, 0, SRCCOPY);
+  BitBlt(Canvas.Handle, 6, 3 + 2 * integer(Tab <> 0), 36, 36, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
 
   if page = pgMain then
   begin
@@ -628,16 +628,13 @@ begin
     LoweredTextOut(Canvas, -2, MainTexture, x0Brain + 32 - w div 2,
       y0Brain + dyBrain + 69, s);
 
-    InitOrnament;
     if AutoDiff < 0 then
     begin
       for i := 12 to 19 do
         if (i < 13) or (i > 17) then
         begin
           BitBlt(Canvas.Handle, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            GrExt[HGrSystem2].Mask.Canvas.Handle, xOrna, yOrna, SRCAND);
-          BitBlt(Canvas.Handle, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            GrExt[HGrSystem2].Data.Canvas.Handle, xOrna, yOrna, SRCPAINT);
+            system2transparent.Canvas.Handle, xOrna, yOrna, SRCCOPY);
         end;
       PaintLogo(Canvas, 69 + 11 * 27, yLogo, MainTexture.clBevelLight,
         MainTexture.clBevelShade);
@@ -721,9 +718,7 @@ begin
         if (i < 2) or (i > 6) then
         begin
           BitBlt(Canvas.Handle, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            GrExt[HGrSystem2].Mask.Canvas.Handle, xOrna, yOrna, SRCAND);
-          BitBlt(Canvas.Handle, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            GrExt[HGrSystem2].Data.Canvas.Handle, xOrna, yOrna, SRCPAINT);
+            system2transparent.Canvas.Handle, xOrna, yOrna, SRCCOPY);
         end;
       PaintLogo(Canvas, 69, yLogo, MainTexture.clBevelLight, MainTexture.clBevelShade);
     end;

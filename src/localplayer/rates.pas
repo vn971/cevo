@@ -95,7 +95,7 @@ begin
     GlowFrame(Offscreen, ClientWidth div 2 - xSizeBig div 2,
       52, xSizeBig, ySizeBig, Tribe[me].Color);
     BitBlt(Offscreen.Canvas.Handle, ClientWidth div 2 - xSizeBig div 2,
-      52, xSizeBig, ySizeBig, BigImp.Canvas.Handle,
+      52, xSizeBig, ySizeBig, wondersTransparent.Canvas.Handle,
       (woLiberty mod 7) * xSizeBig, (woLiberty div 7 + SystemIconLines) * ySizeBig, SRCCOPY);
   end
   else

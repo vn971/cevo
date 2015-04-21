@@ -385,7 +385,7 @@ begin
         BitBlt(Buffer.Canvas.Handle, 0, 0, xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange,
           Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange, SRCCOPY);
         BitBlt(Buffer.Canvas.Handle, GlowRange, GlowRange, xSizeBig, ySizeBig,
-          BigImp.Canvas.Handle, IconIndex mod 7 * xSizeBig,
+          wondersTransparent.Canvas.Handle, IconIndex mod 7 * xSizeBig,
           (IconIndex + SystemIconLines * 7) div 7 * ySizeBig, SRCCOPY);
         if p1 < 0 then
           GlowFrame(Buffer, GlowRange, GlowRange, xSizeBig, ySizeBig, $000000)
@@ -408,7 +408,7 @@ begin
     mikModel:
       with Tribe[me].ModelPicture[IconIndex] do
       begin
-        FrameImage(Canvas, BigImp, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig, 0, 0);
+        FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig, 0, 0);
         BitBlt(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
           GrExt[HGr].Mask.Canvas.Handle, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCAND);
         BitBlt(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
@@ -427,11 +427,11 @@ begin
           1 + Tribe[IconIndex].facepix div 10 * 49, SRCCOPY);
       end;
     mikPureIcon:
-      FrameImage(Canvas, BigImp, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig,
+      FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig,
         IconIndex mod 7 * xSizeBig,
         IconIndex div 7 * ySizeBig);
     mikBigIcon:
-      FrameImage(Canvas, BigImp, ClientWidth div 2 - 3 * 28, 32, xSizeBig * 3, ySizeBig * 3,
+      FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 3 * 28, 32, xSizeBig * 3, ySizeBig * 3,
         IconIndex mod 2 * 3 * xSizeBig,
         IconIndex div 2 * 3 * ySizeBig);
     mikEnemyShipComplete:

@@ -59,7 +59,8 @@ and image drawing. As far as I understood,
 things get painted as black instead of transparent in some cases.
 It's not clear (to me) why it works in some cases and does not in others.
 The goal is to fix that, of course.
-The method `BitBlt` may or may not be relevant (I'm suspicious about it, but I don't know).
+The method `BitBlt` may or may not be relevant
+(I'm suspicious about it, but I don't know for sure).
 
 * Fix other graphics issues.
 
@@ -75,7 +76,7 @@ You should understand what the code really meant to do,
 and write it in pure correct Pascal code. Using methods, properties, loops etc.
 
 If you go this way, you'll also have easy time advertising your progress.:)
-It's easy to share a screenshot...:)
+It's easy to share a screenshot.:)
 
 
 Other notes
