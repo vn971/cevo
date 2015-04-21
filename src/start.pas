@@ -351,22 +351,22 @@ begin
   BrainPicture[0].Width := 64;
   BrainPicture[0].Height := 64;
   BitBlt(BrainPicture[0].Canvas.Handle, 0, 0, 64, 64,
-    GrExt[HGrSystem2].Data.Canvas.Handle, 1, 111, SRCCOPY);
+    system2transparent.Canvas.Handle, 1, 111, SRCCOPY);
   BrainPicture[1] := TBitmap.Create;
   BrainPicture[1].Width := 64;
   BrainPicture[1].Height := 64;
   BitBlt(BrainPicture[1].Canvas.Handle, 0, 0, 64, 64,
-    GrExt[HGrSystem2].Data.Canvas.Handle, 66, 111, SRCCOPY);
+    system2transparent.Canvas.Handle, 66, 111, SRCCOPY);
   BrainPicture[2] := TBitmap.Create;
   BrainPicture[2].Width := 64;
   BrainPicture[2].Height := 64;
   BitBlt(BrainPicture[2].Canvas.Handle, 0, 0, 64, 64,
-    GrExt[HGrSystem2].Data.Canvas.Handle, 131, 111, SRCCOPY);
+    system2transparent.Canvas.Handle, 131, 111, SRCCOPY);
   BrainPicture[3] := TBitmap.Create;
   BrainPicture[3].Width := 64;
   BrainPicture[3].Height := 64;
   BitBlt(BrainPicture[3].Canvas.Handle, 0, 0, 64, 64,
-    GrExt[HGrSystem2].Data.Canvas.Handle, 131, 46, SRCCOPY);
+    system2transparent.Canvas.Handle, 131, 46, SRCCOPY);
   for i := bixFirstAI to nBrain - 1 do
   begin
     BrainPicture[i] := LoadAnyGraphics(AiDirectory + Brain[i].FileName, gfNoError);

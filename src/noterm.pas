@@ -372,7 +372,7 @@ begin
       end;
       ShowActive(i, i = Active);
     end;
-  Sprite(Canvas, HGrSystem2, x0Brain + 32 - 20, y0Brain + 32 - 20, 40, 40, 115, 1);
+  BitBlt(Canvas.Handle, x0Brain + 32 - 20, y0Brain + 32 - 20, 40, 40, system2transparent.Canvas.Handle, 115, 1, SRCCOPY);
   ShowYear;
   BtnFrame(Canvas, GoBtn.BoundsRect, MainTexture);
   BtnFrame(Canvas, QuitBtn.BoundsRect, MainTexture);

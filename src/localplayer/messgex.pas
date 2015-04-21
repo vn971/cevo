@@ -447,7 +447,7 @@ begin
     mikEnemyArmy:
       PaintEnemyArmy;
     mikFullControl:
-      Sprite(Canvas, HGrSystem2, ClientWidth div 2 - 31, 24, 63, 63, 1, 281);
+      BitBlt(Canvas.Handle, ClientWidth div 2 - 31, 24, 63, 63, system2transparent.Canvas.Handle, 1, 281, SRCCOPY);
     mikShip:
       PaintColonyShip(Canvas, IconIndex, 17, ClientWidth - 34, 38);
   end;

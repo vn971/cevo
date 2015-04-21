@@ -137,7 +137,7 @@ for cix:=0 to ComponentCount-1 do
     begin
     Graphic:=GrExt[HGrSystem].Data;
     Mask:=GrExt[HGrSystem].Mask;
-    BackGraphic:=GrExt[HGrSystem2].Data;
+    BackGraphic:=system2transparent;
     case Tag shr 8 of
       1: SmartHint:=Phrases.Lookup('WANT', ButtonIndex-6);
       2: SmartHint:=Phrases.Lookup('OFFER', ButtonIndex-6);

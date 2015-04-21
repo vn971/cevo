@@ -557,8 +557,9 @@ begin
   else if AllowChange then
   begin
     OptiType := c.Status shr 4 and $0F;
-    Sprite(offscreen, HGrSystem2, xmOpt - 32, ymOpt - 32, 64, 64, 1 + OptiType mod
-      3 * 64, 217 + OptiType div 3 * 64);
+    BitBlt(offscreen.Handle, xmOpt - 32, ymOpt - 32, 64, 64,
+      system2transparent.Canvas.Handle,
+      1 + OptiType mod 3 * 64, 217 + OptiType div 3 * 64, SRCCOPY);
 
     {display messages now}
     MessageCount := 0;
