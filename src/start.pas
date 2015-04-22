@@ -259,8 +259,6 @@ begin
       ResolutionY := Reg.ReadInteger('ResolutionY');
       ResolutionBPP := Reg.ReadInteger('ResolutionBPP');
       ResolutionFreq := Reg.ReadInteger('ResolutionFreq');
-      if ScreenMode = 2 then
-        ChangeResolution(ResolutionX, ResolutionY, ResolutionBPP, ResolutionFreq);
     except
     end;
     Reg.closekey;

@@ -19,8 +19,6 @@ type
     clPage, clCover: TColor
   end;
 
-function ChangeResolution(x, y, bpp, freq: integer): boolean;
-procedure RestoreResolution;
 function Play(Item: string; Index: integer = -1): boolean;
 procedure PreparePlay(Item: string; Index: integer = -1);
 procedure EmptyMenu(MenuItems: TMenuItem; Keep: integer = 0);
@@ -199,43 +197,8 @@ uses
   Registry;
 
 var
-  {$ifdef WINDOWS}
-    StartResolution: TDeviceMode;
-  {$endif}
-  ResolutionChanged: boolean;
-
   Gamma: integer; // global gamma correction (cent)
   GammaLUT: array[0..255] of byte;
-
-
-function ChangeResolution(x, y, bpp, freq: integer): boolean;
-{$ifdef WINDOWS}
-var
-  DevMode: TDeviceMode;
-begin
-  EnumDisplaySettings(nil, 0, DevMode);
-  DevMode.dmFields := DM_PELSWIDTH or DM_PELSHEIGHT or DM_BITSPERPEL or
-    DM_DISPLAYFREQUENCY;
-  DevMode.dmPelsWidth := x;
-  DevMode.dmPelsHeight := y;
-  DevMode.dmBitsPerPel := bpp;
-  DevMode.dmDisplayFrequency := freq;
-  Result := ChangeDisplaySettings(DevMode, 0) = DISP_CHANGE_SUCCESSFUL;
-  if Result then
-    ResolutionChanged := True;
-end;
-{$else}
-begin end;
-{$EndIf}
-
-procedure RestoreResolution;
-begin
-  {$ifdef WINDOWS}
-  if ResolutionChanged then
-    ChangeDisplaySettings(StartResolution, 0);
-  {$endif}
-  ResolutionChanged := False;
-end;
 
 function Play(Item: string; Index: integer = -1): boolean;
 {$IFNDEF DEBUG}
@@ -1496,10 +1459,6 @@ initialization
       GammaLUT[i] := p;
     end;
   end;
-  {$ifdef WINDOWS}
-    EnumDisplaySettings(nil, $FFFFFFFF, StartResolution);
-  {$endif}
-  ResolutionChanged := False;
 
   Phrases := TStringTable.Create;
   Phrases2 := TStringTable.Create;
@@ -1596,7 +1555,6 @@ initialization
   GenerateNames := True;
 
 finalization
-  RestoreResolution;
   for i := 0 to nGrExt - 1 do
   begin
     GrExt[i].Data.Free;

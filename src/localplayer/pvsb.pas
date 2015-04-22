@@ -11,7 +11,7 @@ uses
 
 type
   TPVScrollbar = record
-    h: integer;
+    h: HWND;
     si: TScrollInfo
   end;
 
