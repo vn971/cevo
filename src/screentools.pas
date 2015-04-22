@@ -1317,8 +1317,8 @@ begin
         BitBlt(Handle, xIcon + 4 + i * (14 * ld div sd), yIcon + 2 + 1, 14, 14,
           GrExt[HGrSystem].Mask.Canvas.Handle,
           67 + Kind mod 8 * 15, 70 + Kind div 8 * 15, SRCAND);
-        Sprite(dst, HGrSystem, xIcon + 3 + i * (14 * ld div sd), yIcon + 2, 14, 14,
-          67 + Kind mod 8 * 15, 70 + Kind div 8 * 15);
+        BitBltTransparent(dst.Canvas, xIcon + 3 + i * (14 * ld div sd), yIcon + 2, 14, 14,
+          67 + Kind mod 8 * 15, 70 + Kind div 8 * 15, system1transparent);
       end;
       for i := 0 to val div 10 - 1 do
       begin
@@ -1326,8 +1326,8 @@ begin
           (14 * ld div sd) + i * (14 * ld div sd), yIcon + 3, 14, 14,
           GrExt[HGrSystem].Mask.Canvas.Handle, 67 + 7 mod 8 * 15, 70 + 7 div 8 * 15,
           SRCAND);
-        Sprite(dst, HGrSystem, xIcon + 3 + (val mod 10) * (14 * ld div sd) +
-          i * (14 * ld div sd), yIcon + 2, 14, 14, 67 + 7 mod 8 * 15, 70 + 7 div 8 * 15);
+        BitBltTransparent(dst.Canvas, xIcon + 3 + (val mod 10) * (14 * ld div sd) +
+          i * (14 * ld div sd), yIcon + 2, 14, 14, 67 + 7 mod 8 * 15, 70 + 7 div 8 * 15, system1transparent);
       end;
     end
     else
@@ -1348,9 +1348,9 @@ begin
         BitBlt(Handle, xIcon + 4 + i * (14 * ld div sd), yIcon + 3, 14, 14,
           GrExt[HGrSystem].Mask.Canvas.Handle, 67 + Kind mod 8 * 15,
           70 + Kind div 8 * 15, SRCAND);
-        Sprite(dst, HGrSystem, xIcon + 3 + i * (14 * ld div sd),
+        BitBltTransparent(dst.Canvas, xIcon + 3 + i * (14 * ld div sd),
           yIcon + 2, 14, 14, 67 + Kind mod 8 * 15,
-          70 + Kind div 8 * 15);
+          70 + Kind div 8 * 15, system1transparent);
       end;
       for i := 0 to val mod 10 - 1 do
       begin
@@ -1358,9 +1358,9 @@ begin
           (14 * ld div sd) + i * (10 * ld div sd), yIcon + 7, 10, 10,
           GrExt[HGrSystem].Mask.Canvas.Handle,
           66 + Kind mod 11 * 11, 115 + Kind div 11 * 11, SRCAND);
-        Sprite(dst, HGrSystem, xIcon + 3 + (val div 10) * (14 * ld div sd) +
+        BitBltTransparent(dst.Canvas, xIcon + 3 + (val div 10) * (14 * ld div sd) +
           i * (10 * ld div sd), yIcon + 6, 10, 10, 66 + Kind mod 11 *
-          11, 115 + Kind div 11 * 11);
+          11, 115 + Kind div 11 * 11, system1transparent);
       end;
     end;
   end;
@@ -1389,30 +1389,26 @@ begin
   with ca do
   begin
     for i := 0 to pos div 8 - 1 do
-      BitBlt(Handle, x + i * 8, y, 8, 7, GrExt[HGrSystem].Data.Canvas.Handle, 104,
-        9 + 8 * Kind, SRCCOPY);
-    BitBlt(Handle, x + 8 * (pos div 8), y,
-      pos - 8 * (pos div 8), 7, GrExt[HGrSystem].Data.Canvas.Handle,
-      104, 9 + 8 * Kind, SRCCOPY);
+      BitBltTransparent(ca, x + i * 8, y, 8, 7, 104,
+        9 + 8 * Kind, system1transparent);
+    BitBltTransparent(ca, x + 8 * (pos div 8), y,
+      pos - 8 * (pos div 8), 7, 104, 9 + 8 * Kind, system1transparent);
     if Growth > 0 then
     begin
       for i := 0 to Growth div 8 - 1 do
-        BitBlt(Handle, x + pos + i * 8, y, 8, 7,
-          GrExt[HGrSystem].Data.Canvas.Handle, 112,
-          9 + 8 * Kind, SRCCOPY);
-      BitBlt(Handle, x + pos + 8 * (Growth div 8), y,
-        Growth - 8 * (Growth div 8), 7, GrExt[HGrSystem].Data.Canvas.Handle, 112,
-        9 + 8 * Kind, SRCCOPY);
+        BitBltTransparent(ca, x + pos + i * 8, y, 8, 7,
+          112, 9 + 8 * Kind, system1transparent);
+      BitBltTransparent(ca, x + pos + 8 * (Growth div 8), y,
+        Growth - 8 * (Growth div 8), 7, 112,
+        9 + 8 * Kind, system1transparent);
     end
     else if Growth < 0 then
     begin
       for i := 0 to -Growth div 8 - 1 do
-        BitBlt(Handle, x + pos + i * 8, y, 8, 7,
-          GrExt[HGrSystem].Data.Canvas.Handle, 104, 1,
-          SRCCOPY);
-      BitBlt(Handle, x + pos + 8 * (-Growth div 8), y, -Growth - 8 *
-        (-Growth div 8), 7, GrExt[HGrSystem].Data.Canvas.Handle, 104, 1,
-        SRCCOPY);
+        BitBltTransparent(ca, x + pos + i * 8, y, 8, 7,
+          104, 1, system1transparent);
+      BitBltTransparent(ca, x + pos + 8 * (-Growth div 8), y, -Growth - 8 *
+        (-Growth div 8), 7, 104, 1, system1transparent);
     end;
     Brush.Color := $000000;
     FillRect(Rect(x + pos + abs(Growth), y, x + max, y + 7));
@@ -1432,7 +1428,7 @@ begin
     PaintProgressBar(ca, Kind, x, y, pos * size div max,
       (Growth * size - max div 2) div max, size, T);
   if IndicateComplete and (pos + Growth >= max) then
-    Sprite(ca, HGrSystem, x + size - 10, y - 7, 23, 16, 1, 129);
+    BitBltTransparent(ca, x + size - 10, y - 7, 23, 16, 1, 129, system1transparent);
 end;
 
 procedure PaintLogo(ca: TCanvas; x, y, clLight, clShade: integer);

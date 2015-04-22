@@ -301,8 +301,8 @@ begin
           ReplaceText(x + (CityNameSpace + 4 + 40 + 18 + 8), y, TextColor, s);
           if NonText then
           begin
-            Sprite(offscreen, HGrSystem, 105 - 76 + CityNameSpace + 4 + 40, y0 + 1, 18, 18,
-              1 + i mod 3 * 19, 1 + i div 3 * 19);
+            BitBltTransparent(offscreen.Canvas, 105 - 76 + CityNameSpace + 4 + 40, y0 + 1, 18, 18,
+              1 + i mod 3 * 19, 1 + i div 3 * 19, system1transparent);
             x := InnerWidth - 26;
             for j := nCityEventPriority - 1 downto First + 1 do
               if (Flags and CityRepMask and CityEventPriority[j] <> 0) then
@@ -317,8 +317,8 @@ begin
                 if (CityEventPriority[j] = chNoGrowthWarning) and
                   (Built[imAqueduct] > 0) then
                   i := 17;
-                Sprite(offscreen, HGrSystem, x, y0 + 1, 18, 18, 1 + i mod 3 * 19,
-                  1 + i div 3 * 19);
+                BitBltTransparent(offscreen.Canvas, x, y0 + 1, 18, 18, 1 + i mod 3 * 19,
+                  1 + i div 3 * 19, system1transparent);
                 Dec(x, 20);
               end;
           end;
@@ -367,9 +367,9 @@ begin
           ReplaceText(x + CityNameSpace + 4 + 132 - BiColorTextWidth(ca, s), y, TextColor, s);
           if NonText then
           begin
-            //Sprite(offscreen,HGrSystem,x+CityNameSpace+4+333+1,y+6,10,10,66,115);
-            Sprite(offscreen, HGrSystem, x + CityNameSpace + 4 + 370 + 48 + 1, y + 6, 10, 10, 77, 126);
-            Sprite(offscreen, HGrSystem, x + CityNameSpace + 4 + 132 + 1, y + 6, 10, 10, 88, 115);
+            //BitBltTransparent(offscreen.Canvas,x+CityNameSpace+4+333+1,y+6,10,10,66,115, system1transparent);
+            BitBltTransparent(offscreen.Canvas, x + CityNameSpace + 4 + 370 + 48 + 1, y + 6, 10, 10, 77, 126, system1transparent);
+            BitBltTransparent(offscreen.Canvas, x + CityNameSpace + 4 + 132 + 1, y + 6, 10, 10, 88, 115, system1transparent);
           end;
         end;
         s := IntToStr(CityTaxBalance(lix, CityReport));
@@ -378,7 +378,7 @@ begin
         //  ReplaceText(x+CityNameSpace+4+333+1,y,TextColor,Format('%d/%d',[TrueProd,CityReport.ProjectCost]));
         if NonText then
         begin
-          Sprite(offscreen, HGrSystem, x + CityNameSpace + 4 + 370 + 1, y + 6, 10, 10, 132, 115);
+          BitBltTransparent(offscreen.Canvas, x + CityNameSpace + 4 + 370 + 1, y + 6, 10, 10, 132, 115, system1transparent);
 
           // food progress
           CanGrow := (Size < MaxCitySize) and (MyRO.Government <> gFuture) and
@@ -536,19 +536,19 @@ begin
             begin
               Frame(offscreen.Canvas, (8 + 16 - 1), y0 - 1, (8 + 16 + 36),
                 y0 + 20, MainTexture.clBevelLight, MainTexture.clBevelShade);
-              Dump(offscreen, HGrSystem, (8 + 16), y0, 36, 20, 223, 295);
+              BitBltTransparent(offscreen.Canvas, (8 + 16), y0, 36, 20, 223, 295, system1transparent);
             end
             else if lix = adNone then
             begin
               Frame(offscreen.Canvas, (8 + 16 - 1), y0 - 1, (8 + 16 + 36),
                 y0 + 20, MainTexture.clBevelLight, MainTexture.clBevelShade);
-              Dump(offscreen, HGrSystem, (8 + 16), y0, 36, 20, 260, 295);
+              BitBltTransparent(offscreen.Canvas, (8 + 16), y0, 36, 20, 260, 295, system1transparent);
             end
             else if lix = adMilitary then
             begin
               Frame(offscreen.Canvas, (8 + 16 - 1), y0 - 1, (8 + 16 + 36),
                 y0 + 20, MainTexture.clBevelLight, MainTexture.clBevelShade);
-              Dump(offscreen, HGrSystem, (8 + 16), y0, 36, 20, 38, 295);
+              BitBltTransparent(offscreen.Canvas, (8 + 16), y0, 36, 20, 38, 295, system1transparent);
             end
             else
             begin

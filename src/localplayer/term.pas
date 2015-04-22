@@ -4157,9 +4157,9 @@ procedure TMainScreen.CopyMiniToPanel;
 begin
   BitBlt(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Mini.Canvas.Handle, 0, 0, SRCCOPY);
   if MarkCityLoc >= 0 then
-    Sprite(Panel, HGrSystem, xMini - 2 + (4 * G.lx + 2 * (MarkCityLoc mod G.lx) +
+    BitBltTransparent(Panel.Canvas, xMini - 2 + (4 * G.lx + 2 * (MarkCityLoc mod G.lx) +
       (G.lx - MapWidth div (xxt * 2)) - 2 * xwd) mod (2 * G.lx) + MarkCityLoc div G.lx and 1,
-      yMini - 3 + MarkCityLoc div G.lx, 10, 10, 77, 47)
+      yMini - 3 + MarkCityLoc div G.lx, 10, 10, 77, 47, system1transparent)
   else if ywmax <= 0 then
     Frame(Panel.Canvas, xMini + 2 + G.lx - MapWidth div (xxt * 2), yMini + 2,
       xMini + 1 + G.lx + MapWidth div (xxt * 2),
@@ -4262,7 +4262,7 @@ begin
     if ClientMode <> cEditMap then // MapBtn icons
       for i := 0 to 5 do
         if i <> 3 then
-          Dump(Panel, HGrSystem, xMini + G.lx - 42 + 16 * i, PanelHeight - 26, 8, 8, 121 + i * 9, 61);
+          BitBltTransparent(Panel.Canvas, xMini + G.lx - 42 + 16 * i, PanelHeight - 26, 8, 8, 121 + i * 9, 61, system1transparent);
 
     if ClientMode = cEditMap then
     begin
@@ -4425,7 +4425,7 @@ begin
           RisedTextOut(Panel.Canvas, xMidPanel + 7 + 12 + 32 - BiColorTextWidth(Panel.Canvas, s) div 2,
             PanelHeight - 23, s);
 
-          FrameImage(Panel.Canvas, GrExt[HGrSystem].Data, xMidPanel + 7 +
+          FrameImage(Panel.Canvas, system1transparent, xMidPanel + 7 +
             xUnitText, yTroop + 15, 12, 14,
             121 + Exp div ExpCost * 13, 28);
           if Job = jCity then
@@ -4499,8 +4499,8 @@ begin
                       if (ClientMode < scContact) and
                         ((unx.Job > jNone) or
                         (unx.Status and (usStay or usRecover or usGoto) <> 0)) then
-                        Sprite(Panel, HGrSystem, xTroop + 2 + 60 - 20 + x, yTroop + 35,
-                          20, 20, 81, 25);
+                        BitBltTransparent(Panel.Canvas, xTroop + 2 + 60 - 20 + x, yTroop + 35,
+                          20, 20, 81, 25, system1transparent);
 
                       if not supervising then
                       begin
@@ -4592,9 +4592,9 @@ begin
       begin
         if Visible then
         begin
-          Dump(Panel, HGrSystem, Left, Top - self.ClientHeight + PanelHeight, 25, 25, 169, 243);
-          Sprite(Panel, HGrSystem, Left, Top - self.ClientHeight + PanelHeight, 25, 25,
-            1 + 26 * ButtonIndex, 337);
+          BitBltTransparent(Panel.Canvas, Left, Top - self.ClientHeight + PanelHeight, 25, 25, 169, 243, system1transparent);
+          BitBltTransparent(Panel.Canvas, Left, Top - self.ClientHeight + PanelHeight, 25, 25,
+            1 + 26 * ButtonIndex, 337, system1transparent);
           RFrame(Panel.Canvas, Left - 1, Top - self.ClientHeight + (PanelHeight - 1),
             Left + Width, Top + Height - self.ClientHeight + PanelHeight,
             MainTexture.clBevelShade, MainTexture.clBevelLight);
@@ -4607,8 +4607,8 @@ begin
       if Controls[i] is TButtonC then
         with TButtonC(Controls[i]) do
         begin
-          Dump(Panel, HGrSystem, Left, Top - self.ClientHeight + PanelHeight, 12, 12,
-            169, 178 + 13 * ButtonIndex);
+          BitBltTransparent(Panel.Canvas, Left, Top - self.ClientHeight + PanelHeight, 12, 12,
+            169, 178 + 13 * ButtonIndex, system1transparent);
           RFrame(Panel.Canvas, Left - 1, Top - self.ClientHeight + (PanelHeight - 1),
             Left + Width, Top + Height - self.ClientHeight + PanelHeight,
             MainTexture.clBevelShade, MainTexture.clBevelLight);

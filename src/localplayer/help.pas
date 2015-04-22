@@ -305,7 +305,7 @@ begin
   ca.brush.color:=$FFFFFF;
   ca.FrameRect(rect(x+1,i*24+1,x+24-1,i*24+24-1));
   ca.Brush.Style:=bsClear;}
-    BitBlt(ca.handle, x, y - 4, 24, 24, GrExt[HGrSystem].Data.Canvas.Handle, 1, 146, SRCCOPY);
+    BitBltTransparent(ca, x, y - 4, 24, 24, 1, 146, system1transparent);
     BiColorTextOut(ca, $FFFFFF, $7F007F, x + 10 - ca.Textwidth(s[1]) div 2, y - 3, s[1]);
     BiColorTextOut(ca, CaptionColor, $7F007F, x + 24, y - 3, copy(s, 2, 255));
     ca.Font.Assign(UniFont[ftNormal]);
@@ -455,13 +455,13 @@ begin
         if HelpLineInfo.Link <> 0 then
         begin
           if (Kind = hkMisc) and (no = miscSearchResult) then
-            Sprite(offscreen, HGrSystem, 18, 9 + i * 24, 8, 8, 90, 16)
+            BitBltTransparent(offscreen.Canvas, 18, 9 + i * 24, 8, 8, 90, 16, system1transparent)
           else if HelpLineInfo.Format in [pkSmallIcon_AsPreq, pkAdvIcon_AsPreq] then
-            Sprite(offscreen, HGrSystem, 12, i * 24 + 5, 14, 14, 65, 20)
+            BitBltTransparent(offscreen.Canvas, 12, i * 24 + 5, 14, 14, 65, 20, system1transparent)
           else if HelpLineInfo.Link and (hkCrossLink shl 8) <> 0 then
-            Sprite(offscreen, HGrSystem, 12, i * 24 + 5, 14, 14, 80, 1)
+            BitBltTransparent(offscreen.Canvas, 12, i * 24 + 5, 14, 14, 80, 1, system1transparent)
           else if not ((Kind = hkMisc) and (no = miscMain)) then
-            Sprite(offscreen, HGrSystem, 10, i * 24 + 6, 14, 14, 65, 1);
+            BitBltTransparent(offscreen.Canvas, 10, i * 24 + 6, 14, 14, 65, 1, system1transparent);
           x0[i] := 24;
         end
         else
@@ -504,7 +504,7 @@ begin
           begin
             case HelpLineInfo.Picpix of
               0:
-                FrameImage(Offscreen.Canvas, GrExt[HGrSystem2].Data,
+                FrameImage(Offscreen.Canvas, system2transparent,
                   12 + x0[i], -7 + i * 24, 56, 40, 137, 127);
               1:
               begin
@@ -533,8 +533,8 @@ begin
           begin
             ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + 36 + x0[i], 2 + 20 + i * 24,
               $000000, $000000);
-            Dump(offscreen, HGrSystem, 8 + x0[i], 2 + i * 24, 36, 20,
-              75 + HelpLineInfo.Picpix * 37, 295);
+            BitBltTransparent(offscreen.Canvas, 8 + x0[i], 2 + i * 24, 36, 20,
+              75 + HelpLineInfo.Picpix * 37, 295, system1transparent);
             x0[i] := x0[i] + (8 + 8 + 36);
           end;
           pkAdvIcon, pkAdvIcon_AsPreq:
@@ -547,9 +547,9 @@ begin
                 (AdvIcon[HelpLineInfo.Picpix] + SystemIconLines * 7) mod 7 * xSizeSmall,
                 (AdvIcon[HelpLineInfo.Picpix] + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
             else
-              Dump(offscreen, HGrSystem, 8 + x0[i], 2 + i * 24, 36, 20,
+              BitBltTransparent(offscreen.Canvas, 8 + x0[i], 2 + i * 24, 36, 20,
                 1 + (AdvIcon[HelpLineInfo.Picpix] - 84) mod 8 * 37,
-                295 + (AdvIcon[HelpLineInfo.Picpix] - 84) div 8 * 21);
+                295 + (AdvIcon[HelpLineInfo.Picpix] - 84) div 8 * 21, system1transparent);
             j := AdvValue[HelpLineInfo.Picpix] div 1000;
             BitBlt(Handle, x0[i] + 4, 4 + i * 24, 14, 14,
               GrExt[HGrSystem].Mask.Canvas.Handle, 127 + j * 15, 85, SRCAND);
@@ -574,7 +574,7 @@ begin
               if 1 shl j and Feature[HelpLineInfo.Picpix].Domains <> 0 then
               begin
                 Inc(cnt);
-                Dump(offscreen, HGrSystem, InnerWidth - 38 - 38 * cnt, i * 24 + 1, 36, 20, 75 + j * 37, 295);
+                BitBltTransparent(offscreen.Canvas, InnerWidth - 38 - 38 * cnt, i * 24 + 1, 36, 20, 75 + j * 37, 295, system1transparent);
                 ScreenTools.Frame(offscreen.canvas, InnerWidth - 39 - 38 * cnt, i * 24,
                   InnerWidth - 2 - 38 * cnt, i * 24 + 21,
                   $000000, $000000);
@@ -586,9 +586,9 @@ begin
               Brush.Color := $C0C0C0;
               FrameRect(Rect(ofs, 1 + 23 + i * 24, ofs + 14, 15 + 23 + i * 24));
               Brush.Style := bsClear;
-              Sprite(offscreen, HGrSystem, ofs + 2, 3 + 23 + i * 24, 10, 10,
+              BitBltTransparent(offscreen.Canvas, ofs + 2, 3 + 23 + i * 24, 10, 10,
                 66 + HelpLineInfo.Picpix mod 11 * 11,
-                137 + HelpLineInfo.Picpix div 11 * 11);
+                137 + HelpLineInfo.Picpix div 11 * 11, system1transparent);
             end;
             x0[i] := x0[i] + 8;
           end;
@@ -687,19 +687,19 @@ begin
             DarkGradient(offscreen.Canvas, x0[i] + 8 - 1, 7 + i * 24 - 3, 16, 1);
             ScreenTools.Frame(offscreen.canvas, x0[i] + 8, 7 + i * 24 - 2, x0[i] + 8 + 13, 7 + i * 24 - 2 + 13,
               $C0C0C0, $C0C0C0);
-            Sprite(offscreen, HGrSystem, x0[i] + 8 + 2, 7 + i * 24, 10, 10,
-              66 + HelpLineInfo.Picpix mod 11 * 11, 137 + HelpLineInfo.Picpix div 11 * 11);
+            BitBltTransparent(offscreen.Canvas, x0[i] + 8 + 2, 7 + i * 24, 10, 10,
+              66 + HelpLineInfo.Picpix mod 11 * 11, 137 + HelpLineInfo.Picpix div 11 * 11, system1transparent);
             x0[i] := x0[i] + 8 + 8 + 2 + 13;
           end;
           pkExp:
           begin
             ScreenTools.Frame(offscreen.Canvas, 20 - 1, 8 - 4 + i * 24, 20 + 12, 8 + 11 + i * 24, $000000, $000000);
-            Dump(offscreen, HGrSystem, 20, 8 - 3 + i * 24, 12, 14, 121 + HelpLineInfo.Picpix * 13, 28);
+            BitBltTransparent(offscreen.Canvas, 20, 8 - 3 + i * 24, 12, 14, 121 + HelpLineInfo.Picpix * 13, 28, system1transparent);
             x0[i] := 20 + 8 + 11;
           end;
           pkAITStat:
           begin
-            Sprite(offscreen, HGrSystem, 20, 6 + i * 24, 14, 14, 1 + HelpLineInfo.Picpix * 15, 316);
+            BitBltTransparent(offscreen.Canvas, 20, 6 + i * 24, 14, 14, 1 + HelpLineInfo.Picpix * 15, 316, system1transparent);
             x0[i] := 20 + 8 + 11;
           end;
           pkGov:
@@ -713,7 +713,7 @@ begin
           end;
           pkDot:
           begin
-            Sprite(offscreen, HGrSystem, x0[i] + 18, 9 + i * 24, 8, 8, 81, 16);
+            BitBltTransparent(offscreen.Canvas, x0[i] + 18, 9 + i * 24, 8, 8, 81, 16, system1transparent);
             x0[i] := 20 + 8 + 4;
           end;
           pkNormal_Dot:

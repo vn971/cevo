@@ -649,9 +649,9 @@ begin
             FrameImage(Canvas, EmptyPicture, xBrain[i], yBrain[i], 64, 64, 0, 0, True);
           if bixView[i] >= bixTerm then
           begin
-            BitBlt(Canvas.Handle, xBrain[i] - 18, yBrain[i] + 19, 12, 14,
-              GrExt[HGrSystem].Data.Canvas.Handle, 134 + (Difficulty[i] - 1) *
-              13, 28, SRCCOPY);
+            BitBltTransparent(Canvas, xBrain[i] - 18, yBrain[i] + 19, 12, 14,
+              134 + (Difficulty[i] - 1) *
+              13, 28, system1transparent);
             Frame(Canvas, xBrain[i] - 19, yBrain[i] + 18, xBrain[i] -
               18 + 12, yBrain[i] + (19 + 14),
               $000000, $000000);
@@ -671,8 +671,8 @@ begin
                 1, MultiBtn[i].Left + 12,
                 MultiBtn[i].Top + 12, MainTexture.clBevelShade,
                 MainTexture.clBevelLight);
-              BitBlt(Canvas.Handle, xBrain[i] - 31, yBrain[i], 13, 12,
-                GrExt[HGrSystem].Data.Canvas.Handle, 88, 47, SRCCOPY);
+              BitBltTransparent(Canvas, xBrain[i] - 31, yBrain[i], 13, 12,
+                88, 47, system1transparent);
             end;
           end;
           if bixView[i] >= 0 then

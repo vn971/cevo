@@ -586,8 +586,9 @@ begin
       begin
         xGr := 121 + j mod 7 * 9;
         yGr := 1 + j div 7 * 9;
-        BitBlt_to_isoengine(GrExt[HGrSystem].Mask, x + xsh + 3, y + ysh + 9, 8, 8, xGr, yGr, SRCAND);
-        Sprite(HGrSystem, x + xsh + 2, y + ysh + 8, 8, 8, xGr, yGr);
+        // lazarus TODO: numbers differ a bit. Make sure this works.
+        // BitBlt_to_isoengine(GrExt[HGrSystem].Mask, x + xsh + 3, y + ysh + 9, 8, 8, xGr, yGr, SRCAND);
+        BitBltTransparent(FOutput.Canvas,          x + xsh + 2, y + ysh + 8, 8, 8, xGr, yGr, system1transparent);
       end;
       with Tribe[Owner].ModelPicture[mixShow] do
         Sprite(HGr, x, y, 64, 48, pix mod 10 * 65 + 1, pix div 10 * 49 + 1);

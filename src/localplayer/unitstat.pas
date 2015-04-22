@@ -540,7 +540,7 @@ begin
           Sprite(offscreen, HGr, xView, yView, 64, 48, pix mod 10 * 65 + 1, pix div 10 * 49 + 1);
           if Flags and unFortified <> 0 then
             Sprite(offscreen, HGrStdUnits, xView, yView, xxu * 2, yyu * 2, 1 + 6 * (xxu * 2 + 1), 1);
-          FrameImage(offscreen.canvas, GrExt[HGrSystem].Data, xView - 20, yView + 5, 12, 14,
+          FrameImage(offscreen.canvas, system1transparent, xView - 20, yView + 5, 12, 14,
             121 + Exp div ExpCost * 13, 28);
           if Health < 100 then
           begin
