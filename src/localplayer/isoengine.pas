@@ -32,7 +32,6 @@ type
     FOutput: TBitmap;
     FLeft, FTop, FRight, FBottom, RealTop, RealBottom, AttLoc, DefLoc,
     DefHealth, FAdviceLoc: integer;
-    OutDC, DataDC, MaskDC: cardinal;
     function Connection4(Loc, Mask, Value: integer): integer;
     function Connection8(Loc, Mask: integer): integer;
     function OceanConnection(Loc: integer): integer;
@@ -537,9 +536,11 @@ begin
   if (Width <= 0) or (Height <= 0) then
     exit;
 
-  BitBlt(OutDC, xDst, yDst, Width, Height, MaskDC, xSrc, ySrc, SRCAND);
-  if not PureBlack then
-    BitBlt(OutDC, xDst, yDst, Width, Height, DataDC, xSrc, ySrc, SRCPAINT);
+  // lazarus TODO: get rid of this `PureBlack` totally?
+  if PureBlack then
+    BitBlt(FOutput.Canvas.Handle, xDst, yDst, Width, Height, terrainCurrent.Canvas.Handle, xSrc, ySrc, SRCAND)
+  else
+    BitBltTransparent(FOutput.Canvas, xDst, yDst, Width, Height, xSrc, ySrc, terrainCurrent);
 end;
 
 procedure TIsoMap.PaintUnit(x, y: integer; const UnitInfo: TUnitInfo; Status: integer);
@@ -592,9 +593,7 @@ begin
         Sprite(HGr, x, y, 64, 48, pix mod 10 * 65 + 1, pix div 10 * 49 + 1);
       if Flags and unFortified <> 0 then
       begin
-{    OutDC:=FOutput.Canvas.Handle;
-    DataDC:=GrExt[HGrTerrain].Data.Canvas.Handle;
-    MaskDC:=GrExt[HGrTerrain].Mask.Canvas.Handle;
+{
     TSprite(x,y+16,12*9+7);}
         Sprite(HGrStdUnits, x, y, xxu * 2, yyu * 2, 1 + 6 * (xxu * 2 + 1), 1);
       end;
@@ -1495,9 +1494,6 @@ begin
           end;
       end;
 
-  OutDC := FOutput.Canvas.Handle;
-  DataDC := GrExt[HGrTerrain].Data.Canvas.Handle;
-  MaskDC := GrExt[HGrTerrain].Mask.Canvas.Handle;
   for dy := -2 to ny + 1 do
     for dx := -1 to nx do
       if (dx + dy) and 1 = 0 then
