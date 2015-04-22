@@ -465,10 +465,10 @@ const
     Canvas.Font.Assign(UniFont[ftNormal]);
     BiColorTextOut(Canvas, Colors.Canvas.Pixels[clkAge0 - 1, cliDimmedText],
       $000000, xAction, y + 21, Phrases2.Lookup(TextItem));
-    BitBlt(LogoBuffer.Canvas.Handle, 0, 0, 50, 50, Canvas.Handle,
+    BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, 50, 50, Canvas.Handle,
       xActionIcon - 2, y - 2, SRCCOPY);
     GlowFrame(LogoBuffer, 8, 8, 34, 34, $202020);
-    BitBlt(Canvas.Handle, xActionIcon - 2, y - 2, 50, 50, LogoBuffer.Canvas.Handle,
+    BitBltUgly(Canvas.Handle, xActionIcon - 2, y - 2, 50, 50, LogoBuffer.Canvas.Handle,
       0, 0, SRCCOPY);
     BitBltTransparent(Canvas, xActionIcon, y, 40, 40,
       (IconIndex mod 7) * xSizeBig + 8,
@@ -556,13 +556,13 @@ begin
     Frame(Canvas, TabOffset + (Tab + 1) * TabSize + 1, 3, TabOffset +
       (Tab + 1) * TabSize + 2, TabHeight,
       MainTexture.clBevelShade, MainTexture.clBevelShade); // Tab shadow
-  BitBlt(LogoBuffer.Canvas.Handle, 0, 0, 36, 36, Canvas.Handle, 6,
+  BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, 36, 36, Canvas.Handle, 6,
     3 + 2 * integer(Tab <> 0), SRCCOPY);
   ImageOp_BCC(LogoBuffer, Templates, 0, 0, 145, 38, 36, 27, $BFBF20, $4040DF);
   // logo part 1
   ImageOp_BCC(LogoBuffer, Templates, 10, 27, 155, 38 + 27, 26, 9, $BFBF20, $4040DF);
   // logo part 2
-  BitBlt(Canvas.Handle, 6, 3 + 2 * integer(Tab <> 0), 36, 36, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(Canvas.Handle, 6, 3 + 2 * integer(Tab <> 0), 36, 36, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
 
   if page = pgMain then
   begin
@@ -577,11 +577,11 @@ begin
         ActionBottomBorder then
           h := ClientHeight - ActionBottomBorder -
             (yAction + SelectedAction * ActionPitch - 8);
-        BitBlt(LogoBuffer.Canvas.Handle, 0, 0, w, h, Canvas.Handle,
+        BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, w, h, Canvas.Handle,
           ActionSideBorder + i * wBuffer, yAction + SelectedAction *
           ActionPitch - 8, SRCCOPY);
         MakeBlue(LogoBuffer, 0, 0, w, h);
-        BitBlt(Canvas.Handle, ActionSideBorder + i * wBuffer,
+        BitBltUgly(Canvas.Handle, ActionSideBorder + i * wBuffer,
           yAction + SelectedAction * ActionPitch - 8, w, h,
           LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
       end;
@@ -605,11 +605,11 @@ begin
             RisedTextOut(Canvas, xActionIcon + 99, y,
               Phrases2.Lookup('ACTIONHEADER_WEB'));
             Canvas.Font.Assign(UniFont[ftNormal]);
-            BitBlt(LogoBuffer.Canvas.Handle, 0, 0, 91, 25, Canvas.Handle,
+            BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, 91, 25, Canvas.Handle,
               xActionIcon, y + 2, SRCCOPY);
             ImageOp_BCC(LogoBuffer, Templates, 0, 0, 1, 400, 91, 25, 0,
               Colors.Canvas.Pixels[clkAge0 - 1, cliDimmedText]);
-            BitBlt(Canvas.Handle, xActionIcon, y + 2, 91, 25, LogoBuffer.Canvas.Handle,
+            BitBltUgly(Canvas.Handle, xActionIcon, y + 2, 91, 25, LogoBuffer.Canvas.Handle,
               0, 0, SRCCOPY);
           end;
         end;
@@ -810,7 +810,7 @@ begin
   s := '';
   if (MiniMode = mmPicture) and (xMini > 0) then
   begin
-    BitBlt(Canvas.Handle, xMini + 2, yMini + 2, MiniWidth * 2, MiniHeight,
+    BitBltUgly(Canvas.Handle, xMini + 2, yMini + 2, MiniWidth * 2, MiniHeight,
       Mini.Canvas.Handle, 0, 0, SRCCOPY);
     if page = pgStartRandom then
       s := Phrases.Lookup('RANMAP');

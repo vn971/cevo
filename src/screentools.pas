@@ -32,6 +32,7 @@ procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
 procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; SrcCanvas: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
 procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; XSrc, YSrc: Integer; source: TFPImageBitmap);
+procedure BitBltUgly(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
@@ -421,6 +422,25 @@ begin
   BitBlt(DestCanvas.Handle, destX, destY, Width, Height, source.Canvas.Handle, XSrc, YSrc, SRCCOPY);
 end;
 
+procedure BitBlt_onlyCopy(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
+begin
+  if (Rop = SRCCOPY) then begin
+    BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, SRCCOPY);
+  end else if Rop = SRCPAINT then begin
+    //BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, SRCPAINT);
+  end;
+end;
+
+procedure BitBltUgly(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
+var
+  img: TFPImageBitmap;
+  x,y: Integer;
+  color: TFPColor;
+begin
+  BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+  //BitBlt_onlyCopy(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+end;
+
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 type
   TLine = array[0..9999, 0..2] of byte;
@@ -623,7 +643,7 @@ end;
 
 procedure Dump(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
-  BitBlt(dst.Canvas.Handle, xDst, yDst, Width, Height,
+  BitBltUgly(dst.Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Data.Canvas.Handle, xGr, yGr, SRCCOPY);
 end;
 
@@ -827,17 +847,17 @@ end;
 
 procedure Sprite(Canvas: TCanvas; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
-  BitBlt(Canvas.Handle, xDst, yDst, Width, Height,
+  BitBltUgly(Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Mask.Canvas.Handle, xGr, yGr, SRCAND);
-  BitBlt(Canvas.Handle, xDst, yDst, Width, Height,
+  BitBltUgly(Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Data.Canvas.Handle, xGr, yGr, SRCPAINT);
 end;
 
 procedure Sprite(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
-  BitBlt(dst.Canvas.Handle, xDst, yDst, Width, Height,
+  BitBltUgly(dst.Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Mask.Canvas.Handle, xGr, yGr, SRCAND);
-  BitBlt(dst.Canvas.Handle, xDst, yDst, Width, Height,
+  BitBltUgly(dst.Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Data.Canvas.Handle, xGr, yGr, SRCPAINT);
 end;
 
@@ -927,7 +947,7 @@ begin
   end
   else
     Frame(ca, x - 1, y - 1, x + Width, y + Height, $000000, $000000);
-  BitBlt(ca.Handle, x, y, Width, Height, src.Canvas.Handle, xSrc, ySrc, SRCCOPY);
+  BitBltUgly(ca.Handle, x, y, Width, Height, src.Canvas.Handle, xSrc, ySrc, SRCCOPY);
 end;
 
 procedure GlowFrame(dst: TFPImageBitmap; x0, y0, Width, Height: integer; cl: TColor);
@@ -989,7 +1009,7 @@ begin
           $FF * intensity div $FF shl 8 + T.clMark shr 16 and $FF *
           intensity div $FF shl 16;
       end;
-  bitblt(GrExt[HGrSystem].Mask.Canvas.Handle, 77, 47, 10, 10,
+  BitBltUgly(GrExt[HGrSystem].Mask.Canvas.Handle, 77, 47, 10, 10,
     GrExt[HGrSystem].Mask.Canvas.Handle, 66, 47, SRCCOPY);
 end;
 
@@ -997,7 +1017,7 @@ procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer)
 begin
   assert((left + xOffset >= 0) and (left + xOffset + Width <= wMainTexture) and
     (top + yOffset >= 0) and (top + yOffset + Height <= hMainTexture));
-  bitblt(ca.handle, left, top, Width, Height, MainTexture.Image.Canvas.Handle,
+  BitBltUgly(ca.handle, left, top, Width, Height, MainTexture.Image.Canvas.Handle,
     left + xOffset, top + yOffset, SRCCOPY);
 end;
 
@@ -1019,18 +1039,18 @@ var
   i: integer;
 begin
   for i := 0 to (x1 - xm) div wMainTexture - 1 do
-    bitblt(ca.handle, xm + i * wMainTexture, y0, wMainTexture, y1 - y0,
+    BitBltUgly(ca.handle, xm + i * wMainTexture, y0, wMainTexture, y1 - y0,
       MainTexture.Image.canvas.handle, 0, hMainTexture div 2 + band(i) *
       (y1 - y0), SRCCOPY);
-  bitblt(ca.handle, xm + ((x1 - xm) div wMainTexture) * wMainTexture, y0,
+  BitBltUgly(ca.handle, xm + ((x1 - xm) div wMainTexture) * wMainTexture, y0,
     x1 - (xm + ((x1 - xm) div wMainTexture) * wMainTexture), y1 - y0,
     MainTexture.Image.canvas.handle, 0,
     hMainTexture div 2 + band((x1 - xm) div wMainTexture) * (y1 - y0), SRCCOPY);
   for i := 0 to (xm - x0) div wMainTexture - 1 do
-    bitblt(ca.handle, xm - (i + 1) * wMainTexture, y0, wMainTexture, y1 - y0,
+    BitBltUgly(ca.handle, xm - (i + 1) * wMainTexture, y0, wMainTexture, y1 - y0,
       MainTexture.Image.canvas.handle, 0, hMainTexture div 2 +
       band(-i - 1) * (y1 - y0), SRCCOPY);
-  bitblt(ca.handle, x0, y0, xm - ((xm - x0) div wMainTexture) *
+  BitBltUgly(ca.handle, x0, y0, xm - ((xm - x0) div wMainTexture) *
     wMainTexture - x0, y1 - y0,
     MainTexture.Image.canvas.handle, ((xm - x0) div wMainTexture + 1) *
     wMainTexture - (xm - x0),
@@ -1064,7 +1084,7 @@ begin
       x1cut := (x + 1) * Texture.Width - (Left + xOffset + Width);
       if x1cut < 0 then
         x1cut := 0;
-      BitBlt(ca.Handle, x * Texture.Width + x0cut - xOffset, y *
+      BitBltUgly(ca.Handle, x * Texture.Width + x0cut - xOffset, y *
         Texture.Height + y0cut - yOffset,
         Texture.Width - x0cut - x1cut, Texture.Height - y0cut - y1cut,
         Texture.Canvas.Handle, x0cut, y0cut, SRCCOPY);
@@ -1086,9 +1106,9 @@ end;
 
 procedure Corner(ca: TCanvas; x, y, Kind: integer; const T: TTexture);
 begin
-{BitBlt(ca.Handle,x,y,8,8,GrExt[T.HGr].Mask.Canvas.Handle,
+{BitBltUgly(ca.Handle,x,y,8,8,GrExt[T.HGr].Mask.Canvas.Handle,
   T.xGr+29+Kind*9,T.yGr+89,SRCAND);
-BitBlt(ca.Handle,x,y,8,8,GrExt[T.HGr].Data.Canvas.Handle,
+BitBltUgly(ca.Handle,x,y,8,8,GrExt[T.HGr].Data.Canvas.Handle,
   T.xGr+29+Kind*9,T.yGr+89,SRCPAINT);}
 end;
 
@@ -1419,9 +1439,9 @@ end;
 
 procedure PaintLogo(ca: TCanvas; x, y, clLight, clShade: integer);
 begin
-  BitBlt(LogoBuffer.Canvas.Handle, 0, 0, wLogo, hLogo, ca.handle, x, y, SRCCOPY);
+  BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, wLogo, hLogo, ca.handle, x, y, SRCCOPY);
   ImageOp_BCC(LogoBuffer, Templates, 0, 0, 1, 1, wLogo, hLogo, clLight, clShade);
-  BitBlt(ca.handle, x, y, wLogo, hLogo, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(ca.handle, x, y, wLogo, hLogo, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
 end;
 
 function SetMainTextureByAge(Age: integer): boolean;

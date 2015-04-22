@@ -215,7 +215,7 @@ begin
         begin
           HaveWonder := True;
           Glow(i, $000000);
-          BitBlt(Offscreen.Canvas.Handle, xm - xSizeBig div 2 + RingPosition[i, 0],
+          BitBltUgly(Offscreen.Canvas.Handle, xm - xSizeBig div 2 + RingPosition[i, 0],
             ym - ySizeBig div 2 + RingPosition[i, 1], xSizeBig, ySizeBig,
             BigImp.Canvas.Handle, 0, (SystemIconLines + 3) * ySizeBig, SRCCOPY);
         end;
@@ -226,7 +226,7 @@ begin
             Glow(i, Tribe[MyRO.Wonder[i].EffectiveOwner].Color)
           else
             Glow(i, $000000);
-          BitBlt(Offscreen.Canvas.Handle, xm - xSizeBig div 2 + RingPosition[i, 0],
+          BitBltUgly(Offscreen.Canvas.Handle, xm - xSizeBig div 2 + RingPosition[i, 0],
             ym - ySizeBig div 2 + RingPosition[i, 1], xSizeBig, ySizeBig,
             BigImp.Canvas.Handle, (i mod 7) * xSizeBig,
             (i div 7 + SystemIconLines) * ySizeBig, SRCCOPY);

@@ -167,7 +167,7 @@ begin
   DitherMask.PixelFormat := pf24bit;
   DitherMask.Width := xxt * 2;
   DitherMask.Height := yyt * 2;
-  BitBlt(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
+  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
     GrExt[HGrTerrain].Mask.Canvas.Handle, 1 + 7 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1), SRCAND);
 
   for x := -1 to 6 do
@@ -191,16 +191,16 @@ begin
       BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
         xSrc, ySrc, terrainCurrent);
     for y := -2 to 6 do
-      BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
         GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
     for y := -2 to 6 do
-      BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt,
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt,
         GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
     for y := -2 to 6 do
-      BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
         DitherMask.Canvas.Handle, xxt, yyt, SRCAND);
     for y := -2 to 6 do
-      BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt,
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt,
         DitherMask.Canvas.Handle, 0, yyt, SRCAND);
   end;
 
@@ -224,13 +224,13 @@ begin
     for x := -2 to 6 do
       BitBltTransparent(LandMore.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
         xSrc, ySrc, terrainCurrent);
-    BitBlt(LandMore.Canvas.Handle, xxt * 2, (y + 2) * yyt, xxt, yyt,
+    BitBltUgly(LandMore.Canvas.Handle, xxt * 2, (y + 2) * yyt, xxt, yyt,
       GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
     for x := 0 to 7 do
-      BitBlt(LandMore.Canvas.Handle, (x + 2) * (xxt * 2) - xxt, (y + 2) * yyt, xxt * 2, yyt,
+      BitBltUgly(LandMore.Canvas.Handle, (x + 2) * (xxt * 2) - xxt, (y + 2) * yyt, xxt * 2, yyt,
         GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
     for x := -2 to 6 do
-      BitBlt(LandMore.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
+      BitBltUgly(LandMore.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
         DitherMask.Canvas.Handle, 0, 0, SRCAND);
   end;
 
@@ -247,12 +247,12 @@ begin
           xSrc, ySrc, terrainCurrent);
       if (x >= 1) and ((y < 2) or (x >= 2)) then
       begin
-        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt, GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
-        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt, GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
+        BitBltUgly(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt, GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
+        BitBltUgly(OceanPatch.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt, GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
       end;
-      BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
+      BitBltUgly(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
         DitherMask.Canvas.Handle, xxt, yyt, SRCAND);
-      BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt,
+      BitBltUgly(OceanPatch.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt,
         DitherMask.Canvas.Handle, 0, yyt, SRCAND);
     end;
 
@@ -269,44 +269,44 @@ begin
           xSrc, ySrc, terrainCurrent);
       if (x = 1) and (y < 2) or (x >= 2) and (y >= 1) then
       begin
-        BitBlt(OceanMore.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
+        BitBltUgly(OceanMore.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
           GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
-        BitBlt(OceanMore.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt,
+        BitBltUgly(OceanMore.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt,
           GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
       end;
-      BitBlt(OceanMore.Canvas.Handle, x * (xxt * 2), y * yyt, xxt * 2, yyt,
+      BitBltUgly(OceanMore.Canvas.Handle, x * (xxt * 2), y * yyt, xxt * 2, yyt,
         DitherMask.Canvas.Handle, 0, 0, SRCAND);
     end;
 
-  BitBlt(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
+  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
     DitherMask.Canvas.Handle, 0, 0, DSTINVERT); {invert dither mask}
-  BitBlt(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
+  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
     GrExt[HGrTerrain].Mask.Canvas.Handle, 1, 1 + yyt, SRCPAINT);
 
   for x := -1 to 6 do
     for y := -2 to 6 do
-      BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
         DitherMask.Canvas.Handle, 0, 0, SRCAND);
 
   for y := -1 to 6 do
     for x := -2 to 7 do
-      BitBlt(LandMore.Canvas.Handle, (x + 2) * (xxt * 2) - xxt, (y + 2) * yyt, xxt * 2, yyt,
+      BitBltUgly(LandMore.Canvas.Handle, (x + 2) * (xxt * 2) - xxt, (y + 2) * yyt, xxt * 2, yyt,
         DitherMask.Canvas.Handle, 0, yyt, SRCAND);
 
-  BitBlt(LandPatch.Canvas.Handle, 0, 0, (xxt * 2) * 9, yyt * 9, LandMore.Canvas.Handle, 0, 0,
+  BitBltUgly(LandPatch.Canvas.Handle, 0, 0, (xxt * 2) * 9, yyt * 9, LandMore.Canvas.Handle, 0, 0,
     SRCPAINT);
 
   for x := 0 to 3 do
     for y := 0 to 3 do
-      BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt * 2, yyt,
+      BitBltUgly(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt * 2, yyt,
         DitherMask.Canvas.Handle, 0, 0, SRCAND);
 
   for y := 0 to 3 do
     for x := 0 to 4 do
-      BitBlt(OceanMore.Canvas.Handle, x * (xxt * 2) - xxt, y * yyt, xxt * 2, yyt,
+      BitBltUgly(OceanMore.Canvas.Handle, x * (xxt * 2) - xxt, y * yyt, xxt * 2, yyt,
         DitherMask.Canvas.Handle, 0, yyt, SRCAND);
 
-  BitBlt(OceanPatch.Canvas.Handle, 0, 0, (xxt * 2) * 4, yyt * 4, OceanMore.Canvas.Handle, 0, 0,
+  BitBltUgly(OceanPatch.Canvas.Handle, 0, 0, (xxt * 2) * 4, yyt * 4, OceanMore.Canvas.Handle, 0, 0,
     SRCPAINT);
 
   with DitherMask.Canvas do
@@ -314,18 +314,18 @@ begin
     Brush.Color := $FFFFFF;
     FillRect(Rect(0, 0, xxt * 2, yyt));
   end;
-  BitBlt(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt,
+  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt,
     GrExt[HGrTerrain].Mask.Canvas.Handle, 1, 1 + yyt, SRCCOPY);
 
   for x := 0 to 6 do
-    BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), yyt, xxt * 2, yyt,
+    BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), yyt, xxt * 2, yyt,
       DitherMask.Canvas.Handle, 0, 0, SRCAND);
 
-  BitBlt(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt,
+  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt,
     DitherMask.Canvas.Handle, 0, 0, DSTINVERT);
 
   for y := 0 to 6 do
-    BitBlt(LandPatch.Canvas.Handle, xxt * 2, (y + 2) * yyt, xxt * 2, yyt,
+    BitBltUgly(LandPatch.Canvas.Handle, xxt * 2, (y + 2) * yyt, xxt * 2, yyt,
       DitherMask.Canvas.Handle, 0, 0, SRCAND);
 
   LandMore.Free;
@@ -497,7 +497,7 @@ begin
   if (Width <= 0) or (Height <= 0) then
     exit;
 
-  BitBlt(FOutput.Canvas.Handle, x, y, Width, Height, Src.Canvas.Handle, xSrc,
+  BitBltUgly(FOutput.Canvas.Handle, x, y, Width, Height, Src.Canvas.Handle, xSrc,
     ySrc, Rop);
 end;
 
@@ -538,7 +538,7 @@ begin
 
   // lazarus TODO: get rid of this `PureBlack` totally?
   if PureBlack then
-    BitBlt(FOutput.Canvas.Handle, xDst, yDst, Width, Height, terrainCurrent.Canvas.Handle, xSrc, ySrc, SRCAND)
+    BitBltUgly(FOutput.Canvas.Handle, xDst, yDst, Width, Height, terrainCurrent.Canvas.Handle, xSrc, ySrc, SRCAND)
   else
     BitBltTransparent(FOutput.Canvas, xDst, yDst, Width, Height, xSrc, ySrc, terrainCurrent);
 end;

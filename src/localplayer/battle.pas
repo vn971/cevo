@@ -128,7 +128,7 @@ begin
   if Forecast.EndHealthDef <= 0 then
   begin
     // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
-    //BitBlt(ca.Handle, xm + 9 + LDDamage - 7, ym - 6, 14, 17,
+    //BitBltUgly(ca.Handle, xm + 9 + LDDamage - 7, ym - 6, 14, 17,
     //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
     BitBltTransparent(ca, xm + 8 + LDDamage - 7, ym - 7, 14, 17,
       51, 153, system1transparent);
@@ -146,7 +146,7 @@ begin
   if Forecast.EndHealthAtt <= 0 then
   begin
     // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
-    //BitBlt(ca.Handle, xm - 6, ym + 9 + LADamage - 7, 14, 17,
+    //BitBltUgly(ca.Handle, xm - 6, ym + 9 + LADamage - 7, 14, 17,
     //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
     BitBltTransparent(ca, xm - 7, ym + 8 + LADamage - 7, 14, 17,
       51, 153, system1transparent);
@@ -163,7 +163,7 @@ begin
       (LADamage - LAAvoidedDamage - TextSize.cy) div 2, LabelText);
 
   NoMap.SetOutput(Buffer);
-  BitBlt(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, SRCCOPY);
+  BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, SRCCOPY);
 {if TerrType<fForest then
   Sprite(Buffer,HGrTerrain,0,16,66,32,1+TerrType*(xxt*2+1),1+yyt)
 else
@@ -174,13 +174,13 @@ else
   else Sprite(Buffer,HGrTerrain,0,16,66,32,1+7*(xxt*2+1),1+yyt+2*(2+TerrType-fForest)*(yyt*3+1));
   end;}
   NoMap.PaintUnit(1, 0, UnitInfo, 0);
-  BitBlt(ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
 
-  BitBlt(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, SRCCOPY);
+  BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, SRCCOPY);
   MakeUnitInfo(me, MyUn[uix], UnitInfo);
   UnitInfo.Flags := UnitInfo.Flags and not unFortified;
   NoMap.PaintUnit(1, 0, UnitInfo, 0);
-  BitBlt(ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
 end; {PaintBattleOutcome}
 
 

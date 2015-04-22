@@ -54,7 +54,7 @@ end;
 procedure TBackground.FormPaint(Sender: TObject);
 begin
   if img <> nil then
-    BitBlt(Canvas.Handle,
+    BitBltUgly(Canvas.Handle,
       Screen.Width - img.Width - (Screen.Width - 800) * 3 div 8,
       (Screen.Height - 600) div 3,
       img.Width, img.Height,

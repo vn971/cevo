@@ -199,15 +199,15 @@ procedure TListDlg.lineMod(ca: TCanvas; l: integer; NonText, lit: boolean);
         y + (16 - 1 + ySizeSmall), MainTexture.clBevelLight, MainTexture.clBevelShade);
       if pix and cpType = 0 then
         if (pix and cpIndex = imPalace) and (MyRO.Government <> gAnarchy) then
-          BitBlt(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
+          BitBltUgly(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
             SmallImp.Canvas.Handle, (MyRO.Government - 1) * xSizeSmall,
             ySizeSmall, SRCCOPY)
         else
-          BitBlt(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
+          BitBltUgly(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
             SmallImp.Canvas.Handle, pix and cpIndex mod 7 * xSizeSmall,
             (pix and cpIndex + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
       else
-        BitBlt(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
+        BitBltUgly(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
           SmallImp.Canvas.Handle, (3 + pix and cpIndex) * xSizeSmall, 0, SRCCOPY);
     end;
   end;
@@ -555,7 +555,7 @@ begin
               Frame(offscreen.Canvas, (8 + 16 - 1), y0 - 1, (8 + 16 + xSizeSmall),
                 y0 + ySizeSmall, MainTexture.clBevelLight, MainTexture.clBevelShade);
               if AdvIcon[lix] < 84 then
-                BitBlt(offscreen.Canvas.Handle, (8 + 16), y0, xSizeSmall, ySizeSmall,
+                BitBltUgly(offscreen.Canvas.Handle, (8 + 16), y0, xSizeSmall, ySizeSmall,
                   SmallImp.Canvas.Handle, (AdvIcon[lix] + SystemIconLines * 7) mod 7 * xSizeSmall,
                   (AdvIcon[lix] + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
               else
@@ -563,7 +563,7 @@ begin
                   1 + (AdvIcon[lix] - 84) mod 8 * 37, 295 + (AdvIcon[lix] - 84) div 8 * 21, system1transparent);
               j := AdvValue[lix] div 1000;
               // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
-              //BitBlt(Handle, (8 + 16 - 4), y0 + 2, 14, 14,
+              //BitBltUgly(Handle, (8 + 16 - 4), y0 + 2, 14, 14,
               //  GrExt[HGrSystem].Mask.Canvas.Handle, 127 + j * 15, 85, SRCAND);
               BitBltTransparent(offscreen.Canvas, (8 + 16 - 5), y0 + 1, 14, 14,
                 127 + j * 15, 85, system1transparent);
@@ -656,7 +656,7 @@ begin
         begin
           Frame(offscreen.Canvas, 8 + 16 - 1, y0 - 15 + (16 - 2), 8 + 16 + xSizeSmall,
             y0 - 15 + (16 - 1 + ySizeSmall), MainTexture.clBevelLight, MainTexture.clBevelShade);
-          BitBlt(offscreen.Canvas.Handle, 8 + 16, y0 - 15 + (16 - 1), xSizeSmall, ySizeSmall,
+          BitBltUgly(offscreen.Canvas.Handle, 8 + 16, y0 - 15 + (16 - 1), xSizeSmall, ySizeSmall,
             SmallImp.Canvas.Handle, (lix - 1) * xSizeSmall, ySizeSmall, SRCCOPY);
         end;
       end;
@@ -786,11 +786,11 @@ begin
         // old report
         xScreen := (ClientWidth - BiColorTextWidth(Canvas, s)) div 2;
         LoweredTextOut(Canvas, -1, MainTexture, xScreen + 10, ClientHeight - 29, s);
-        BitBlt(ScienceNationDot.Canvas.Handle, 0, 0, 17, 17, Canvas.Handle, xScreen - 10,
+        BitBltUgly(ScienceNationDot.Canvas.Handle, 0, 0, 17, 17, Canvas.Handle, xScreen - 10,
           ClientHeight - 27, SRCCOPY);
         ImageOp_BCC(ScienceNationDot, Templates, 0, 0, 114, 211, 17, 17,
           MainTexture.clBevelShade, Tribe[ScienceNation].Color);
-        BitBlt(Canvas.Handle, xScreen - 10, ClientHeight - 27, 17, 17,
+        BitBltUgly(Canvas.Handle, xScreen - 10, ClientHeight - 27, 17, 17,
           ScienceNationDot.Canvas.Handle, 0, 0, SRCCOPY);
       end;
     end;

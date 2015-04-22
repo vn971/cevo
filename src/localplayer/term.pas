@@ -2638,7 +2638,7 @@ begin {>>>client}
         if G.RO[pLogo] = nil then
         begin
           if AILogo[pLogo] <> nil then
-            BitBlt(Canvas.Handle, (xRightPanel + 10) - (16 + 64),
+            BitBltUgly(Canvas.Handle, (xRightPanel + 10) - (16 + 64),
               ClientHeight - PanelHeight, 64, 64,
               AILogo[pLogo].Canvas.Handle, 0, 0, SRCCOPY);
         end;
@@ -3888,19 +3888,19 @@ begin
   if yMap < 0 then
   begin
     if xMap < 0 then
-      BitBlt(Canvas.Handle, MapOffset, TopBarHeight, Width + xMap, Height + yMap,
+      BitBltUgly(Canvas.Handle, MapOffset, TopBarHeight, Width + xMap, Height + yMap,
         Buffer.Canvas.Handle, -xMap, -yMap, SRCCOPY)
     else
-      BitBlt(Canvas.Handle, xMap + MapOffset, TopBarHeight, Width, Height + yMap,
+      BitBltUgly(Canvas.Handle, xMap + MapOffset, TopBarHeight, Width, Height + yMap,
         Buffer.Canvas.Handle, 0, -yMap, SRCCOPY);
   end
   else
   begin
     if xMap < 0 then
-      BitBlt(Canvas.Handle, MapOffset, TopBarHeight + yMap, Width + xMap, Height,
+      BitBltUgly(Canvas.Handle, MapOffset, TopBarHeight + yMap, Width + xMap, Height,
         Buffer.Canvas.Handle, -xMap, 0, SRCCOPY)
     else
-      BitBlt(Canvas.Handle, xMap + MapOffset, TopBarHeight + yMap, Width, Height,
+      BitBltUgly(Canvas.Handle, xMap + MapOffset, TopBarHeight + yMap, Width, Height,
         Buffer.Canvas.Handle, 0, 0, SRCCOPY);
   end;
 end;
@@ -4155,7 +4155,7 @@ end;
 
 procedure TMainScreen.CopyMiniToPanel;
 begin
-  BitBlt(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Mini.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Mini.Canvas.Handle, 0, 0, SRCCOPY);
   if MarkCityLoc >= 0 then
     BitBltTransparent(Panel.Canvas, xMini - 2 + (4 * G.lx + 2 * (MarkCityLoc mod G.lx) +
       (G.lx - MapWidth div (xxt * 2)) - 2 * xwd) mod (2 * G.lx) + MarkCityLoc div G.lx and 1,
@@ -5034,7 +5034,7 @@ begin
       BrushLoc := MouseLoc;
       PaintLoc(MouseLoc, 2);
       MiniPaint;
-      BitBlt(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Mini.Canvas.Handle,
+      BitBltUgly(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Mini.Canvas.Handle,
         0, 0, SRCCOPY);
       if ywmax <= 0 then
         Frame(Panel.Canvas, xMini + 2 + G.lx - MapWidth div (2 * xxt), yMini + 2,
@@ -5826,7 +5826,7 @@ begin
     NoMap.SetPaintBounds(0, 0, xRange, yRange);
     for Step := 0 to abs(Step1 - Step0) do
     begin
-      BitBlt(Buffer.Canvas.Handle, 0, 0, xRange, yRange,
+      BitBltUgly(Buffer.Canvas.Handle, 0, 0, xRange, yRange,
         offscreen.Canvas.Handle, xMin, yMin, SRCCOPY);
       if Step1 <> Step0 then
       begin
@@ -5859,7 +5859,7 @@ begin
   end;
   if Restore then
   begin
-    BitBlt(Buffer.Canvas.Handle, 0, 0, xRange, yRange, offscreen.Canvas.Handle, xMin,
+    BitBltUgly(Buffer.Canvas.Handle, 0, 0, xRange, yRange, offscreen.Canvas.Handle, xMin,
       yMin, SRCCOPY);
     PaintBufferToScreen(xMin, yMin, xRange, yRange);
   end;
@@ -7186,7 +7186,7 @@ begin
         else if yw > ywmax then
           yw := ywmax;
       end;
-      BitBlt(Buffer.Canvas.Handle, 0, 0, G.lx * 2, G.ly, Mini.Canvas.Handle, 0, 0, SRCCOPY);
+      BitBltUgly(Buffer.Canvas.Handle, 0, 0, G.lx * 2, G.ly, Mini.Canvas.Handle, 0, 0, SRCCOPY);
       if ywmax <= 0 then
         Frame(Buffer.Canvas, x - xMini - 2 - MapWidth div (xxt * 2), 0,
           x - xMini - 2 + MapWidth div (xxt * 2) - 1,
@@ -7195,7 +7195,7 @@ begin
         Frame(Buffer.Canvas, x - xMini - 2 - MapWidth div (xxt * 2), yw,
           x - xMini - 2 + MapWidth div (xxt * 2) - 1,
           yw + MapHeight div yyt - 2, MainTexture.clMark, MainTexture.clMark);
-      BitBlt(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Buffer.Canvas.Handle,
+      BitBltUgly(Panel.Canvas.Handle, xMini + 2, yMini + 2, G.lx * 2, G.ly, Buffer.Canvas.Handle,
         0, 0, SRCCOPY);
       MainOffscreenPaint;
       RectInvalidate(xMini + 2, TopBarHeight + MapHeight - overlap + yMini + 2,
@@ -7336,35 +7336,35 @@ begin
       end;
       Brush.Style := bsClear;
     end;
-  BitBlt(Canvas.Handle, MapOffset, TopBarHeight, MapWidth, MapHeight - overlap,
+  BitBltUgly(Canvas.Handle, MapOffset, TopBarHeight, MapWidth, MapHeight - overlap,
     offscreen.Canvas.Handle,
     0, 0, SRCCOPY);
-  BitBlt(Canvas.Handle, 0, 0, ClientWidth, TopBarHeight, TopBar.Canvas.Handle,
+  BitBltUgly(Canvas.Handle, 0, 0, ClientWidth, TopBarHeight, TopBar.Canvas.Handle,
     0, 0, SRCCOPY);
   if xMidPanel > MapOffset then
-    BitBlt(Canvas.Handle, xMidPanel, TopBarHeight + MapHeight - overlap,
+    BitBltUgly(Canvas.Handle, xMidPanel, TopBarHeight + MapHeight - overlap,
       ClientWidth div 2 - xMidPanel, overlap,
       offscreen.Canvas.Handle, xMidPanel - MapOffset, MapHeight - overlap, SRCCOPY)
   else
-    BitBlt(Canvas.Handle, MapOffset, TopBarHeight + MapHeight - overlap,
+    BitBltUgly(Canvas.Handle, MapOffset, TopBarHeight + MapHeight - overlap,
       ClientWidth div 2 - MapOffset, overlap,
       offscreen.Canvas.Handle, 0, MapHeight - overlap, SRCCOPY);
   if xRightPanel < MapOffset + MapWidth then
-    BitBlt(Canvas.Handle, ClientWidth div 2, TopBarHeight + MapHeight - overlap,
+    BitBltUgly(Canvas.Handle, ClientWidth div 2, TopBarHeight + MapHeight - overlap,
       xRightPanel - ClientWidth div 2, overlap,
       offscreen.Canvas.Handle, ClientWidth div 2 - MapOffset, MapHeight - overlap, SRCCOPY)
   else
-    BitBlt(Canvas.Handle, ClientWidth div 2, TopBarHeight + MapHeight - overlap,
+    BitBltUgly(Canvas.Handle, ClientWidth div 2, TopBarHeight + MapHeight - overlap,
       MapOffset + MapWidth - ClientWidth div 2, overlap,
       offscreen.Canvas.Handle, ClientWidth div 2 - MapOffset, MapHeight - overlap, SRCCOPY);
-  BitBlt(Canvas.Handle, 0, TopBarHeight + MapHeight - overlap, xMidPanel, overlap,
+  BitBltUgly(Canvas.Handle, 0, TopBarHeight + MapHeight - overlap, xMidPanel, overlap,
     Panel.Canvas.Handle, 0, 0, SRCCOPY);
-  BitBlt(Canvas.Handle, xRightPanel, TopBarHeight + MapHeight - overlap, Panel.Width - xRightPanel,
+  BitBltUgly(Canvas.Handle, xRightPanel, TopBarHeight + MapHeight - overlap, Panel.Width - xRightPanel,
     overlap, Panel.Canvas.Handle, xRightPanel, 0, SRCCOPY);
-  BitBlt(Canvas.Handle, 0, TopBarHeight + MapHeight, Panel.Width, PanelHeight - overlap,
+  BitBltUgly(Canvas.Handle, 0, TopBarHeight + MapHeight, Panel.Width, PanelHeight - overlap,
     Panel.Canvas.Handle, 0, overlap, SRCCOPY);
   if (pLogo >= 0) and (G.RO[pLogo] = nil) and (AILogo[pLogo] <> nil) then
-    BitBlt(Canvas.Handle, xRightPanel + 10 - (16 + 64), ClientHeight - PanelHeight, 64, 64,
+    BitBltUgly(Canvas.Handle, xRightPanel + 10 - (16 + 64), ClientHeight - PanelHeight, 64, 64,
       AILogo[pLogo].Canvas.Handle, 0, 0, SRCCOPY);
 end;
 

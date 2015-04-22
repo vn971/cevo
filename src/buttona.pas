@@ -47,7 +47,7 @@ begin
   with Canvas do
     if FGraphic <> nil then
     begin
-      BitBlt(Canvas.Handle, 0, 0, 100, 25, Graphic.Canvas.Handle,
+      BitBltUgly(Canvas.Handle, 0, 0, 100, 25, Graphic.Canvas.Handle,
         195, 243 + 26 * byte(Down), SRCCOPY);
       Canvas.Brush.Style := bsClear;
       Textout(50 - (TextWidth(FCaption) + 1) div 2, 12 - textheight(FCaption) div 2,

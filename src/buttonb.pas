@@ -47,13 +47,13 @@ begin
   with Canvas do
     if FGraphic <> nil then
     begin
-      BitBlt(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
+      BitBltUgly(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
         169, 243 + 26 * byte(FDown), SRCCOPY);
       if FIndex >= 0 then
       begin
-        BitBlt(Canvas.Handle, 0, 0, 25, 25, FMask.Canvas.Handle,
+        BitBltUgly(Canvas.Handle, 0, 0, 25, 25, FMask.Canvas.Handle,
           1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, SRCAND);
-        BitBlt(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
+        BitBltUgly(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
           1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, SRCPAINT);
       end;
     end

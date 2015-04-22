@@ -64,13 +64,13 @@ begin
   begin
     if FGraphic <> nil then
     begin
-      BitBlt(Canvas.Handle, 1, 1, 40, 40, FBackGraphic.Canvas.Handle,
+      BitBltUgly(Canvas.Handle, 1, 1, 40, 40, FBackGraphic.Canvas.Handle,
         1 + 80 * BackIndex + 40 * byte(FPossible and FLit), 176, SRCCOPY);
       if FPossible then
       begin
-        BitBlt(Canvas.Handle, 3, 3, 36, 36, FMask.Canvas.Handle,
+        BitBltUgly(Canvas.Handle, 3, 3, 36, 36, FMask.Canvas.Handle,
           195 + 37 * (FIndex mod 3), 21 + 37 * (FIndex div 3), SRCAND);
-        BitBlt(Canvas.Handle, 3, 3, 36, 36, FGraphic.Canvas.Handle,
+        BitBltUgly(Canvas.Handle, 3, 3, 36, 36, FGraphic.Canvas.Handle,
           195 + 37 * (FIndex mod 3), 21 + 37 * (FIndex div 3), SRCPAINT);
       end;
     end;

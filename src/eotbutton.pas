@@ -123,13 +123,13 @@ begin
   with Canvas do
     if FGraphic <> nil then
     begin
-      BitBlt(Buffer.Canvas.Handle, 0, 0, 48, 48, Back.Canvas.Handle, 0, 0, SRCCOPY);
+      BitBltUgly(Buffer.Canvas.Handle, 0, 0, 48, 48, Back.Canvas.Handle, 0, 0, SRCCOPY);
       ImageOp_CBC(Buffer, Template, 0, 0, 133, 149 + 48 * byte(FDown), 48,
         48, $000000, $FFFFFF);
       if FIndex >= 0 then
         ImageOp_CBC(Buffer, Template, 8, 8, 1 + 32 * byte(FIndex), 246, 32,
           32, $000000, $FFFFFF);
-      BitBlt(Canvas.Handle, 0, 0, 48, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
+      BitBltUgly(Canvas.Handle, 0, 0, 48, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
     end
     else
     begin
@@ -161,7 +161,7 @@ end;
 
 procedure TEOTButton.SetBack(ca: TCanvas; x, y: integer);
 begin
-  BitBlt(Back.Canvas.Handle, 0, 0, 48, 48, ca.Handle, x, y, SRCCOPY);
+  BitBltUgly(Back.Canvas.Handle, 0, 0, 48, 48, ca.Handle, x, y, SRCCOPY);
 end;
 
 end.

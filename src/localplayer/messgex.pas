@@ -302,7 +302,7 @@ begin
   x := x - wb div 2;
 
   // paint
-  BitBlt(LogoBuffer.Canvas.Handle, 0, 0, wb, hb, ca.handle, x, y, SRCCOPY);
+  BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, wb, hb, ca.handle, x, y, SRCCOPY);
 
   if IconIndex >= 0 then
     for iy := 0 to hScrewed - 1 do
@@ -315,7 +315,7 @@ begin
 
   ImageOp_BCC(LogoBuffer, Templates, 0, 0, xb, yb, wb, hb, clCover, clPage);
 
-  BitBlt(ca.handle, x, y, wb, hb, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(ca.handle, x, y, wb, hb, LogoBuffer.Canvas.Handle, 0, 0, SRCCOPY);
 end;
 
 procedure TMessgExDlg.PaintMyArmy;
@@ -339,9 +339,9 @@ begin
       y := 26 + Border + TopSpace + Lines * MessageLineSpacing + iy * 48;
       with MyRO.EnemyModel[emix], Tribe[Owner].ModelPicture[mix] do
       begin
-        BitBlt(Canvas.Handle, x, y, 64, 48, GrExt[HGr].Mask.Canvas.Handle,
+        BitBltUgly(Canvas.Handle, x, y, 64, 48, GrExt[HGr].Mask.Canvas.Handle,
           pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCAND);
-        BitBlt(Canvas.Handle, x, y, 64, 48, GrExt[HGr].Data.Canvas.Handle,
+        BitBltUgly(Canvas.Handle, x, y, 64, 48, GrExt[HGr].Data.Canvas.Handle,
           pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCPAINT);
       end;
 
@@ -382,7 +382,7 @@ begin
       if Imp[IconIndex].Kind = ikWonder then
       begin
         p1 := MyRO.Wonder[IconIndex].EffectiveOwner;
-        BitBlt(Buffer.Canvas.Handle, 0, 0, xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange,
+        BitBltUgly(Buffer.Canvas.Handle, 0, 0, xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange,
           Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange, SRCCOPY);
         BitBltTransparent(Buffer.Canvas, GlowRange, GlowRange, xSizeBig, ySizeBig,
           IconIndex mod 7 * xSizeBig,
@@ -392,7 +392,7 @@ begin
         else
           GlowFrame(Buffer, GlowRange, GlowRange, xSizeBig, ySizeBig,
             Tribe[p1].Color);
-        BitBlt(Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange,
+        BitBltUgly(Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange,
           xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange, Buffer.Canvas.Handle, 0, 0,
           SRCCOPY);
       end
@@ -409,9 +409,9 @@ begin
       with Tribe[me].ModelPicture[IconIndex] do
       begin
         FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig, 0, 0);
-        BitBlt(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
+        BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
           GrExt[HGr].Mask.Canvas.Handle, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCAND);
-        BitBlt(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
+        BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
           GrExt[HGr].Data.Canvas.Handle, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCPAINT);
       end;
     mikBook:
@@ -421,7 +421,7 @@ begin
       begin
         Frame(Canvas, ClientWidth div 2 - 32 - 1, 24 - 1, ClientWidth div 2 + 32,
           24 + 48, $000000, $000000);
-        BitBlt(Canvas.Handle, ClientWidth div 2 - 32, 24, 64, 48,
+        BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 24, 64, 48,
           GrExt[Tribe[IconIndex].faceHGr].Data.Canvas.Handle,
           1 + Tribe[IconIndex].facepix mod 10 * 65,
           1 + Tribe[IconIndex].facepix div 10 * 49, SRCCOPY);
@@ -436,10 +436,10 @@ begin
         IconIndex div 2 * 3 * ySizeBig);
     mikEnemyShipComplete:
     begin
-      BitBlt(Buffer.Canvas.Handle, 0, 0, 140, 120, Canvas.Handle,
+      BitBltUgly(Buffer.Canvas.Handle, 0, 0, 140, 120, Canvas.Handle,
         (ClientWidth - 140) div 2, 24, SRCCOPY);
       ImageOp_BCC(Buffer, Templates, 0, 0, 1, 279, 140, 120, 0, $FFFFFF);
-      BitBlt(Canvas.Handle, (ClientWidth - 140) div 2, 24, 140,
+      BitBltUgly(Canvas.Handle, (ClientWidth - 140) div 2, 24, 140,
         120, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
     end;
     mikMyArmy:

@@ -140,7 +140,7 @@ end;
 
 procedure TBufferedDrawDlg.VPaint;
 begin
-  BitBlt(Canvas.Handle, 0, 0, ClientWidth,
+  BitBltUgly(Canvas.Handle, 0, 0, ClientWidth,
     ClientHeight, offscreen.Canvas.Handle, 0, 0, SRCCOPY);
 end;
 
@@ -423,7 +423,7 @@ begin
         BtnFrame(Canvas, R, MainTexture);
     end;
 
-  BitBlt(Canvas.Handle, SideFrame, TitleHeight, ClientWidth - 2 * SideFrame,
+  BitBltUgly(Canvas.Handle, SideFrame, TitleHeight, ClientWidth - 2 * SideFrame,
     InnerBottom - TitleHeight, offscreen.Canvas.Handle, 0, 0, SRCCOPY);
 end;
 
