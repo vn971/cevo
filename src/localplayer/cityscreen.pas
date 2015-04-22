@@ -413,7 +413,7 @@ procedure TCityDlg.OffscreenPaint;
         xGr := 66
       else
         xGr := 66 + 22;
-      BitBltTransparent(offscreen.Canvas, x + xxt - 5 + d * (2 * i + 1 - Total), y + yyt - 5, 10, 10, system1transparent, xGr, yGr);
+      BitBltTransparent(offscreen.Canvas, x + xxt - 5 + d * (2 * i + 1 - Total), y + yyt - 5, 10, 10, xGr, yGr, system1transparent);
     end;
   end;
 
@@ -558,8 +558,7 @@ begin
   begin
     OptiType := c.Status shr 4 and $0F;
     BitBltTransparent(offscreen.Canvas, xmOpt - 32, ymOpt - 32, 64, 64,
-      system2transparent,
-      1 + OptiType mod 3 * 64, 217 + OptiType div 3 * 64);
+      1 + OptiType mod 3 * 64, 217 + OptiType div 3 * 64, system2transparent);
 
     {display messages now}
     MessageCount := 0;
@@ -628,7 +627,7 @@ begin
     // lazarus TODO: find out whether this new code works...
     //BitBlt(offscreen.Canvas.Handle, xmArea - 192 + 5 + i * d, ymArea - 96 - 29,
     //  27, 30, GrExt[HGrSystem].Mask.Canvas.Handle, xGr, 171, SRCAND); {shadow}
-    BitBltTransparent(offscreen.Canvas, xmArea - 192 + 4 + i * d, ymArea - 96 - 30, 27, 30, system1transparent, xGr, 171);
+    BitBltTransparent(offscreen.Canvas, xmArea - 192 + 4 + i * d, ymArea - 96 - 30, 27, 30, xGr, 171, system1transparent);
   end;
   if c.Size - Report.Working > 1 then
     d := (xmArea + 192 - xService - 32) div (c.Size - Report.Working - 1);
@@ -640,9 +639,9 @@ begin
     // lazarus TODO: find out whether this new code works...
     //BitBlt(offscreen.Canvas.Handle, xmArea + 192 - 27 + 1 - i * d, 29 + 1,
     //  27, 30, GrExt[HGrSystem].Mask.Canvas.Handle, xGr, 171, SRCAND); {shadow}
-    BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 - i * d, 29, 27, 30, system1transparent, xGr, 171);
-    BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 + 4 - i * d, 29 + 32, 10, 10, system1transparent, 121, 126);
-    BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 + 13 - i * d, 29 + 32, 10, 10, system1transparent, 121, 126);
+    BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 - i * d, 29, 27, 30, xGr, 171, system1transparent);
+    BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 + 4 - i * d, 29 + 32, 10, 10, 121, 126, system1transparent);
+    BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 + 13 - i * d, 29 + 32, 10, 10, 121, 126, system1transparent);
     //  BitBltTransparent(offscreen.Canvas, xmArea+192-31+18-i*d,ymArea-96-80+32,10,10,system1transparent, 88,115);
   end;
 
@@ -801,9 +800,9 @@ begin
     Offscreen.Canvas.FillRect(Rect(x - 27, y - 6, x + 27, y + 6));
     Offscreen.Canvas.brush.style := bsClear;
   end;
-  BitBltTransparent(offscreen.Canvas, x - 16, y - 5, 10, 10, system1transparent, 88, 115);
-  BitBltTransparent(offscreen.Canvas, x - 5, y - 5, 10, 10, system1transparent, 66, 115);
-  BitBltTransparent(offscreen.Canvas, x + 6, y - 5, 10, 10, system1transparent, 154, 126);
+  BitBltTransparent(offscreen.Canvas, x - 16, y - 5, 10, 10, 88, 115, system1transparent);
+  BitBltTransparent(offscreen.Canvas, x - 5, y - 5, 10, 10, 66, 115, system1transparent);
+  BitBltTransparent(offscreen.Canvas, x + 6, y - 5, 10, 10, 154, 126, system1transparent);
 
   BitBlt(Offscreen.Canvas.Handle, xZoomMap, yZoommap, wZoomMap, hZoomMap,
     ZoomCitymap.Canvas.Handle, 0, 0, SRCCOPY);
@@ -846,7 +845,7 @@ begin
         begin
           if iix = imColosseum then
           begin
-            BitBltTransparent(offscreen.Canvas, x + 46, y, 14, 14, system1transparent, 82, 100);
+            BitBltTransparent(offscreen.Canvas, x + 46, y, 14, 14, 82, 100, system1transparent);
           end
           else
           begin
@@ -867,10 +866,10 @@ begin
                 d := 10;
             end;
             for j := 0 to HappyGain - 1 do
-              BitBltTransparent(offscreen.Canvas, x + 50, y + d * j, 10, 10, system1transparent, 132, 126);
+              BitBltTransparent(offscreen.Canvas, x + 50, y + d * j, 10, 10, 132, 126, system1transparent);
           end;
           for j := 0 to Imp[iix].Maint - 1 do
-            BitBltTransparent(offscreen.Canvas, x - 4, y + 29 - 3 * j, 10, 10, system1transparent, 132, 115);
+            BitBltTransparent(offscreen.Canvas, x - 4, y + 29 - 3 * j, 10, 10, 132, 115, system1transparent);
         end;
       end;
     if imix[0] >= 0 then
@@ -919,20 +918,20 @@ begin
             NoMap.PaintUnit(x, y, UnitInfo, MyUn[i].Status);
 
             for j := 0 to UnitReport.FoodSupport - 1 do
-              BitBltTransparent(offscreen.Canvas, x + 38 + 11 * j, y + 40, 10, 10, system1transparent, 66, 115);
+              BitBltTransparent(offscreen.Canvas, x + 38 + 11 * j, y + 40, 10, 10, 66, 115, system1transparent);
             for j := 0 to UnitReport.ProdSupport - 1 do
             begin
               if (FreeSupp > 0) and (UnitReport.ReportFlags and urfAlwaysSupport = 0) then
               begin
-                BitBltTransparent(offscreen.Canvas, x + 16 - 11 * j, y + 40, 10, 10, system1transparent, 143, 115);
+                BitBltTransparent(offscreen.Canvas, x + 16 - 11 * j, y + 40, 10, 10, 143, 115, system1transparent);
                 Dec(FreeSupp);
               end
               else
-                BitBltTransparent(offscreen.Canvas, x + 16 - 11 * j, y + 40, 10, 10, system1transparent, 88, 115);
+                BitBltTransparent(offscreen.Canvas, x + 16 - 11 * j, y + 40, 10, 10, 88, 115, system1transparent);
             end;
             if UnitReport.ReportFlags and urfDeployed <> 0 then
               for j := 0 to 1 do
-                BitBltTransparent(offscreen.Canvas, x + 27 + 11 * j, y + 40, 10, 10, system1transparent, 154, 126);
+                BitBltTransparent(offscreen.Canvas, x + 27 + 11 * j, y + 40, 10, 10, 154, 126, system1transparent);
           end // unit visible in display
           else
             Dec(FreeSupp, UnitReport.ProdSupport);
@@ -1573,7 +1572,7 @@ begin
       else if c.Project and cpImp = 0 then
       begin // project is unit
         BitBltTransparent(canvas, xView + 9, yView + 5, xSizeBig, ySizeBig,
-          wondersTransparent, 0, 0);
+          0, 0, wondersTransparent);
         with Tribe[cOwner].ModelPicture[c.Project and cpIndex] do
           Sprite(canvas, HGr, xView + 5, yView + 1, 64, 44,
             pix mod 10 * 65 + 1, pix div 10 * 49 + 1);

@@ -344,7 +344,7 @@ var
             Brush.Color := $C0C0C0;
             FrameRect(Rect(x - 3 + dx, y + 2, x + 11 + dx, y + 16));
             Brush.Style := bsClear;
-            BitBltTransparent(dst.Canvas, x - 1 + dx, y + 4, 10, 10, system1transparent, 66 + i mod 11 * 11, 137 + i div 11 * 11);
+            BitBltTransparent(dst.Canvas, x - 1 + dx, y + 4, 10, 10, 66 + i mod 11 * 11, 137 + i div 11 * 11, system1transparent);
             Inc(dx, 15);
           end;
         end;
@@ -583,7 +583,7 @@ begin
         s := IntToStr(mi.cost * BuildCostMod[G.Difficulty[me]] div 12);
       RisedTextout(offscreen.Canvas, xTotal + 159 - BiColorTextWidth(
         Offscreen.Canvas, s), yTotal + 57, s);
-      BitBltTransparent(offscreen.Canvas, xTotal + 160, yTotal + 57 + 5, 10, 10, system1transparent, 88, 115);
+      BitBltTransparent(offscreen.Canvas, xTotal + 160, yTotal + 57 + 5, 10, 10, 88, 115, system1transparent);
 
       if Kind = dkOwnModel then
       begin

@@ -91,8 +91,8 @@ begin
   for i := 0 to ControlCount - 1 do
     if Controls[i] is TButtonC then
       BitBltTransparent(Canvas, Controls[i].Left + 2, Controls[i].Top - 11, 8, 8,
-        system1transparent, 121 + Controls[i].Tag mod 7 * 9,
-        1 + Controls[i].Tag div 7 * 9);
+        121 + Controls[i].Tag mod 7 * 9,
+        1 + Controls[i].Tag div 7 * 9, system1transparent);
 end;
 
 procedure TEnhanceDlg.FormShow(Sender: TObject);
@@ -133,7 +133,7 @@ begin
   begin
     if stage > 0 then
     begin
-      BitBltTransparent(offscreen.Canvas, x - 10, 66, 14, 14, system1transparent, 80, 1);
+      BitBltTransparent(offscreen.Canvas, x - 10, 66, 14, 14, 80, 1, system1transparent);
       case MyData.EnhancementJobs[Page, stage - 1] of
         jRoad:
         begin

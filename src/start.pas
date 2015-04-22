@@ -351,22 +351,22 @@ begin
   BrainPicture[0].Width := 64;
   BrainPicture[0].Height := 64;
   BitBltTransparent(BrainPicture[0].Canvas, 0, 0, 64, 64,
-    system2transparent, 1, 111);
+    1, 111, system2transparent);
   BrainPicture[1] := TBitmap.Create;
   BrainPicture[1].Width := 64;
   BrainPicture[1].Height := 64;
   BitBltTransparent(BrainPicture[1].Canvas, 0, 0, 64, 64,
-    system2transparent, 66, 111);
+    66, 111, system2transparent);
   BrainPicture[2] := TBitmap.Create;
   BrainPicture[2].Width := 64;
   BrainPicture[2].Height := 64;
   BitBltTransparent(BrainPicture[2].Canvas, 0, 0, 64, 64,
-    system2transparent, 131, 111);
+    131, 111, system2transparent);
   BrainPicture[3] := TBitmap.Create;
   BrainPicture[3].Width := 64;
   BrainPicture[3].Height := 64;
   BitBltTransparent(BrainPicture[3].Canvas, 0, 0, 64, 64,
-    system2transparent, 131, 46);
+    131, 46, system2transparent);
   for i := bixFirstAI to nBrain - 1 do
   begin
     BrainPicture[i] := LoadAnyGraphics(AiDirectory + Brain[i].FileName, gfNoError);
@@ -470,9 +470,9 @@ const
     GlowFrame(LogoBuffer, 8, 8, 34, 34, $202020);
     BitBlt(Canvas.Handle, xActionIcon - 2, y - 2, 50, 50, LogoBuffer.Canvas.Handle,
       0, 0, SRCCOPY);
-    BitBltTransparent(Canvas, xActionIcon, y, 40, 40, wondersTransparent,
+    BitBltTransparent(Canvas, xActionIcon, y, 40, 40,
       (IconIndex mod 7) * xSizeBig + 8,
-      (IconIndex div 7) * ySizeBig);
+      (IconIndex div 7) * ySizeBig, wondersTransparent);
     RFrame(Canvas, xActionIcon - 1, y - 1, xActionIcon + 40, y + 40, $000000, $000000);
   end;
 
@@ -634,7 +634,7 @@ begin
         if (i < 13) or (i > 17) then
         begin
           BitBltTransparent(Canvas, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            system2transparent, xOrna, yOrna);
+            xOrna, yOrna, system2transparent);
         end;
       PaintLogo(Canvas, 69 + 11 * 27, yLogo, MainTexture.clBevelLight,
         MainTexture.clBevelShade);
@@ -718,7 +718,7 @@ begin
         if (i < 2) or (i > 6) then
         begin
           BitBltTransparent(Canvas, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            system2transparent, xOrna, yOrna);
+            xOrna, yOrna, system2transparent);
         end;
       PaintLogo(Canvas, 69, yLogo, MainTexture.clBevelLight, MainTexture.clBevelShade);
     end;

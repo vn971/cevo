@@ -152,7 +152,7 @@ procedure TDraftDlg.OffscreenPaint;
               FrameRect(Rect(xTotal2 - 3 - dx, y + 2, xTotal2 + 11 - dx, y + 16));
               Brush.Style := bsClear;
               BitBltTransparent(Offscreen.Canvas, xTotal2 - 1 - dx, y + 4, 10, 10,
-                system1transparent, 66 + i mod 11 * 11, 137 + i div 11 * 11);
+                66 + i mod 11 * 11, 137 + i div 11 * 11, system1transparent);
               if num > 1 then
               begin
                 s := IntToStr(num);
@@ -191,7 +191,7 @@ procedure TDraftDlg.OffscreenPaint;
         MainTexture.clBevelLight);
       s := IntToStr(MyRO.DevModel.Cost);
       RisedTextOut(offscreen.Canvas, xTotal2 + 170 + 64 + 30 - 12 - TextWidth(s), y, s);
-      BitBltTransparent(offscreen.Canvas, xTotal2 + 170 + 54 + 30, y + 4, 10, 10, system1transparent, 88, 115);
+      BitBltTransparent(offscreen.Canvas, xTotal2 + 170 + 54 + 30, y + 4, 10, 10, 88, 115, system1transparent);
 
       if G.Difficulty[me] <> 2 then
       begin // corrected cost bar
@@ -205,7 +205,7 @@ procedure TDraftDlg.OffscreenPaint;
           MainTexture.clBevelLight);
         s := IntToStr(MyRO.DevModel.Cost * BuildCostMod[G.Difficulty[me]] div 12);
         RisedTextOut(offscreen.Canvas, xTotal2 + 170 + 64 + 30 - 12 - TextWidth(s), y, s);
-        BitBltTransparent(offscreen.Canvas, xTotal2 + 170 + 54 + 30, y + 4, 10, 10, system1transparent, 88, 115);
+        BitBltTransparent(offscreen.Canvas, xTotal2 + 170 + 54 + 30, y + 4, 10, 10, 88, 115, system1transparent);
       end;
     end;
   end;
@@ -288,9 +288,9 @@ begin
           if code[i] < mcFirstNonCap then
           begin
             BitBltTransparent(offscreen.Canvas, xFeature - 21, yFeature + 2 + LinePitch * i,
-              12, 12, system1transparent, 169, 172);
+              12, 12, 169, 172, system1transparent);
             BitBltTransparent(offscreen.Canvas, xFeature - 9, yFeature + 2 + LinePitch * i,
-              12, 12, system1transparent, 169, 159);
+              12, 12, 169, 159, system1transparent);
             RFrame(offscreen.Canvas, xFeature - (21 + 1), yFeature + 2 + LinePitch * i - 1,
               xFeature - (21 - 24), yFeature + 2 + LinePitch * i + 12,
               MainTexture.clBevelShade, MainTexture.clBevelLight);
@@ -298,7 +298,7 @@ begin
           else
           begin
             BitBltTransparent(offscreen.Canvas, xFeature - 9, yFeature + 2 + LinePitch * i,
-              12, 12, system1transparent, 169, 185 + 13 * MyRO.DevModel.Cap[code[i]]);
+              12, 12, 169, 185 + 13 * MyRO.DevModel.Cap[code[i]], system1transparent);
             RFrame(offscreen.Canvas, xFeature - (9 + 1), yFeature + 2 + LinePitch * i - 1,
               xFeature - (21 - 24), yFeature + 2 + LinePitch * i + 12,
               MainTexture.clBevelShade, MainTexture.clBevelLight);
@@ -318,16 +318,16 @@ begin
           for j := 0 to n - 1 do
             if j < CapWeight then
               BitBltTransparent(offscreen.Canvas, xFeature + 54 + (j * 2 + 1 - n) * d,
-                yFeature + 2 + LinePitch * i + 1, 10, 10, system1transparent, 88, 126)
+                yFeature + 2 + LinePitch * i + 1, 10, 10, 88, 126, system1transparent)
             else
               BitBltTransparent(offscreen.Canvas, xFeature + 54 + (j * 2 + 1 - n) * d,
-                yFeature + 2 + LinePitch * i + 1, 10, 10, system1transparent, 88, 115);
+                yFeature + 2 + LinePitch * i + 1, 10, 10, 88, 115, system1transparent);
         end; // if not (code[i] in AutoFeature)
         DarkGradient(offscreen.Canvas, xFeature + 17, yFeature + LinePitch * i, 16, 1);
         ScreenTools.Frame(offscreen.canvas, xFeature + 18, yFeature + 1 + LinePitch * i,
           xFeature + 20 - 2 + 13, yFeature + 2 + 1 - 2 + 13 + LinePitch * i, $C0C0C0, $C0C0C0);
         BitBltTransparent(offscreen.Canvas, xFeature + 20, yFeature + 2 + 1 + LinePitch * i,
-          10, 10, system1transparent, 66 + code[i] mod 11 * 11, 137 + code[i] div 11 * 11);
+          10, 10, 66 + code[i] mod 11 * 11, 137 + code[i] div 11 * 11, system1transparent);
 
         if MyRO.DevModel.Cap[code[i]] > 0 then
           TextColor := MainTexture.clLitText
@@ -356,7 +356,7 @@ begin
       Frame(offscreen.canvas, xWeight + 5, yWeight + 33 + LinePitch * j,
         xWeight + 18, yWeight + 47 + LinePitch * j, $C0C0C0, $C0C0C0);
       BitBltTransparent(offscreen.Canvas, xWeight + 7, yWeight + 36 + LinePitch * j,
-        10, 10, system1transparent, 66 + i mod 11 * 11, 137 + i div 11 * 11);
+        10, 10, 66 + i mod 11 * 11, 137 + i div 11 * 11, system1transparent);
       LoweredTextOut(offscreen.Canvas, -1, MainTexture, xWeight + 26,
         yWeight + 31 + LinePitch * j, Phrases.Lookup('FEATURES', i));
       Inc(j);
@@ -500,17 +500,17 @@ begin
         if (code[i] < mcFirstNonCap) and (x >= xFeature - 21) and (x < xFeature - 21 + 12) then
         begin
           IncCap := code[i];
-          BitBltTransparent(offscreen.Canvas, xFeature - 21, yFeature + 2 + LinePitch * i, 12, 12, system1transparent, 182, 172);
+          BitBltTransparent(offscreen.Canvas, xFeature - 21, yFeature + 2 + LinePitch * i, 12, 12, 182, 172, system1transparent);
           SmartInvalidate;
         end
         else if (x >= xFeature - 9) and (x < xFeature - 9 + 12) then
         begin
           DecCap := code[i];
           if code[i] < mcFirstNonCap then
-            BitBltTransparent(offscreen.Canvas, xFeature - 9, yFeature + 2 + LinePitch * i, 12, 12, system1transparent, 182, 159)
+            BitBltTransparent(offscreen.Canvas, xFeature - 9, yFeature + 2 + LinePitch * i, 12, 12, 182, 159, system1transparent)
           else
             BitBltTransparent(offscreen.Canvas, xFeature - 9, yFeature + 2 + LinePitch * i,
-              12, 12, system1transparent, 182, 185 + 13 * MyRO.DevModel.Cap[code[i]]);
+              12, 12, 182, 185 + 13 * MyRO.DevModel.Cap[code[i]], system1transparent);
           SmartInvalidate;
         end;
       end;

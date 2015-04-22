@@ -417,10 +417,10 @@ procedure THelpDlg.OffscreenPaint;
     end
     else
       Sprite(Offscreen, HGrTerrain, x, y, 56, 40, xSrc, ySrc);
-    Sprite(Offscreen, HGrTerrain, x, y, xxt, yyt, xSrc + xxt, ySrc + yyt);
-    Sprite(Offscreen, HGrTerrain, x, y + yyt, xxt, 40 - yyt, xSrc + xxt, ySrc);
-    Sprite(Offscreen, HGrTerrain, x + xxt, y, 56 - xxt, yyt, xSrc, ySrc + yyt);
-    Sprite(Offscreen, HGrTerrain, x + xxt, y + yyt, 56 - xxt, 40 - yyt, xSrc, ySrc);
+    BitBltTransparent(Offscreen.Canvas, x, y, xxt, yyt, xSrc + xxt, ySrc + yyt, terrainCurrent);
+    BitBltTransparent(Offscreen.Canvas, x, y + yyt, xxt, 40 - yyt, xSrc + xxt, ySrc, terrainCurrent);
+    BitBltTransparent(Offscreen.Canvas, x + xxt, y, 56 - xxt, yyt, xSrc, ySrc + yyt, terrainCurrent);
+    BitBltTransparent(Offscreen.Canvas, x + xxt, y + yyt, 56 - xxt, 40 - yyt, xSrc, ySrc, terrainCurrent);
   end;
 
 var
@@ -510,21 +510,21 @@ begin
               begin
                 PaintTerrIcon(12 + x0[i], -7 + i * 24, 1 + 3 * (xxt * 2 + 1), 1 + yyt);
                 if 2 * yyt < 40 then
-                  Sprite(Offscreen, HGrTerrain, 12 + x0[i], -7 + 4 + i * 24, 56,
-                    2 * yyt, 1 + 3 * (xxt * 2 + 1) + xxt - 28, 1 + yyt + 1 * (yyt * 3 + 1))
+                  BitBltTransparent(Offscreen.Canvas, 12 + x0[i], -7 + 4 + i * 24, 56,
+                    2 * yyt, 1 + 3 * (xxt * 2 + 1) + xxt - 28, 1 + yyt + 1 * (yyt * 3 + 1), terrainCurrent)
                 else
-                  Sprite(Offscreen, HGrTerrain, 12 + x0[i], -7 + 4 + i * 24 - 4, 56, 40, 1 + 3 *
-                    (xxt * 2 + 1) + xxt - 28, 1 + yyt + 1 * (yyt * 3 + 1) + yyt - 20);
+                  BitBltTransparent(Offscreen.Canvas, 12 + x0[i], -7 + 4 + i * 24 - 4, 56, 40, 1 + 3 *
+                    (xxt * 2 + 1) + xxt - 28, 1 + yyt + 1 * (yyt * 3 + 1) + yyt - 20, terrainCurrent);
               end;
               2:
               begin
                 PaintTerrIcon(12 + x0[i], -7 + i * 24, 1 + 7 * (xxt * 2 + 1), 1 + yyt + 4 * (yyt * 3 + 1));
                 if 2 * yyt < 40 then
-                  Sprite(Offscreen, HGrTerrain, 12 + x0[i], -7 + 4 + i * 24, 56,
-                    32, 1 + 4 * (xxt * 2 + 1) + xxt - 28, 1 + yyt + 12 * (yyt * 3 + 1) + yyt - 16)
+                  BitBltTransparent(Offscreen.Canvas, 12 + x0[i], -7 + 4 + i * 24, 56,
+                    32, 1 + 4 * (xxt * 2 + 1) + xxt - 28, 1 + yyt + 12 * (yyt * 3 + 1) + yyt - 16, terrainCurrent)
                 else
-                  Sprite(Offscreen, HGrTerrain, 12 + x0[i], -7 + 4 + i * 24, 56, 32, 1 + 4 *
-                    (xxt * 2 + 1) + xxt - 28, 1 + yyt + 12 * (yyt * 3 + 1) + yyt - 16);
+                  BitBltTransparent(Offscreen.Canvas, 12 + x0[i], -7 + 4 + i * 24, 56, 32, 1 + 4 *
+                    (xxt * 2 + 1) + xxt - 28, 1 + yyt + 12 * (yyt * 3 + 1) + yyt - 16, terrainCurrent);
               end;
             end;
             x0[i] := 64 + 8 + 8 + x0[i];
@@ -618,17 +618,17 @@ begin
             end;
             if srcno >= fJungle then
             begin
-              Sprite(offscreen, HGrTerrain, ofs + 4, y - yyt + 2, xxt * 2 - 8, yyt * 2 - 4,
-                5 + 2 * (xxt * 2 + 1), 3 + yyt + 2 * (yyt * 3 + 1));
-              Sprite(offscreen, HGrTerrain, ofs, y - 2 * yyt, xxt * 2, yyt * 3 - 2,
-                1 + srcno mod 9 * (xxt * 2 + 1), 1 + srcno div 9 * (yyt * 3 + 1));
+              BitBltTransparent(offscreen.Canvas, ofs + 4, y - yyt + 2, xxt * 2 - 8, yyt * 2 - 4,
+                5 + 2 * (xxt * 2 + 1), 3 + yyt + 2 * (yyt * 3 + 1), terrainCurrent);
+              BitBltTransparent(offscreen.Canvas, ofs, y - 2 * yyt, xxt * 2, yyt * 3 - 2,
+                1 + srcno mod 9 * (xxt * 2 + 1), 1 + srcno div 9 * (yyt * 3 + 1), terrainCurrent);
             end
             else
-              Sprite(offscreen, HGrTerrain, ofs + 4, y - yyt + 2, xxt * 2 - 8, yyt * 2 - 4,
-                5 + srcno mod 9 * (xxt * 2 + 1), 3 + yyt + srcno div 9 * (yyt * 3 + 1));
+              BitBltTransparent(offscreen.Canvas, ofs + 4, y - yyt + 2, xxt * 2 - 8, yyt * 2 - 4,
+                5 + srcno mod 9 * (xxt * 2 + 1), 3 + yyt + srcno div 9 * (yyt * 3 + 1), terrainCurrent);
             if HelpLineInfo.Picpix >= 3 * 12 then {rare resource}
-              Sprite(offscreen, HGrTerrain, ofs, y - 2 * yyt, xxt * 2, yyt * 3,
-                1 + 8 * (xxt * 2 + 1), 1 + (HelpLineInfo.Picpix - 2 * 12) * (yyt * 3 + 1))
+              BitBltTransparent(offscreen.Canvas, ofs, y - 2 * yyt, xxt * 2, yyt * 3,
+                1 + 8 * (xxt * 2 + 1), 1 + (HelpLineInfo.Picpix - 2 * 12) * (yyt * 3 + 1), terrainCurrent)
             else if HelpLineInfo.Picpix >= 12 then {special tile}
             begin
               if HelpLineInfo.Picpix mod 12 = fJungle then
@@ -638,8 +638,8 @@ begin
               else
                 srcno := 18 + 8 + (HelpLineInfo.Picpix mod 12 - 9) * 18;
               srcno := srcno + HelpLineInfo.Picpix div 12 * 9;
-              Sprite(offscreen, HGrTerrain, ofs, y - 2 * yyt, xxt * 2, yyt * 3,
-                1 + srcno mod 9 * (xxt * 2 + 1), 1 + srcno div 9 * (yyt * 3 + 1));
+              BitBltTransparent(offscreen.Canvas, ofs, y - 2 * yyt, xxt * 2, yyt * 3,
+                1 + srcno mod 9 * (xxt * 2 + 1), 1 + srcno div 9 * (yyt * 3 + 1), terrainCurrent);
             end;
           end;
           pkTerImp:
@@ -647,31 +647,31 @@ begin
             ofs := 8;
             if HelpLineInfo.Picpix = 5 then
             begin // display mine on hills
-              Sprite(offscreen, HGrTerrain, ofs + 4, i * 24 + 13 - yyt, xxt * 2 - 8, yyt * 2 - 4,
-                5 + 2 * (xxt * 2 + 1), 3 + yyt + 2 * (yyt * 3 + 1));
+              BitBltTransparent(offscreen.Canvas, ofs + 4, i * 24 + 13 - yyt, xxt * 2 - 8, yyt * 2 - 4,
+                5 + 2 * (xxt * 2 + 1), 3 + yyt + 2 * (yyt * 3 + 1), terrainCurrent);
               srcno := 45;
             end
             else
               srcno := fPrairie; // display on prairie
-            Sprite(offscreen, HGrTerrain, ofs + 4, i * 24 + 13 - yyt, xxt * 2 - 8, yyt * 2 - 4,
-              5 + srcno mod 9 * (xxt * 2 + 1), 3 + yyt + srcno div 9 * (yyt * 3 + 1));
+            BitBltTransparent(offscreen.Canvas, ofs + 4, i * 24 + 13 - yyt, xxt * 2 - 8, yyt * 2 - 4,
+              5 + srcno mod 9 * (xxt * 2 + 1), 3 + yyt + srcno div 9 * (yyt * 3 + 1), terrainCurrent);
             if HelpLineInfo.Picpix = 12 then {river}
-              Sprite(offscreen, HGrTerrain, ofs, i * 24 + 11 - yyt, xxt * 2, yyt * 2, 1 + 5 * (xxt * 2 + 1),
-                1 + yyt + 13 * (yyt * 3 + 1))
+              BitBltTransparent(offscreen.Canvas, ofs, i * 24 + 11 - yyt, xxt * 2, yyt * 2, 1 + 5 * (xxt * 2 + 1),
+                1 + yyt + 13 * (yyt * 3 + 1), terrainCurrent)
             else if HelpLineInfo.Picpix >= 3 then {improvement 2}
             begin
               if HelpLineInfo.Picpix = 6 then
-                Sprite(offscreen, HGrTerrain, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
-                  1 + 7 * (xxt * 2 + 1), 1 + 12 * (yyt * 3 + 1));
-              Sprite(offscreen, HGrTerrain, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
-                1 + (HelpLineInfo.Picpix - 3) * (xxt * 2 + 1), 1 + 12 * (yyt * 3 + 1));
+                BitBltTransparent(offscreen.Canvas, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
+                  1 + 7 * (xxt * 2 + 1), 1 + 12 * (yyt * 3 + 1), terrainCurrent);
+              BitBltTransparent(offscreen.Canvas, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
+                1 + (HelpLineInfo.Picpix - 3) * (xxt * 2 + 1), 1 + 12 * (yyt * 3 + 1), terrainCurrent);
             end
             else {improvement 1}
             begin
-              Sprite(offscreen, HGrTerrain, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
-                1 + 2 * (xxt * 2 + 1), 1 + (9 + HelpLineInfo.Picpix) * (yyt * 3 + 1));
-              Sprite(offscreen, HGrTerrain, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
-                1 + 5 * (xxt * 2 + 1), 1 + (9 + HelpLineInfo.Picpix) * (yyt * 3 + 1));
+              BitBltTransparent(offscreen.Canvas, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
+                1 + 2 * (xxt * 2 + 1), 1 + (9 + HelpLineInfo.Picpix) * (yyt * 3 + 1), terrainCurrent);
+              BitBltTransparent(offscreen.Canvas, ofs, i * 24 + 11 - 2 * yyt, xxt * 2, yyt * 3,
+                1 + 5 * (xxt * 2 + 1), 1 + (9 + HelpLineInfo.Picpix) * (yyt * 3 + 1), terrainCurrent);
             end;
             x0[i] := x0[i] + 8;
           end;

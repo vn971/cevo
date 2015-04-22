@@ -123,6 +123,11 @@ begin
     exit;
   xxt := xxtNew;
   yyt := yytNew;
+  if yyt = 16 then begin
+    terrainCurrent:=terrainSmall
+  end else begin
+    terrainCurrent:=terrainBig;
+  end;
   HGrTerrain := HGrTerrainNew;
   HGrCities := HGrCitiesNew;
   Result := True;
@@ -184,8 +189,8 @@ begin
       ySrc := 1 + yyt;
     end;
     for y := -1 to 6 do
-      BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
-        GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc, SRCCOPY);
+      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
+        xSrc, ySrc, terrainCurrent);
     for y := -2 to 6 do
       BitBlt(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
         GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
@@ -218,8 +223,8 @@ begin
       ySrc := 1 + yyt;
     end;
     for x := -2 to 6 do
-      BitBlt(LandMore.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
-        GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc, SRCCOPY);
+      BitBltTransparent(LandMore.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
+        xSrc, ySrc, terrainCurrent);
     BitBlt(LandMore.Canvas.Handle, xxt * 2, (y + 2) * yyt, xxt, yyt,
       GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
     for x := 0 to 7 do
@@ -239,14 +244,12 @@ begin
         xSrc := (x mod 2) * (xxt * 2 + 1) + 1;
       ySrc := 1 + yyt;
       if (x >= 1) = (y >= 2) then
-        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt * 2, yyt,
-          GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc, SRCCOPY);
+        BitBltTransparent(OceanPatch.Canvas, x * (xxt * 2), y * yyt, xxt * 2, yyt,
+          xSrc, ySrc, terrainCurrent);
       if (x >= 1) and ((y < 2) or (x >= 2)) then
       begin
-        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
-          GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
-        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt,
-          GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
+        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt, GrExt[HGrTerrain].Data.Canvas.Handle, xSrc + xxt, ySrc + yyt, SRCPAINT);
+        BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2) + xxt, y * yyt, xxt, yyt, GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc + yyt, SRCPAINT);
       end;
       BitBlt(OceanPatch.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
         DitherMask.Canvas.Handle, xxt, yyt, SRCAND);
@@ -263,8 +266,8 @@ begin
         xSrc := (y mod 2) * (xxt * 2 + 1) + 1;
       ySrc := 1 + yyt;
       if (x < 1) or (y >= 2) then
-        BitBlt(OceanMore.Canvas.Handle, x * (xxt * 2), y * yyt, xxt * 2, yyt,
-          GrExt[HGrTerrain].Data.Canvas.Handle, xSrc, ySrc, SRCCOPY);
+        BitBltTransparent(OceanMore.Canvas, x * (xxt * 2), y * yyt, xxt * 2, yyt,
+          xSrc, ySrc, terrainCurrent);
       if (x = 1) and (y < 2) or (x >= 2) and (y >= 1) then
       begin
         BitBlt(OceanMore.Canvas.Handle, x * (xxt * 2), y * yyt, xxt, yyt,
@@ -967,8 +970,8 @@ var
       begin
         if BordersOK and (1 shl p1) = 0 then
         begin
-          BitBlt(Borders.Canvas.Handle, 0, p1 * (yyt * 2), xxt * 2, yyt * 2,
-            GrExt[HGrTerrain].Data.Canvas.Handle, 1 + 8 * (xxt * 2 + 1), 1 + yyt + 16 * (yyt * 3 + 1), SRCCOPY);
+          BitBltTransparent(Borders.Canvas, 0, p1 * (yyt * 2), xxt * 2, yyt * 2,
+            1 + 8 * (xxt * 2 + 1), 1 + yyt + 16 * (yyt * 3 + 1), terrainCurrent);
           for dy := 0 to yyt * 2 - 1 do
           begin
             Borders.BeginUpdate();
@@ -997,8 +1000,7 @@ var
                 p2 := MyRO.Territory[Loc1];
               if p2 <> p1 then
               begin
-                BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x + dx * xxt, y + dy * yyt, xxt, yyt,
-                  1 + 8 * (xxt * 2 + 1) + dx * xxt, 1 + yyt + 16 * (yyt * 3 + 1) + dy * yyt, SRCAND);
+                BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x + dx * xxt, y + dy * yyt, xxt, yyt, 1 + 8 * (xxt * 2 + 1) + dx * xxt, 1 + yyt + 16 * (yyt * 3 + 1) + dy * yyt, SRCAND);
                 BitBlt_to_isoengine(Borders, x + dx * xxt, y + dy * yyt, xxt, yyt, dx * xxt, p1 * (yyt * 2) + dy * yyt, SRCPAINT);
               end;
             end;
@@ -1072,9 +1074,9 @@ begin
     fog := FoW and (Tile and fObserved = 0);
   if fog and ShowObjects then
     if Loc < -G.lx then
-      Sprite(HGrTerrain, x, y + yyt, xxt * 2, yyt, 1 + 6 * (xxt * 2 + 1), 1 + yyt * 2 + 15 * (yyt * 3 + 1))
+      BitBltTransparent(FOutput.Canvas, x, y + yyt, xxt * 2, yyt, 1 + 6 * (xxt * 2 + 1), 1 + yyt * 2 + 15 * (yyt * 3 + 1), terrainCurrent)
     else if Loc >= G.lx * (G.ly + 1) then
-      Sprite(HGrTerrain, x, y, xxt * 2, yyt, 1 + 6 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1))
+      BitBltTransparent(FOutput.Canvas, x, y, xxt * 2, yyt, 1 + 6 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1), terrainCurrent)
     else
       TSprite(x, y, 6 + 9 * 15, xxt <> 33);
 
@@ -1482,10 +1484,10 @@ begin
               else
                 Bix := Aix;
             if Aix = -1 then
-              BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + dx * xxt, y + dy * yyt, xxt, yyt,
+              BitBlt_to_isoengine(terrainCurrent, x + dx * xxt, y + dy * yyt, xxt, yyt,
                 1 + 6 * (xxt * 2 + 1) + (dx + dy + 1) and 1 * xxt, 1 + yyt, SRCCOPY) // arctic <-> ocean
             else if bix = -1 then
-              BitBlt_to_isoengine(GrExt[HGrTerrain].Data, x + dx * xxt, y + dy * yyt, xxt,
+              BitBlt_to_isoengine(terrainCurrent, x + dx * xxt, y + dy * yyt, xxt,
                 yyt, 1 + 6 * (xxt * 2 + 1) + xxt - (dx + dy + 1) and 1 * xxt, 1 + yyt * 2, SRCCOPY) // arctic <-> ocean
             else
               BitBlt_to_isoengine(LandPatch, x + dx * xxt, y + dy * yyt, xxt, yyt,

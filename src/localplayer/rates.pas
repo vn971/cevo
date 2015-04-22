@@ -95,8 +95,8 @@ begin
     GlowFrame(Offscreen, ClientWidth div 2 - xSizeBig div 2,
       52, xSizeBig, ySizeBig, Tribe[me].Color);
     BitBltTransparent(Offscreen.Canvas, ClientWidth div 2 - xSizeBig div 2,
-      52, xSizeBig, ySizeBig, wondersTransparent,
-      (woLiberty mod 7) * xSizeBig, (woLiberty div 7 + SystemIconLines) * ySizeBig);
+      52, xSizeBig, ySizeBig,
+      (woLiberty mod 7) * xSizeBig, (woLiberty div 7 + SystemIconLines) * ySizeBig, wondersTransparent);
   end
   else
   begin
@@ -119,10 +119,10 @@ begin
     with Offscreen.Canvas do
     begin
       for i := 0 to current div 8 - 1 do
-        BitBltTransparent(Offscreen.Canvas, x + max - 8 - i * 8, y, 8, 7, system1transparent, 104,
-          9 + 8 * 2);
+        BitBltTransparent(Offscreen.Canvas, x + max - 8 - i * 8, y, 8, 7, 104,
+          9 + 8 * 2, system1transparent);
       BitBltTransparent(Offscreen.Canvas, x + max - current, y,
-        current - 8 * (current div 8), 7, system1transparent, 104, 9 + 8 * 2);
+        current - 8 * (current div 8), 7, 104, 9 + 8 * 2, system1transparent);
       Brush.Color := $000000;
       FillRect(Rect(x, y, x + max - current, y + 7));
       Brush.Style := bsClear;

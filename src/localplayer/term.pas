@@ -397,6 +397,7 @@ var
   CityRepMask: cardinal;
   ReceivedOffer: TOffer;
   Buffer, SmallImp: TBitmap;
+  terrainSmall, terrainBig, terrainCurrent: TFPImageBitmap;
   BlinkON, DestinationMarkON, StartRunning, StayOnTop_Ensured, supervising: boolean;
   UnusedTribeFiles, TribeNames: TStringList;
   TribeOriginal: array[0..nPl - 1] of boolean;
@@ -4240,7 +4241,7 @@ begin
         RFrame(Panel.Canvas, ClientWidth - xPalace - 2, yPalace - 2,
           ClientWidth - xPalace + xSizeBig + 1, yPalace + ySizeBig + 1, $FFFFFF, $B0B0B0);
         BitBltTransparent(Panel.Canvas, ClientWidth - xPalace, yPalace, xSizeBig,
-          ySizeBig, system2transparent, 70, 123);
+          ySizeBig, 70, 123, system2transparent);
       end
       else if MyRO.NatBuilt[imPalace] > 0 then
         ImpImage(Panel.Canvas, ClientWidth - xPalace, yPalace, imPalace, -1, GameMode <> cMovie
@@ -7650,5 +7651,6 @@ begin
 end;
 
 initialization
-
+  terrainSmall := LoadAnyGraphics(GraphicsDirectory + 'Terrain66x32transparent');
+  terrainBig := LoadAnyGraphics(GraphicsDirectory + 'Terrain96x48transparent');
 end.

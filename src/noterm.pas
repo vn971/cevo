@@ -118,7 +118,7 @@ procedure TNoTermDlg.ShowActive(p: integer; Active: boolean);
 begin
   if p < nPlOffered then
     BitBltTransparent(Canvas, x0Brain + 28 + xActive[p], y0Brain + 28 + yActive[p], 8, 8,
-      system1transparent, 81 + 9 * byte(Active), 16);
+      81 + 9 * byte(Active), 16, system1transparent);
 end;
 
 procedure TNoTermDlg.ShowYear;
@@ -351,19 +351,19 @@ begin
       if 1 shl i and G.RO[me].Alive = 0 then
         BitBlt(Canvas.Handle, xBrain[i], yBrain[i] - 16, 64, 64,
           Shade.Canvas.Handle, 0, 0, SRCAND);
-      BitBltTransparent(Canvas, xBrain[i] + 30 - 14, yBrain[i] + 53, 14, 14, system1transparent, 1, 316);
+      BitBltTransparent(Canvas, xBrain[i] + 30 - 14, yBrain[i] + 53, 14, 14, 1, 316, system1transparent);
       RisedTextout(Canvas, xBrain[i] + 30 - 16 -
         BiColorTextWidth(Canvas, IntToStr(WinStat[i])),
         yBrain[i] + 51, IntToStr(WinStat[i]));
-      BitBltTransparent(Canvas, xBrain[i] + 34, yBrain[i] + 53, 14, 14, system1transparent, 1 + 15, 316);
+      BitBltTransparent(Canvas, xBrain[i] + 34, yBrain[i] + 53, 14, 14, 1 + 15, 316, system1transparent);
       RisedTextout(Canvas, xBrain[i] + 34 + 16, yBrain[i] + 51, IntToStr(AloneStat[i]));
       BitBltTransparent(Canvas, xBrain[i] + 30 - 14, yBrain[i] + 53 +
-        16, 14, 14, system1transparent, 1 + 30, 316);
+        16, 14, 14, 1 + 30, 316, system1transparent);
       RisedTextout(Canvas, xBrain[i] + 30 - 16 -
         BiColorTextWidth(Canvas, IntToStr(ExtStat[i])),
         yBrain[i] + 51 + 16, IntToStr(ExtStat[i]));
       BitBltTransparent(Canvas, xBrain[i] + 34, yBrain[i] + 53 + 16,
-        14, 14, system1transparent, 1 + 45, 316);
+        14, 14, 1 + 45, 316, system1transparent);
       if TotalStatTime > 0 then
       begin
         TimeShare := trunc(TimeStat[i] / TotalStatTime * 100 + 0.5);
@@ -372,7 +372,7 @@ begin
       end;
       ShowActive(i, i = Active);
     end;
-  BitBltTransparent(Canvas, x0Brain + 32 - 20, y0Brain + 32 - 20, 40, 40, system2transparent, 115, 1);
+  BitBltTransparent(Canvas, x0Brain + 32 - 20, y0Brain + 32 - 20, 40, 40, 115, 1, system2transparent);
   ShowYear;
   BtnFrame(Canvas, GoBtn.BoundsRect, MainTexture);
   BtnFrame(Canvas, QuitBtn.BoundsRect, MainTexture);

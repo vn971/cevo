@@ -31,7 +31,7 @@ procedure BtnFrame(ca: TCanvas; p: TRect; const T: TTexture);
 procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
 procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; SrcCanvas: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
-procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; source: TFPImageBitmap; XSrc, YSrc: Integer);
+procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; XSrc, YSrc: Integer; source: TFPImageBitmap);
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
@@ -416,7 +416,7 @@ begin
   FreeAndNil(img);
 end;
 
-procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; source: TFPImageBitmap; XSrc, YSrc: Integer);
+procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; XSrc, YSrc: Integer; source: TFPImageBitmap);
 begin
   BitBlt(DestCanvas.Handle, destX, destY, Width, Height, source.Canvas.Handle, XSrc, YSrc, SRCCOPY);
 end;
@@ -1096,8 +1096,8 @@ procedure BiColorTextOut(ca: TCanvas; clMain, clBack: TColor; x, y: integer; s: 
 
   procedure PaintIcon(x, y, Kind: integer);
   begin
-    BitBltTransparent(ca, x, y + 6, 10, 10, system1transparent,
-      66 + Kind mod 11 * 11, 115 + Kind div 11 * 11);
+    BitBltTransparent(ca, x, y + 6, 10, 10,
+      66 + Kind mod 11 * 11, 115 + Kind div 11 * 11, system1transparent);
   end;
 
 var

@@ -92,41 +92,41 @@ begin
       nHab := 2;
     for i := 0 to nHab - 1 do
       BitBltTransparent(canvas, Left + Width div 2 + xHab[i], Top + 100 + yHab[i],
-        80, 80, system2transparent, 34, 1);
+        80, 80, 34, 1, system2transparent);
     for i := 0 to nComp - 1 do
       BitBltTransparent(canvas, Left + Width div 2 + xComp[i], Top + 100 + yComp[i],
-        32, 80, system2transparent, 1, 1);
+        32, 80, 1, 1, system2transparent);
     if nComp > 0 then
       for i := 3 downto nPow do
         BitBltTransparent(canvas, Left + Width div 2 + xPow[i] + 40, Top + 100 + yPow[i],
-          16, 27, system2transparent, 1, 82);
+          16, 27, 1, 82, system2transparent);
     for i := nPow - 1 downto 0 do
       BitBltTransparent(canvas, Left + Width div 2 + xPow[i], Top + 100 + yPow[i],
-        56, 28, system2transparent, 58, 82);
+        56, 28, 58, 82, system2transparent);
     if (nComp < 3) and (nHab >= 1) then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[2] + 32 - 16, Top + 100 + 7 + yComp[2],
-        16, 27, system2transparent, 1, 82);
+        16, 27, 1, 82, system2transparent);
     if (nComp >= 3) and (nHab < 1) then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[2] + 32, Top + 100 + 7 + yComp[2],
-        16, 27, system2transparent, 18, 82);
+        16, 27, 18, 82, system2transparent);
     if (nComp < 4) and (nHab >= 2) then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[3] + 32 - 16, Top + 100 + 46 + yComp[3],
-        16, 27, system2transparent, 1, 82);
+        16, 27, 1, 82, system2transparent);
     if (nComp >= 4) and (nHab < 2) then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[3] + 32, Top + 100 + 46 + yComp[3],
-        16, 27, system2transparent, 18, 82);
+        16, 27, 18, 82, system2transparent);
     if (nComp <> 6) and (nComp <> 2) and not ((nComp = 0) and (nPow < 1)) then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[nComp], Top + 100 + 7 + yComp[nComp],
-        16, 27, system2transparent, 18, 82);
+        16, 27, 18, 82, system2transparent);
     if (nComp <> 6) and (nComp <> 3) and not ((nComp = 0) and (nPow < 2)) then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[nComp], Top + 100 + 46 + yComp[nComp],
-        16, 27, system2transparent, 18, 82);
+        16, 27, 18, 82, system2transparent);
     if nComp = 2 then
       BitBltTransparent(canvas, Left + Width div 2 + xComp[3], Top + 100 + 7 + yComp[3],
-        16, 27, system2transparent, 18, 82);
+        16, 27, 18, 82, system2transparent);
     if nComp = 3 then
       BitBltTransparent(Canvas, Left + Width div 2 + xComp[4], Top + 100 + 7 + yComp[4],
-        16, 27, system2transparent, 18, 82);
+        16, 27, 18, 82, system2transparent);
   end;
 end;
 

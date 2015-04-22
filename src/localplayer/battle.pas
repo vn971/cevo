@@ -109,7 +109,7 @@ begin
   if LADamage > LABaseDamage then
     VLightGradient(ca, xm - 8, ym + 8 + LABaseDamage, LADamage - LABaseDamage, FanaticColor);
   BitBltTransparent(ca, xm - 12, ym - 12, 24, 24,
-    system1transparent, 26, 146);
+    26, 146, system1transparent);
 
   LabelText := Format('%d', [Forecast.AStr]);
   TextSize := ca.TextExtent(LabelText);
@@ -131,7 +131,7 @@ begin
     //BitBlt(ca.Handle, xm + 9 + LDDamage - 7, ym - 6, 14, 17,
     //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
     BitBltTransparent(ca, xm + 8 + LDDamage - 7, ym - 7, 14, 17,
-      system1transparent, 51, 153);
+      51, 153, system1transparent);
   end;
   LabelText := Format('%d', [DDamage]);
   TextSize := ca.TextExtent(LabelText);
@@ -149,7 +149,7 @@ begin
     //BitBlt(ca.Handle, xm - 6, ym + 9 + LADamage - 7, 14, 17,
     //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
     BitBltTransparent(ca, xm - 7, ym + 8 + LADamage - 7, 14, 17,
-      system1transparent, 51, 153);
+      51, 153, system1transparent);
   end;
   LabelText := Format('%d', [MyUn[uix].Health - Forecast.EndHealthAtt]);
   TextSize := ca.TextExtent(LabelText);

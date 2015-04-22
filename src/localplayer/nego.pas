@@ -303,7 +303,7 @@ for preview:=true downto false do
       y:=(Bounds.Top+Bounds.Bottom) div 2-10*nLines+20*Line-1;
       if Dot then
         BitBltTransparent(offscreen.Canvas, Bounds.Left+PaperBorder_Left+(ListIndent-14),
-          y+7,8,8,system1transparent, 90,16);
+          y+7,8,8,90,16, system1transparent);
       s:=Copy(Text,Start,Stop-Start+1);
       BiColorTextOut(Offscreen.Canvas,Colors.Canvas.Pixels[clkMisc,cliPaperText],
         $7F007F,Bounds.Left+PaperBorder_Left+Indent,y,s);
