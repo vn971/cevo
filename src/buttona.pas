@@ -27,6 +27,8 @@ type
 procedure Register;
 
 implementation
+uses
+  screentools;
 
 procedure Register;
 begin
