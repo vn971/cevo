@@ -1314,18 +1314,11 @@ begin
         ld := w - 44;
       for i := 0 to val mod 10 - 1 do
       begin
-        BitBlt(Handle, xIcon + 4 + i * (14 * ld div sd), yIcon + 2 + 1, 14, 14,
-          GrExt[HGrSystem].Mask.Canvas.Handle,
-          67 + Kind mod 8 * 15, 70 + Kind div 8 * 15, SRCAND);
         BitBltTransparent(dst.Canvas, xIcon + 3 + i * (14 * ld div sd), yIcon + 2, 14, 14,
           67 + Kind mod 8 * 15, 70 + Kind div 8 * 15, system1transparent);
       end;
       for i := 0 to val div 10 - 1 do
       begin
-        BitBlt(dst.Canvas.Handle, xIcon + 4 + (val mod 10) *
-          (14 * ld div sd) + i * (14 * ld div sd), yIcon + 3, 14, 14,
-          GrExt[HGrSystem].Mask.Canvas.Handle, 67 + 7 mod 8 * 15, 70 + 7 div 8 * 15,
-          SRCAND);
         BitBltTransparent(dst.Canvas, xIcon + 3 + (val mod 10) * (14 * ld div sd) +
           i * (14 * ld div sd), yIcon + 2, 14, 14, 67 + 7 mod 8 * 15, 70 + 7 div 8 * 15, system1transparent);
       end;
@@ -1345,19 +1338,12 @@ begin
         ld := w - 44;
       for i := 0 to val div 10 - 1 do
       begin
-        BitBlt(Handle, xIcon + 4 + i * (14 * ld div sd), yIcon + 3, 14, 14,
-          GrExt[HGrSystem].Mask.Canvas.Handle, 67 + Kind mod 8 * 15,
-          70 + Kind div 8 * 15, SRCAND);
         BitBltTransparent(dst.Canvas, xIcon + 3 + i * (14 * ld div sd),
           yIcon + 2, 14, 14, 67 + Kind mod 8 * 15,
           70 + Kind div 8 * 15, system1transparent);
       end;
       for i := 0 to val mod 10 - 1 do
       begin
-        BitBlt(dst.Canvas.Handle, xIcon + 4 + (val div 10) *
-          (14 * ld div sd) + i * (10 * ld div sd), yIcon + 7, 10, 10,
-          GrExt[HGrSystem].Mask.Canvas.Handle,
-          66 + Kind mod 11 * 11, 115 + Kind div 11 * 11, SRCAND);
         BitBltTransparent(dst.Canvas, xIcon + 3 + (val div 10) * (14 * ld div sd) +
           i * (10 * ld div sd), yIcon + 6, 10, 10, 66 + Kind mod 11 *
           11, 115 + Kind div 11 * 11, system1transparent);

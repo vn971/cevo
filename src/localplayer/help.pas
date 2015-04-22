@@ -551,9 +551,7 @@ begin
                 1 + (AdvIcon[HelpLineInfo.Picpix] - 84) mod 8 * 37,
                 295 + (AdvIcon[HelpLineInfo.Picpix] - 84) div 8 * 21, system1transparent);
             j := AdvValue[HelpLineInfo.Picpix] div 1000;
-            BitBlt(Handle, x0[i] + 4, 4 + i * 24, 14, 14,
-              GrExt[HGrSystem].Mask.Canvas.Handle, 127 + j * 15, 85, SRCAND);
-            Sprite(offscreen, HGrSystem, x0[i] + 3, 3 + i * 24, 14, 14, 127 + j * 15, 85);
+            BitBltTransparent(offscreen.Canvas, x0[i] + 3, 3 + i * 24, 14, 14, 127 + j * 15, 85, system1transparent);
             x0[i] := x0[i] + (8 + 8 + 36);
           end;
           pkRightIcon:
