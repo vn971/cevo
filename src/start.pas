@@ -350,23 +350,23 @@ begin
   BrainPicture[0] := TBitmap.Create;
   BrainPicture[0].Width := 64;
   BrainPicture[0].Height := 64;
-  BitBlt(BrainPicture[0].Canvas.Handle, 0, 0, 64, 64,
-    system2transparent.Canvas.Handle, 1, 111, SRCCOPY);
+  BitBltTransparent(BrainPicture[0].Canvas, 0, 0, 64, 64,
+    system2transparent, 1, 111);
   BrainPicture[1] := TBitmap.Create;
   BrainPicture[1].Width := 64;
   BrainPicture[1].Height := 64;
-  BitBlt(BrainPicture[1].Canvas.Handle, 0, 0, 64, 64,
-    system2transparent.Canvas.Handle, 66, 111, SRCCOPY);
+  BitBltTransparent(BrainPicture[1].Canvas, 0, 0, 64, 64,
+    system2transparent, 66, 111);
   BrainPicture[2] := TBitmap.Create;
   BrainPicture[2].Width := 64;
   BrainPicture[2].Height := 64;
-  BitBlt(BrainPicture[2].Canvas.Handle, 0, 0, 64, 64,
-    system2transparent.Canvas.Handle, 131, 111, SRCCOPY);
+  BitBltTransparent(BrainPicture[2].Canvas, 0, 0, 64, 64,
+    system2transparent, 131, 111);
   BrainPicture[3] := TBitmap.Create;
   BrainPicture[3].Width := 64;
   BrainPicture[3].Height := 64;
-  BitBlt(BrainPicture[3].Canvas.Handle, 0, 0, 64, 64,
-    system2transparent.Canvas.Handle, 131, 46, SRCCOPY);
+  BitBltTransparent(BrainPicture[3].Canvas, 0, 0, 64, 64,
+    system2transparent, 131, 46);
   for i := bixFirstAI to nBrain - 1 do
   begin
     BrainPicture[i] := LoadAnyGraphics(AiDirectory + Brain[i].FileName, gfNoError);
@@ -470,9 +470,9 @@ const
     GlowFrame(LogoBuffer, 8, 8, 34, 34, $202020);
     BitBlt(Canvas.Handle, xActionIcon - 2, y - 2, 50, 50, LogoBuffer.Canvas.Handle,
       0, 0, SRCCOPY);
-    BitBlt(Canvas.Handle, xActionIcon, y, 40, 40, wondersTransparent.Canvas.Handle,
+    BitBltTransparent(Canvas, xActionIcon, y, 40, 40, wondersTransparent,
       (IconIndex mod 7) * xSizeBig + 8,
-      (IconIndex div 7) * ySizeBig, SRCCOPY);
+      (IconIndex div 7) * ySizeBig);
     RFrame(Canvas, xActionIcon - 1, y - 1, xActionIcon + 40, y + 40, $000000, $000000);
   end;
 
@@ -633,8 +633,8 @@ begin
       for i := 12 to 19 do
         if (i < 13) or (i > 17) then
         begin
-          BitBlt(Canvas.Handle, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            system2transparent.Canvas.Handle, xOrna, yOrna, SRCCOPY);
+          BitBltTransparent(Canvas, 9 + i * 27, yLogo - 2, wOrna, hOrna,
+            system2transparent, xOrna, yOrna);
         end;
       PaintLogo(Canvas, 69 + 11 * 27, yLogo, MainTexture.clBevelLight,
         MainTexture.clBevelShade);
@@ -717,8 +717,8 @@ begin
       for i := 0 to 19 do
         if (i < 2) or (i > 6) then
         begin
-          BitBlt(Canvas.Handle, 9 + i * 27, yLogo - 2, wOrna, hOrna,
-            system2transparent.Canvas.Handle, xOrna, yOrna, SRCCOPY);
+          BitBltTransparent(Canvas, 9 + i * 27, yLogo - 2, wOrna, hOrna,
+            system2transparent, xOrna, yOrna);
         end;
       PaintLogo(Canvas, 69, yLogo, MainTexture.clBevelLight, MainTexture.clBevelShade);
     end;

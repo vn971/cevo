@@ -4239,8 +4239,8 @@ begin
           ClientWidth - xPalace + xSizeBig, yPalace + ySizeBig, $B0B0B0, $FFFFFF);
         RFrame(Panel.Canvas, ClientWidth - xPalace - 2, yPalace - 2,
           ClientWidth - xPalace + xSizeBig + 1, yPalace + ySizeBig + 1, $FFFFFF, $B0B0B0);
-        BitBlt(Panel.Canvas.Handle, ClientWidth - xPalace, yPalace, xSizeBig,
-          ySizeBig, system2transparent.Canvas.Handle, 70, 123, SRCCOPY);
+        BitBltTransparent(Panel.Canvas, ClientWidth - xPalace, yPalace, xSizeBig,
+          ySizeBig, system2transparent, 70, 123);
       end
       else if MyRO.NatBuilt[imPalace] > 0 then
         ImpImage(Panel.Canvas, ClientWidth - xPalace, yPalace, imPalace, -1, GameMode <> cMovie

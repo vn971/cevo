@@ -559,13 +559,15 @@ begin
                   SmallImp.Canvas.Handle, (AdvIcon[lix] + SystemIconLines * 7) mod 7 * xSizeSmall,
                   (AdvIcon[lix] + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
               else
-                Dump(offscreen, HGrSystem, (8 + 16), y0, 36, 20,
+                BitBltTransparent(offscreen.Canvas, (8 + 16), y0, 36, 20,
+                  system1transparent,
                   1 + (AdvIcon[lix] - 84) mod 8 * 37, 295 + (AdvIcon[lix] - 84) div 8 * 21);
               j := AdvValue[lix] div 1000;
-              BitBlt(Handle, (8 + 16 - 4), y0 + 2, 14, 14,
-                GrExt[HGrSystem].Mask.Canvas.Handle, 127 + j * 15, 85, SRCAND);
-              Sprite(offscreen, HGrSystem, (8 + 16 - 5), y0 + 1, 14, 14,
-                127 + j * 15, 85);
+              // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
+              //BitBlt(Handle, (8 + 16 - 4), y0 + 2, 14, 14,
+              //  GrExt[HGrSystem].Mask.Canvas.Handle, 127 + j * 15, 85, SRCAND);
+              BitBltTransparent(offscreen.Canvas, (8 + 16 - 5), y0 + 1, 14, 14,
+                system1transparent, 127 + j * 15, 85);
             end;
           end;
         end;
@@ -621,8 +623,8 @@ begin
                 else
                   icon := -1;
             if icon >= 0 then
-              Sprite(offscreen, HGrSystem, 104 - 33 + 15 + 3 + TechNameSpace + 24 * j, y0 + 3,
-                14, 14, 67 + icon * 15, 85)
+              BitBltTransparent(offscreen.Canvas, 104 - 33 + 15 + 3 + TechNameSpace + 24 * j, y0 + 3,
+                14, 14, system1transparent, 67 + icon * 15, 85)
             else if (Kind = kScience) and (FutureCount > 0) then
             begin
               number := IntToStr(FutureCount);

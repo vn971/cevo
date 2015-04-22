@@ -504,7 +504,7 @@ begin
           begin
             case HelpLineInfo.Picpix of
               0:
-                FrameImage(Offscreen.Canvas, system2transparent,
+                FrameImage(Offscreen.Canvas, GrExt[HGrSystem2].Data,
                   12 + x0[i], -7 + i * 24, 56, 40, 137, 127);
               1:
               begin

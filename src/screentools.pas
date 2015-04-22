@@ -31,6 +31,7 @@ procedure BtnFrame(ca: TCanvas; p: TRect; const T: TTexture);
 procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
 procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; SrcCanvas: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
+procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; source: TFPImageBitmap; XSrc, YSrc: Integer);
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
@@ -179,7 +180,7 @@ var
   HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
   Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
-  wondersTransparent, system2transparent: TFPImageBitmap;
+  wondersTransparent, system2transparent, system1transparent: TFPImageBitmap;
   FullScreen: Boolean = False; // lazarus todo: stop using this hardcoded fullscreen override
   GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
 
@@ -413,6 +414,11 @@ begin
       end;
     end;
   FreeAndNil(img);
+end;
+
+procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; source: TFPImageBitmap; XSrc, YSrc: Integer);
+begin
+  BitBlt(DestCanvas.Handle, destX, destY, Width, Height, source.Canvas.Handle, XSrc, YSrc, SRCCOPY);
 end;
 
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
@@ -1090,10 +1096,8 @@ procedure BiColorTextOut(ca: TCanvas; clMain, clBack: TColor; x, y: integer; s: 
 
   procedure PaintIcon(x, y, Kind: integer);
   begin
-    BitBlt(ca.Handle, x, y + 6, 10, 10, GrExt[HGrSystem].Mask.Canvas.Handle,
-      66 + Kind mod 11 * 11, 115 + Kind div 11 * 11, SRCAND);
-    BitBlt(ca.Handle, x, y + 6, 10, 10, GrExt[HGrSystem].Data.Canvas.Handle,
-      66 + Kind mod 11 * 11, 115 + Kind div 11 * 11, SRCPAINT);
+    BitBltTransparent(ca, x, y + 6, 10, 10, system1transparent,
+      66 + Kind mod 11 * 11, 115 + Kind div 11 * 11);
   end;
 
 var
@@ -1574,14 +1578,15 @@ initialization
 
   nGrExt := 0;
   HGrSystem := LoadGraphicSet('System');
+  system1transparent := LoadAnyGraphics(GraphicsDirectory + 'System-transparent');
   HGrSystem2 := LoadGraphicSet('System2');
+  system2transparent := LoadAnyGraphics(GraphicsDirectory + 'System2-transparent');
   Templates := LoadAnyGraphics(GraphicsDirectory + 'Templates', gfNoGamma);
   Templates.PixelFormat := pf24bit;
   Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors');
   Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
   BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
   wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'Icons-transparent');
-  system2transparent := LoadAnyGraphics(GraphicsDirectory + 'System2-transparent');
   MainTexture.Image := TBitmap.Create;
   MainTextureAge := -2;
   ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];
@@ -1603,6 +1608,7 @@ finalization
     Sounds.Free;
   LogoBuffer.Free;
   BigImp.Free;
+  system1transparent.Free;
   system2transparent.Free;
   wondersTransparent.Free;
   Paper.Free;

@@ -108,10 +108,8 @@ begin
     DamageColor);
   if LADamage > LABaseDamage then
     VLightGradient(ca, xm - 8, ym + 8 + LABaseDamage, LADamage - LABaseDamage, FanaticColor);
-  BitBlt(ca.Handle, xm - 12, ym - 12, 24, 24,
-    GrExt[HGrSystem].Mask.Canvas.Handle, 26, 146, SRCAND);
-  BitBlt(ca.Handle, xm - 12, ym - 12, 24, 24,
-    GrExt[HGrSystem].Data.Canvas.Handle, 26, 146, SRCPAINT);
+  BitBltTransparent(ca, xm - 12, ym - 12, 24, 24,
+    system1transparent, 26, 146);
 
   LabelText := Format('%d', [Forecast.AStr]);
   TextSize := ca.TextExtent(LabelText);
@@ -129,12 +127,11 @@ begin
 
   if Forecast.EndHealthDef <= 0 then
   begin
-    BitBlt(ca.Handle, xm + 9 + LDDamage - 7, ym - 6, 14, 17,
-      GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
-    BitBlt(ca.Handle, xm + 8 + LDDamage - 7, ym - 7, 14, 17,
-      GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
-    BitBlt(ca.Handle, xm + 8 + LDDamage - 7, ym - 7, 14, 17,
-      GrExt[HGrSystem].Data.Canvas.Handle, 51, 153, SRCPAINT);
+    // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
+    //BitBlt(ca.Handle, xm + 9 + LDDamage - 7, ym - 6, 14, 17,
+    //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
+    BitBltTransparent(ca, xm + 8 + LDDamage - 7, ym - 7, 14, 17,
+      system1transparent, 51, 153);
   end;
   LabelText := Format('%d', [DDamage]);
   TextSize := ca.TextExtent(LabelText);
@@ -148,12 +145,11 @@ begin
 
   if Forecast.EndHealthAtt <= 0 then
   begin
-    BitBlt(ca.Handle, xm - 6, ym + 9 + LADamage - 7, 14, 17,
-      GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
-    BitBlt(ca.Handle, xm - 7, ym + 8 + LADamage - 7, 14, 17,
-      GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
-    BitBlt(ca.Handle, xm - 7, ym + 8 + LADamage - 7, 14, 17,
-      GrExt[HGrSystem].Data.Canvas.Handle, 51, 153, SRCPAINT);
+    // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
+    //BitBlt(ca.Handle, xm - 6, ym + 9 + LADamage - 7, 14, 17,
+    //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
+    BitBltTransparent(ca, xm - 7, ym + 8 + LADamage - 7, 14, 17,
+      system1transparent, 51, 153);
   end;
   LabelText := Format('%d', [MyUn[uix].Health - Forecast.EndHealthAtt]);
   TextSize := ca.TextExtent(LabelText);

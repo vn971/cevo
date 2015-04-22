@@ -384,9 +384,9 @@ begin
         p1 := MyRO.Wonder[IconIndex].EffectiveOwner;
         BitBlt(Buffer.Canvas.Handle, 0, 0, xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange,
           Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange, SRCCOPY);
-        BitBlt(Buffer.Canvas.Handle, GlowRange, GlowRange, xSizeBig, ySizeBig,
-          wondersTransparent.Canvas.Handle, IconIndex mod 7 * xSizeBig,
-          (IconIndex + SystemIconLines * 7) div 7 * ySizeBig, SRCCOPY);
+        BitBltTransparent(Buffer.Canvas, GlowRange, GlowRange, xSizeBig, ySizeBig,
+          wondersTransparent, IconIndex mod 7 * xSizeBig,
+          (IconIndex + SystemIconLines * 7) div 7 * ySizeBig);
         if p1 < 0 then
           GlowFrame(Buffer, GlowRange, GlowRange, xSizeBig, ySizeBig, $000000)
         else
@@ -447,7 +447,7 @@ begin
     mikEnemyArmy:
       PaintEnemyArmy;
     mikFullControl:
-      BitBlt(Canvas.Handle, ClientWidth div 2 - 31, 24, 63, 63, system2transparent.Canvas.Handle, 1, 281, SRCCOPY);
+      BitBltTransparent(Canvas, ClientWidth div 2 - 31, 24, 63, 63, system2transparent, 1, 281);
     mikShip:
       PaintColonyShip(Canvas, IconIndex, 17, ClientWidth - 34, 38);
   end;

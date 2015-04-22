@@ -90,9 +90,9 @@ begin
     MainTexture);
   for i := 0 to ControlCount - 1 do
     if Controls[i] is TButtonC then
-      BitBlt(Canvas.Handle, Controls[i].Left + 2, Controls[i].Top - 11, 8, 8,
-        GrExt[HGrSystem].Data.Canvas.Handle, 121 + Controls[i].Tag mod 7 * 9,
-        1 + Controls[i].Tag div 7 * 9, SRCCOPY);
+      BitBltTransparent(Canvas, Controls[i].Left + 2, Controls[i].Top - 11, 8, 8,
+        system1transparent, 121 + Controls[i].Tag mod 7 * 9,
+        1 + Controls[i].Tag div 7 * 9);
 end;
 
 procedure TEnhanceDlg.FormShow(Sender: TObject);
@@ -133,7 +133,7 @@ begin
   begin
     if stage > 0 then
     begin
-      Sprite(offscreen, HGrSystem, x - 10, 66, 14, 14, 80, 1);
+      BitBltTransparent(offscreen.Canvas, x - 10, 66, 14, 14, system1transparent, 80, 1);
       case MyData.EnhancementJobs[Page, stage - 1] of
         jRoad:
         begin

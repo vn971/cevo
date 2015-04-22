@@ -91,42 +91,42 @@ begin
     if nHab > 2 then
       nHab := 2;
     for i := 0 to nHab - 1 do
-      BitBlt(canvas.Handle, Left + Width div 2 + xHab[i], Top + 100 + yHab[i],
-        80, 80, system2transparent.Canvas.Handle, 34, 1, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xHab[i], Top + 100 + yHab[i],
+        80, 80, system2transparent, 34, 1);
     for i := 0 to nComp - 1 do
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[i], Top + 100 + yComp[i],
-        32, 80, system2transparent.Canvas.Handle, 1, 1, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[i], Top + 100 + yComp[i],
+        32, 80, system2transparent, 1, 1);
     if nComp > 0 then
       for i := 3 downto nPow do
-        BitBlt(canvas.Handle, Left + Width div 2 + xPow[i] + 40, Top + 100 + yPow[i],
-          16, 27, system2transparent.Canvas.Handle, 1, 82, SRCCOPY);
+        BitBltTransparent(canvas, Left + Width div 2 + xPow[i] + 40, Top + 100 + yPow[i],
+          16, 27, system2transparent, 1, 82);
     for i := nPow - 1 downto 0 do
-      BitBlt(canvas.Handle, Left + Width div 2 + xPow[i], Top + 100 + yPow[i],
-        56, 28, system2transparent.Canvas.Handle, 58, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xPow[i], Top + 100 + yPow[i],
+        56, 28, system2transparent, 58, 82);
     if (nComp < 3) and (nHab >= 1) then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[2] + 32 - 16, Top + 100 + 7 + yComp[2],
-        16, 27, system2transparent.Canvas.Handle, 1, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[2] + 32 - 16, Top + 100 + 7 + yComp[2],
+        16, 27, system2transparent, 1, 82);
     if (nComp >= 3) and (nHab < 1) then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[2] + 32, Top + 100 + 7 + yComp[2],
-        16, 27, system2transparent.Canvas.Handle, 18, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[2] + 32, Top + 100 + 7 + yComp[2],
+        16, 27, system2transparent, 18, 82);
     if (nComp < 4) and (nHab >= 2) then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[3] + 32 - 16, Top + 100 + 46 + yComp[3],
-        16, 27, system2transparent.Canvas.Handle, 1, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[3] + 32 - 16, Top + 100 + 46 + yComp[3],
+        16, 27, system2transparent, 1, 82);
     if (nComp >= 4) and (nHab < 2) then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[3] + 32, Top + 100 + 46 + yComp[3],
-        16, 27, system2transparent.Canvas.Handle, 18, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[3] + 32, Top + 100 + 46 + yComp[3],
+        16, 27, system2transparent, 18, 82);
     if (nComp <> 6) and (nComp <> 2) and not ((nComp = 0) and (nPow < 1)) then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[nComp], Top + 100 + 7 + yComp[nComp],
-        16, 27, system2transparent.Canvas.Handle, 18, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[nComp], Top + 100 + 7 + yComp[nComp],
+        16, 27, system2transparent, 18, 82);
     if (nComp <> 6) and (nComp <> 3) and not ((nComp = 0) and (nPow < 2)) then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[nComp], Top + 100 + 46 + yComp[nComp],
-        16, 27, system2transparent.Canvas.Handle, 18, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[nComp], Top + 100 + 46 + yComp[nComp],
+        16, 27, system2transparent, 18, 82);
     if nComp = 2 then
-      BitBlt(canvas.Handle, Left + Width div 2 + xComp[3], Top + 100 + 7 + yComp[3],
-        16, 27, system2transparent.Canvas.Handle, 18, 82, SRCCOPY);
+      BitBltTransparent(canvas, Left + Width div 2 + xComp[3], Top + 100 + 7 + yComp[3],
+        16, 27, system2transparent, 18, 82);
     if nComp = 3 then
-      BitBlt(Canvas.Handle, Left + Width div 2 + xComp[4], Top + 100 + 7 + yComp[4],
-        16, 27, system2transparent.Canvas.Handle, 18, 82, SRCCOPY);
+      BitBltTransparent(Canvas, Left + Width div 2 + xComp[4], Top + 100 + 7 + yComp[4],
+        16, 27, system2transparent, 18, 82);
   end;
 end;
 
