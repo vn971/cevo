@@ -454,6 +454,34 @@ begin
 
   if Result=nil then
   begin
+    bmp := TBitmap.Create;
+    try
+      bmp.LoadFromFile(Path + '.bmp');
+      Result := bmp;
+    except
+      FreeAndNil(bmp);
+    end;
+  end;
+
+  if (Result<>nil) and (Options and gfNoGamma = 0) then
+  begin
+    Result.PixelFormat := pf24bit;
+  end;
+
+  if (Result<>nil) and (Options and gfNoGamma = 0) and (Gamma <> 100) then
+  begin
+    Result.BeginUpdate();
+    FirstLine := Result.ScanLine[0];
+    LastLine := Result.ScanLine[Result.Height - 1];
+    Result.EndUpdate();
+    if integer(FirstLine) < integer(LastLine) then
+      ApplyGamma(pointer(FirstLine), @LastLine[Result.Width])
+    else
+      ApplyGamma(pointer(LastLine), @FirstLine[Result.Width]);
+  end;
+
+  if Result=nil then
+  begin
     png := TPortableNetworkGraphic.Create;
     try
       png.LoadFromFile(Path + '.png');
@@ -476,39 +504,11 @@ begin
 
   if Result=nil then
   begin
-    bmp := TBitmap.Create;
-    try
-      bmp.LoadFromFile(Path + '.bmp');
-      Result := bmp;
-    except
-      FreeAndNil(bmp);
-    end;
-  end;
-
-  if Result=nil then
-  begin
     DebugLn('ERROR, graphics file not found: ', Path);
     if Options and gfNoError = 0 then
       Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'), [Path])),
         'C-evo', 0);
     exit;
-  end;
-
-  if Options and gfNoGamma = 0 then
-  begin
-    Result.PixelFormat := pf24bit;
-  end;
-
-  if (Options and gfNoGamma = 0) and (Gamma <> 100) then
-  begin
-    Result.BeginUpdate();
-    FirstLine := Result.ScanLine[0];
-    LastLine := Result.ScanLine[Result.Height - 1];
-    Result.EndUpdate();
-    if integer(FirstLine) < integer(LastLine) then
-      ApplyGamma(pointer(FirstLine), @LastLine[Result.Width])
-    else
-      ApplyGamma(pointer(LastLine), @FirstLine[Result.Width]);
   end;
 end;
 
