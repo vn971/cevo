@@ -412,11 +412,11 @@ procedure THelpDlg.OffscreenPaint;
     Frame(offscreen.canvas, x - 1, y - 1, x + xSizeBig, y + ySizeBig, $000000, $000000);
     if 2 * yyt < 40 then
     begin
-      Sprite(Offscreen, HGrTerrain, x, y, 56, 2 * yyt, xSrc, ySrc);
-      Sprite(Offscreen, HGrTerrain, x, y + 2 * yyt, 56, 40 - 2 * yyt, xSrc, ySrc);
+      BitBltTransparent(Offscreen.Canvas, x, y, 56, 2 * yyt, xSrc, ySrc, terrainCurrent);
+      BitBltTransparent(Offscreen.Canvas, x, y + 2 * yyt, 56, 40 - 2 * yyt, xSrc, ySrc, terrainCurrent);
     end
     else
-      Sprite(Offscreen, HGrTerrain, x, y, 56, 40, xSrc, ySrc);
+      BitBltTransparent(Offscreen.Canvas, x, y, 56, 40, xSrc, ySrc, terrainCurrent);
     BitBltTransparent(Offscreen.Canvas, x, y, xxt, yyt, xSrc + xxt, ySrc + yyt, terrainCurrent);
     BitBltTransparent(Offscreen.Canvas, x, y + yyt, xxt, 40 - yyt, xSrc + xxt, ySrc, terrainCurrent);
     BitBltTransparent(Offscreen.Canvas, x + xxt, y, 56 - xxt, yyt, xSrc, ySrc + yyt, terrainCurrent);

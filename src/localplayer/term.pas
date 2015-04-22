@@ -822,20 +822,20 @@ procedure PaintZoomedTile(dst: TBitmap; x, y, Loc: integer);
 
   procedure TSprite(xDst, yDst, xSrc, ySrc: integer);
   begin
-    Sprite(dst, HGrTerrain, x + xDst, y + yDst, xxt * 2, yyt * 3, 1 + xSrc * (xxt * 2 + 1),
-      1 + ySrc * (yyt * 3 + 1));
+    BitBltTransparent(dst.Canvas, x + xDst, y + yDst, xxt * 2, yyt * 3, 1 + xSrc * (xxt * 2 + 1),
+      1 + ySrc * (yyt * 3 + 1), terrainCurrent);
   end;
 
   procedure TSprite4(xSrc, ySrc: integer);
   begin
-    Sprite(dst, HGrTerrain, x + xxt, y + yyt + 2, xxt * 2, yyt * 2 - 2, 1 + xSrc * (xxt * 2 + 1),
-      3 + yyt + ySrc * (yyt * 3 + 1));
-    Sprite(dst, HGrTerrain, x + 4, y + 2 * yyt, xxt * 2 - 4, yyt * 2, 5 + xSrc * (xxt * 2 + 1),
-      1 + yyt + ySrc * (yyt * 3 + 1));
-    Sprite(dst, HGrTerrain, x + xxt * 2, y + 2 * yyt, xxt * 2 - 4, yyt * 2, 1 + xSrc * (xxt * 2 + 1),
-      1 + yyt + ySrc * (yyt * 3 + 1));
-    Sprite(dst, HGrTerrain, x + xxt, y + yyt * 3, xxt * 2, yyt * 2 - 2, 1 + xSrc * (xxt * 2 + 1),
-      1 + yyt + ySrc * (yyt * 3 + 1));
+    BitBltTransparent(dst.Canvas, x + xxt, y + yyt + 2, xxt * 2, yyt * 2 - 2, 1 + xSrc * (xxt * 2 + 1),
+      3 + yyt + ySrc * (yyt * 3 + 1), terrainCurrent);
+    BitBltTransparent(dst.Canvas, x + 4, y + 2 * yyt, xxt * 2 - 4, yyt * 2, 5 + xSrc * (xxt * 2 + 1),
+      1 + yyt + ySrc * (yyt * 3 + 1), terrainCurrent);
+    BitBltTransparent(dst.Canvas, x + xxt * 2, y + 2 * yyt, xxt * 2 - 4, yyt * 2, 1 + xSrc * (xxt * 2 + 1),
+      1 + yyt + ySrc * (yyt * 3 + 1), terrainCurrent);
+    BitBltTransparent(dst.Canvas, x + xxt, y + yyt * 3, xxt * 2, yyt * 2 - 2, 1 + xSrc * (xxt * 2 + 1),
+      1 + yyt + ySrc * (yyt * 3 + 1), terrainCurrent);
   end;
 
 var
@@ -4346,10 +4346,10 @@ begin
             end;
           end;
           if xSrcBase >= 0 then
-            Sprite(Panel, HGrTerrain, xTroop + 2 + x, yTroop + 9 - yyt, xxt * 2, yyt * 3,
-              1 + xSrcBase * (xxt * 2 + 1), 1 + ySrcBase * (yyt * 3 + 1));
-          Sprite(Panel, HGrTerrain, xTroop + 2 + x, yTroop + 9 - yyt, xxt * 2, yyt * 3,
-            1 + xSrc * (xxt * 2 + 1), 1 + ySrc * (yyt * 3 + 1));
+            BitBltTransparent(Panel.Canvas, xTroop + 2 + x, yTroop + 9 - yyt, xxt * 2, yyt * 3,
+              1 + xSrcBase * (xxt * 2 + 1), 1 + ySrcBase * (yyt * 3 + 1), terrainCurrent);
+          BitBltTransparent(Panel.Canvas, xTroop + 2 + x, yTroop + 9 - yyt, xxt * 2, yyt * 3,
+            1 + xSrc * (xxt * 2 + 1), 1 + ySrc * (yyt * 3 + 1), terrainCurrent);
           if BrushTypes[i] = BrushType then
           begin
             ScreenTools.Frame(Panel.Canvas, xTroop + 2 + x, yTroop + 7 - yyt div 2, xTroop + 2 * xxt + x,

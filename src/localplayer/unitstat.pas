@@ -521,17 +521,17 @@ begin
             for i := -1 to 1 do
               if (i + j) and 1 = 0 then
               begin
-                Sprite(Buffer, HGrTerrain, i * xxt, j * yyt, xxt * 2, yyt * 2, x, y);
+                BitBltTransparent(Buffer.Canvas, i * xxt, j * yyt, xxt * 2, yyt * 2, x, y, terrainCurrent);
                 if MyMap[Loc] and (fTerrain or fSpecial) = fGrass or fSpecial1 then
-                  Sprite(Buffer, HGrTerrain, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1),
-                    1 + yyt + 1 * (yyt * 3 + 1))
+                  BitBltTransparent(Buffer.Canvas, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1),
+                    1 + yyt + 1 * (yyt * 3 + 1), terrainCurrent)
                 else if (MyMap[Loc] and fTerrain = fForest) and
                   IsJungle(Loc div G.lx) then
-                  Sprite(Buffer, HGrTerrain, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1),
-                    1 + yyt + 19 * (yyt * 3 + 1))
+                  BitBltTransparent(Buffer.Canvas, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1),
+                    1 + yyt + 19 * (yyt * 3 + 1), terrainCurrent)
                 else if MyMap[Loc] and fTerrain >= fForest then
-                  Sprite(Buffer, HGrTerrain, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1),
-                    1 + yyt + 2 * integer(2 + MyMap[Loc] and fTerrain - fForest) * (yyt * 3 + 1));
+                  BitBltTransparent(Buffer.Canvas, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1),
+                    1 + yyt + 2 * integer(2 + MyMap[Loc] and fTerrain - fForest) * (yyt * 3 + 1), terrainCurrent);
               end;
           BitBlt(offscreen.canvas.handle, xView, yView + 16, 64, 32, Buffer.Canvas.Handle, 1, 0,
             SRCCOPY);

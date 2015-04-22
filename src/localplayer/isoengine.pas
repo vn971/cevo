@@ -1001,7 +1001,7 @@ var
               if p2 <> p1 then
               begin
                 BitBlt_to_isoengine(GrExt[HGrTerrain].Mask, x + dx * xxt, y + dy * yyt, xxt, yyt, 1 + 8 * (xxt * 2 + 1) + dx * xxt, 1 + yyt + 16 * (yyt * 3 + 1) + dy * yyt, SRCAND);
-                BitBlt_to_isoengine(Borders, x + dx * xxt, y + dy * yyt, xxt, yyt, dx * xxt, p1 * (yyt * 2) + dy * yyt, SRCPAINT);
+                BitBlt_to_isoengine(Borders,                x + dx * xxt, y + dy * yyt, xxt, yyt, dx * xxt, p1 * (yyt * 2) + dy * yyt, SRCPAINT);
               end;
             end;
           end;

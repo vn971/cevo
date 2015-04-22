@@ -180,29 +180,29 @@ begin
     end;
 
     if TerrType < fForest then
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + TerrType * (xxt * 2 + 1), 1 + yyt)
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + TerrType * (xxt * 2 + 1), 1 + yyt, terrainCurrent)
     else
     begin
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 2 * (yyt * 3 + 1));
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1), 1 + yyt + 2 *
-        (2 + TerrType - fForest) * (yyt * 3 + 1));
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 2 * (yyt * 3 + 1), terrainCurrent);
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1), 1 + yyt + 2 *
+        (2 + TerrType - fForest) * (yyt * 3 + 1), terrainCurrent);
     end;
     if TileImp and fTerImp = tiFarm then
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + (xxt * 2 + 1), 1 + yyt + 12 * (yyt * 3 + 1))
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + (xxt * 2 + 1), 1 + yyt + 12 * (yyt * 3 + 1), terrainCurrent)
     else if TileImp and fTerImp = tiIrrigation then
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1, 1 + yyt + 12 * (yyt * 3 + 1));
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1, 1 + yyt + 12 * (yyt * 3 + 1), terrainCurrent);
     if TileImp and fRR <> 0 then
     begin
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 6 * (xxt * 2 + 1), 1 + yyt + 10 * (yyt * 3 + 1));
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 10 * (yyt * 3 + 1));
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 6 * (xxt * 2 + 1), 1 + yyt + 10 * (yyt * 3 + 1), terrainCurrent);
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 10 * (yyt * 3 + 1), terrainCurrent);
     end
     else if TileImp and fRoad <> 0 then
     begin
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 6 * (xxt * 2 + 1), 1 + yyt + 9 * (yyt * 3 + 1));
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 9 * (yyt * 3 + 1));
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 6 * (xxt * 2 + 1), 1 + yyt + 9 * (yyt * 3 + 1), terrainCurrent);
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 9 * (yyt * 3 + 1), terrainCurrent);
     end;
     if TileImp and fTerImp = tiMine then
-      Sprite(offscreen, HGrTerrain, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 12 * (yyt * 3 + 1));
+      BitBltTransparent(offscreen.Canvas, x, 64 - yyt, xxt * 2, yyt * 2, 1 + 2 * (xxt * 2 + 1), 1 + yyt + 12 * (yyt * 3 + 1), terrainCurrent);
     Inc(x, xxt * 2 + 6);
   end;
 

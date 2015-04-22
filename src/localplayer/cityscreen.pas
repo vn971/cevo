@@ -608,8 +608,8 @@ begin
           if (CityAreaInfo.Available[(dy + 3) shl 2 + (dx + 3) shr 1] in
             [faNotAvailable, faTreaty, faInvalid]) and
             ((Loc1 < 0) or (Loc1 >= G.lx * G.ly) or (MyMap[Loc1] and fCity = 0)) then
-            Sprite(offscreen, HGrTerrain, xmArea - xxt + xxt * dx, ymArea - yyt + yyt * dy, xxt * 2,
-              yyt * 2, 1 + 5 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1));
+            BitBltTransparent(offscreen.Canvas, xmArea - xxt + xxt * dx, ymArea - yyt + yyt * dy, xxt * 2,
+              yyt * 2, 1 + 5 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1), terrainCurrent);
           if (1 shl ((dy + 3) shl 2 + (dx + 3) shr 1) and c.Tiles <> 0) then
             PaintResources(xmArea - xxt + xxt * dx, ymArea - yyt + yyt * dy, Loc1, (dx = 0) and (dy = 0));
         end;
