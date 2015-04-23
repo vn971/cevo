@@ -292,7 +292,7 @@ var
         (MyRO.EnemyModel[emix].mix = mox.mix);
   end;
 
-  procedure FeatureBar(dst: TBitmap; x, y: integer; const mi: TModelInfo;
+  procedure FeatureBar(dst: TFPImageBitmap; x, y: integer; const mi: TModelInfo;
   const T: TTexture);
   var
     i, w, dx, num: integer;
@@ -351,7 +351,7 @@ var
       end;
   end;{featurebar}
 
-  procedure NumberBarS(dst: TBitmap; x, y: integer; Cap, s: string; const T: TTexture);
+  procedure NumberBarS(dst: TFPImageBitmap; x, y: integer; Cap, s: string; const T: TTexture);
   begin
     DLine(dst.Canvas, x - 2, x + 170, y + 16, T.clBevelShade, T.clBevelLight);
     LoweredTextOut(dst.Canvas, -1, T, x - 2, y, Cap);

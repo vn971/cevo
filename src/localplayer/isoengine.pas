@@ -16,7 +16,7 @@ type
 
   TIsoMap = class
     constructor Create;
-    procedure SetOutput(Output: TBitmap);
+    procedure SetOutput(Output: TFPImageBitmap);
     procedure SetPaintBounds(Left, Top, Right, Bottom: integer);
     procedure Paint(x, y, Loc, nx, ny, CityLoc, CityOwner: integer;
       UseBlink: boolean = False; CityAllowClick: boolean = False);
@@ -29,7 +29,7 @@ type
     procedure AttackEnd;
 
   protected
-    FOutput: TBitmap;
+    FOutput: TFPImageBitmap;
     FLeft, FTop, FRight, FBottom, RealTop, RealBottom, AttLoc, DefLoc,
     DefHealth, FAdviceLoc: integer;
     function Connection4(Loc, Mask, Value: integer): integer;
@@ -428,7 +428,7 @@ begin
   FAdviceLoc := -1;
 end;
 
-procedure TIsoMap.SetOutput(Output: TBitmap);
+procedure TIsoMap.SetOutput(Output: TFPImageBitmap);
 begin
   FOutput := Output;
   FLeft := 0;

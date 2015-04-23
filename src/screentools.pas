@@ -35,10 +35,10 @@ function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
 function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
   Options: integer = 0): boolean;
 function LoadGraphicSet(Name: string): integer;
-procedure Dump(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
+procedure Dump(dst: TFPImageBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 procedure Sprite(Canvas: TCanvas; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
   overload;
-procedure Sprite(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
+procedure Sprite(dst: TFPImageBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
   overload;
 procedure MakeBlue(Dst: TFPImageBitmap; x, y, w, h: integer);
 procedure ImageOp_B(Dst, Src: TFPImageBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
@@ -71,9 +71,9 @@ procedure LightGradient(ca: TCanvas; x, y, Width, Color: integer);
 procedure DarkGradient(ca: TCanvas; x, y, Width, Kind: integer);
 procedure VLightGradient(ca: TCanvas; x, y, Height, Color: integer);
 procedure VDarkGradient(ca: TCanvas; x, y, Height, Kind: integer);
-procedure NumberBar(dst: TBitmap; x, y: integer; Cap: string; val: integer;
+procedure NumberBar(dst: TFPImageBitmap; x, y: integer; Cap: string; val: integer;
   const T: TTexture);
-procedure CountBar(dst: TBitmap; x, y, w: integer; Kind: integer;
+procedure CountBar(dst: TFPImageBitmap; x, y, w: integer; Kind: integer;
   Cap: string; val: integer; const T: TTexture);
 procedure PaintProgressBar(ca: TCanvas; Kind, x, y, pos, Growth, max: integer;
   const T: TTexture);
@@ -615,7 +615,7 @@ begin
   end;
 end;
 
-procedure Dump(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
+procedure Dump(dst: TFPImageBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
   BitBltUgly(dst.Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Data.Canvas.Handle, xGr, yGr, SRCCOPY);
@@ -827,7 +827,7 @@ begin
     GrExt[HGr].Data.Canvas.Handle, xGr, yGr, SRCPAINT);
 end;
 
-procedure Sprite(dst: TBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
+procedure Sprite(dst: TFPImageBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
   BitBltUgly(dst.Canvas.Handle, xDst, yDst, Width, Height,
     GrExt[HGr].Mask.Canvas.Handle, xGr, yGr, SRCAND);
@@ -1253,7 +1253,7 @@ begin
     GrExt[HGrSystem].Data.Canvas.Pixels[187, 137 + Kind], Brightness);
 end;
 
-procedure NumberBar(dst: TBitmap; x, y: integer; Cap: string; val: integer;
+procedure NumberBar(dst: TFPImageBitmap; x, y: integer; Cap: string; val: integer;
   const T: TTexture);
 var
   s: string;
@@ -1267,7 +1267,7 @@ begin
   end;
 end;
 
-procedure CountBar(dst: TBitmap; x, y, w: integer; Kind: integer;
+procedure CountBar(dst: TFPImageBitmap; x, y, w: integer; Kind: integer;
   Cap: string; val: integer; const T: TTexture);
 var
   i, sd, ld, cl, xIcon, yIcon: integer;

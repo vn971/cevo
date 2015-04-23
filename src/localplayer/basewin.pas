@@ -61,7 +61,7 @@ const
 
 var
   UsedOffscreenWidth, UsedOffscreenHeight: integer;
-  Offscreen: TBitmap;
+  Offscreen: TFPImageBitmap;
   OffscreenUser: TForm;
 
 procedure CreateOffscreen;
