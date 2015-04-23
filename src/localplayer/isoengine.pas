@@ -625,9 +625,9 @@ begin
     cpix := Tribe[CityInfo.Owner].cpix;
     if (ciWalled and CityInfo.Flags = 0) or
       (GrExt[cHGr].Data.Canvas.Pixels[(xGr + 4) * 65, cpix * 49 + 48] = $00FFFF) then
-      Sprite(cHGr, x - xxc, y - 2 * yyc, xxc * 2, yyc * 3, xGr * (xxc * 2 + 1) + 1, 1 + cpix * (yyc * 3 + 1));
+      BitBltTransparent(FOutput.Canvas, x - xxc, y - 2 * yyc, xxc * 2, yyc * 3, xGr * (xxc * 2 + 1) + 1, 1 + cpix * (yyc * 3 + 1), Tribe[CityInfo.Owner].cityPNG);
     if ciWalled and CityInfo.Flags <> 0 then
-      Sprite(cHGr, x - xxc, y - 2 * yyc, xxc * 2, yyc * 3, (xGr + 4) * (xxc * 2 + 1) + 1, 1 + cpix * (yyc * 3 + 1));
+      BitBltTransparent(FOutput.Canvas, x - xxc, y - 2 * yyc, xxc * 2, yyc * 3, (xGr + 4) * (xxc * 2 + 1) + 1, 1 + cpix * (yyc * 3 + 1), Tribe[CityInfo.Owner].cityPNG);
   end
   else
   begin

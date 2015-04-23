@@ -26,6 +26,7 @@ type
     sympix, faceHGr{hard to png-ify}, facepix, cHGr, cpix, //symbol and city graphics
     cAge, mixSlaves: integer;
     symPNG: TFPImageBitmap; // instead of the old `symHGr` variable
+    cityPNG: TFPImageBitmap; // city graphics
     Color: TColor;
     NumberName: integer;
     CityPicture: array[0..3] of TCityPicture;
@@ -406,6 +407,7 @@ begin
             end
           end;
         cHGr := LoadGraphicSet(Item);
+        cityPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'transparent');
         for x := 0 to 3 do
           with CityPicture[x] do
           begin
