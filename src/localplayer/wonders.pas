@@ -152,10 +152,6 @@ begin
     MainTexture.clBevelShade);
   Frame(Offscreen.Canvas, 2, 2, ClientWidth - 3, ClientHeight - 3, MainTexture.clBevelLight,
     MainTexture.clBevelShade);
-  Corner(Offscreen.Canvas, 1, 1, 0, MainTexture);
-  Corner(Offscreen.Canvas, ClientWidth - 9, 1, 1, MainTexture);
-  Corner(Offscreen.Canvas, 1, ClientHeight - 9, 2, MainTexture);
-  Corner(Offscreen.Canvas, ClientWidth - 9, ClientHeight - 9, 3, MainTexture);
 
   BtnFrame(Offscreen.Canvas, CloseBtn.BoundsRect, MainTexture);
 

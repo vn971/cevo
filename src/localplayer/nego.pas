@@ -459,10 +459,6 @@ Fill(Offscreen.Canvas,3,3,ClientWidth-6,ClientHeight-6,
 Frame(Offscreen.Canvas,0,0,ClientWidth-1,ClientHeight-1,0,0);
 Frame(Offscreen.Canvas,1,1,ClientWidth-2,ClientHeight-2,MainTexture.clBevelLight,MainTexture.clBevelShade);
 Frame(Offscreen.Canvas,2,2,ClientWidth-3,ClientHeight-3,MainTexture.clBevelLight,MainTexture.clBevelShade);
-Corner(Offscreen.Canvas,1,1,0,MainTexture);
-Corner(Offscreen.Canvas,ClientWidth-9,1,1,MainTexture);
-Corner(Offscreen.Canvas,1,ClientHeight-9,2,MainTexture);
-Corner(Offscreen.Canvas,ClientWidth-9,ClientHeight-9,3,MainTexture);
 
 BtnFrame(Offscreen.Canvas,OkBtn.BoundsRect,MainTexture);
 BtnFrame(Offscreen.Canvas,BwdBtn.BoundsRect,MainTexture);

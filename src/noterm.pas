@@ -332,10 +332,6 @@ begin
     MainTexture.clBevelLight, MainTexture.clBevelShade);
   Frame(Canvas, 2, 2, ClientWidth - 3, ClientHeight - 3,
     MainTexture.clBevelLight, MainTexture.clBevelShade);
-  Corner(Canvas, 1, 1, 0, MainTexture);
-  Corner(Canvas, ClientWidth - 9, 1, 1, MainTexture);
-  Corner(Canvas, 1, ClientHeight - 9, 2, MainTexture);
-  Corner(Canvas, ClientWidth - 9, ClientHeight - 9, 3, MainTexture);
   Canvas.Font.Assign(UniFont[ftCaption]);
   RisedTextOut(Canvas, (ClientWidth - BiColorTextWidth(Canvas, Caption)) div
     2, 7, Caption);

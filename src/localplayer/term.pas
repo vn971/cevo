@@ -4229,8 +4229,6 @@ begin
     LineTo(xMidPanel + 7 - 10, 2);
     Pen.Color := MainTexture.clBevelShade;
     LineTo(xMidPanel + 7 - 10, PanelHeight);
-    Corner(Panel.Canvas, xMidPanel + 7 - 16, 1, 1, MainTexture);
-    Corner(Panel.Canvas, xRightPanel + 10 - 9, 1, 0, MainTexture);
     if ClientMode <> cEditMap then
     begin
       if supervising then

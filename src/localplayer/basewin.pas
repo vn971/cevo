@@ -273,10 +273,6 @@ procedure TFramedDlg.VPaint;
   begin
     Frame(Canvas, x0 + 1, y0 + 1, x1 - 2, y1 - 2, MainTexture.clBevelLight, MainTexture.clBevelShade);
     Frame(Canvas, x0 + 2, y0 + 2, x1 - 3, y1 - 3, MainTexture.clBevelLight, MainTexture.clBevelShade);
-    Corner(Canvas, x0 + 1, y0 + 1, 0, MainTexture);
-    Corner(Canvas, x1 - 9, y0 + 1, 1, MainTexture);
-    Corner(Canvas, x0 + 1, y1 - 9, 2, MainTexture);
-    Corner(Canvas, x1 - 9, y1 - 9, 3, MainTexture);
   end;
 
 var
@@ -380,8 +376,6 @@ begin
     Frame(Canvas, CaptionLeft + 2, 0 + 2,
       ClientWidth - CaptionLeft - 3, TitleHeight - 1, MainTexture.clBevelLight,
       MainTexture.clBevelShade);
-    Corner(Canvas, CaptionLeft + 1, 0 + 1, 0, MainTexture);
-    Corner(Canvas, ClientWidth - CaptionLeft - 9, 0 + 1, 1, MainTexture);
 
     with Canvas do
     begin
@@ -403,8 +397,6 @@ begin
       Frame(Canvas, CaptionLeft + 2, ClientHeight - WideFrame - 1 + 1,
         ClientWidth - CaptionLeft - 3, ClientHeight - 3, MainTexture.clBevelLight,
         MainTexture.clBevelShade);
-      Corner(Canvas, CaptionLeft + 1, ClientHeight - 9, 2, MainTexture);
-      Corner(Canvas, ClientWidth - CaptionLeft - 9, ClientHeight - 9, 3, MainTexture);
 
       with Canvas do
       begin

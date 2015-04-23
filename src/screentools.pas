@@ -59,7 +59,6 @@ procedure FillSeamless(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: 
 procedure FillRectSeamless(ca: TCanvas; x0, y0, x1, y1, xOffset, yOffset: integer;
   const Texture: TFPImageBitmap);
 procedure PaintBackground(Form: TForm; Left, Top, Width, Height: integer);
-procedure Corner(ca: TCanvas; x, y, Kind: integer; const T: TTexture);
 procedure BiColorTextOut(ca: TCanvas; clMain, clBack: TColor; x, y: integer; s: string);
 procedure LoweredTextOut(ca: TCanvas; cl: TColor; const T: TTexture;
   x, y: integer; s: string);
@@ -1056,14 +1055,6 @@ procedure PaintBackground(Form: TForm; Left, Top, Width, Height: integer);
 begin
   Fill(Form.Canvas, Left, Top, Width, Height, (wMaintexture - Form.ClientWidth) div 2,
     (hMaintexture - Form.ClientHeight) div 2);
-end;
-
-procedure Corner(ca: TCanvas; x, y, Kind: integer; const T: TTexture);
-begin
-{BitBltUgly(ca.Handle,x,y,8,8,GrExt[T.HGr].Mask.Canvas.Handle,
-  T.xGr+29+Kind*9,T.yGr+89,SRCAND);
-BitBltUgly(ca.Handle,x,y,8,8,GrExt[T.HGr].Data.Canvas.Handle,
-  T.xGr+29+Kind*9,T.yGr+89,SRCPAINT);}
 end;
 
 procedure BiColorTextOut(ca: TCanvas; clMain, clBack: TColor; x, y: integer; s: string);
