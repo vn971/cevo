@@ -23,8 +23,9 @@ type
   end;
 
   TTribe = class
-    symHGr, sympix, faceHGr{hard to png-ify}, facepix, cHGr, cpix, //symbol and city graphics
+    sympix, faceHGr{hard to png-ify}, facepix, cHGr, cpix, //symbol and city graphics
     cAge, mixSlaves: integer;
+    symPNG: TFPImageBitmap; // instead of the old `symHGr` variable
     Color: TColor;
     NumberName: integer;
     CityPicture: array[0..3] of TCityPicture;
@@ -285,7 +286,7 @@ begin
       Delete(Input, 1, 9);
       Item := Get;
       sympix := GetNum;
-      symHGr := LoadGraphicSet(Item);
+      symPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'transparent');
     end;
   end;
   FillChar(ModelPicture, SizeOf(ModelPicture), 0);

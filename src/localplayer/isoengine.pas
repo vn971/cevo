@@ -579,10 +579,10 @@ begin
       else
         j := Job;
       if Flags and unMulti <> 0 then
-        Sprite(Tribe[Owner].symHGr, x + xsh - 1 + 4, y + ysh - 2, 14, 12,
-          33 + Tribe[Owner].sympix mod 10 * 65, 1 + Tribe[Owner].sympix div 10 * 49);
-      Sprite(Tribe[Owner].symHGr, x + xsh - 1, y + ysh - 2, 14, 12,
-        18 + Tribe[Owner].sympix mod 10 * 65, 1 + Tribe[Owner].sympix div 10 * 49);
+        BitBltTransparent(FOutput.Canvas, x + xsh - 1 + 4, y + ysh - 2, 14, 12,
+          33 + Tribe[Owner].sympix mod 10 * 65, 1 + Tribe[Owner].sympix div 10 * 49, Tribe[Owner].symPNG);
+      BitBltTransparent(FOutput.Canvas, x + xsh - 1, y + ysh - 2, 14, 12,
+        18 + Tribe[Owner].sympix mod 10 * 65, 1 + Tribe[Owner].sympix div 10 * 49, Tribe[Owner].symPNG);
       FillRect(x + xsh, y + ysh + 5, 1 + Health * 11 div 100, 3, ColorOfHealth(Health));
       if j > 0 then
       begin

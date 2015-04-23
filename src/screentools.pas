@@ -478,10 +478,11 @@ begin
   if Result=nil then
   begin
     DebugLn('ERROR, graphics file not found: ', Path);
-    if Options and gfNoError = 0 then
+    if Options and gfNoError = 0 then begin
       Application.MessageBox(PChar(Format(Phrases.Lookup('FILENOTFOUND'), [Path])),
         'C-evo', 0);
-    exit;
+    end else
+      halt;
   end;
 end;
 
