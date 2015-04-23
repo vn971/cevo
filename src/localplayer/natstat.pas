@@ -89,7 +89,7 @@ begin
   ToggleBtn.Hint := Phrases.Lookup('BTN_SELECT');
   ContactBtn.Hint := Phrases.Lookup('BTN_DIALOG');
 
-  Back := TBitmap.Create;
+  Back := TPortableNetworkGraphic.Create;
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;

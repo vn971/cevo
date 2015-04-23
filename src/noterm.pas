@@ -27,7 +27,7 @@ type
     TurnTime, TotalStatTime: extended;
     G: TNewGameData;
     Server: TServerCall;
-    Shade, State: TBitmap;
+    Shade, State: TPortableNetworkGraphic;
     WinStat, ExtStat, AloneStat: array[0..nPl - 1] of integer;
     DisallowShowActive: array[0..nPl - 1] of boolean;
     TimeStat: array[0..nPl - 1] of extended;
@@ -145,7 +145,7 @@ begin
     begin
       Server := TInitModuleData(Data).Server;
       TInitModuleData(Data).Flags := aiThreaded;
-      Shade := TBitmap.Create;
+      Shade := TPortableNetworkGraphic.Create;
       Shade.Width := 64;
       Shade.Height := 64;
       for x := 0 to 63 do
@@ -154,7 +154,7 @@ begin
             Shade.Canvas.Pixels[x, y] := $FFFFFF
           else
             Shade.Canvas.Pixels[x, y] := $000000;
-      State := TBitmap.Create;
+      State := TPortableNetworkGraphic.Create;
       State.Width := 192;
       State.Height := 20;
       State.Canvas.Brush.Style := bsClear;

@@ -31,7 +31,7 @@ type
     property ButtonIndex: integer read FIndex write SetIndex;
     property OnClick;
   protected
-    Buffer, Back: TBitmap;
+    Buffer, Back: TPortableNetworkGraphic;
     procedure Paint; override;
   end;
 
@@ -99,11 +99,11 @@ end;
 constructor TEOTButton.Create;
 begin
   inherited Create(aOwner);
-  Buffer := TBitmap.Create;
+  Buffer := TPortableNetworkGraphic.Create;
   Buffer.PixelFormat := pf24bit;
   Buffer.Width := 48;
   Buffer.Height := 48;
-  Back := TBitmap.Create;
+  Back := TPortableNetworkGraphic.Create;
   Back.PixelFormat := pf24bit;
   Back.Width := 48;
   Back.Height := 48;
