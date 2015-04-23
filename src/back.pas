@@ -12,7 +12,6 @@ type
   TBackground = class(TForm)
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     img: TFPImageBitmap;
@@ -28,11 +27,6 @@ uses
   Directories, ScreenTools, Start;
 
 {$R *.lfm}
-
-procedure TBackground.FormCreate(Sender: TObject);
-begin
-  img := nil;
-end;
 
 procedure TBackground.FormShow(Sender: TObject);
 begin
@@ -54,11 +48,10 @@ end;
 procedure TBackground.FormPaint(Sender: TObject);
 begin
   if img <> nil then
-    BitBltUgly(Canvas.Handle,
+    BitBltTransparent(Canvas,
       Screen.Width - img.Width - (Screen.Width - 800) * 3 div 8,
       (Screen.Height - 600) div 3,
-      img.Width, img.Height,
-      img.Canvas.Handle, 0, 0, SRCCOPY);
+      img.Width, img.Height, 0, 0, img);
 end;
 
 procedure TBackground.FormClose(Sender: TObject; var Action: TCloseAction);

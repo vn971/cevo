@@ -918,7 +918,7 @@ begin
   end
   else
     Frame(ca, x - 1, y - 1, x + Width, y + Height, $000000, $000000);
-  BitBltUgly(ca.Handle, x, y, Width, Height, src.Canvas.Handle, xSrc, ySrc, SRCCOPY);
+  BitBltTransparent(ca, x, y, Width, Height, xSrc, ySrc, src);
 end;
 
 procedure GlowFrame(dst: TFPImageBitmap; x0, y0, Width, Height: integer; cl: TColor);

@@ -332,13 +332,6 @@ begin
 
       if Extinct then
         FrameImage(canvas, wondersTransparent, xIcon, yIcon, xSizeBig, ySizeBig, 0, 200)
-    {else if CurrentReport.Government=gAnarchy then
-      FrameImage(canvas,BigImp,xIcon,yIcon,xSizeBig,ySizeBig,112,400,
-        ContactEnabled and (MyRO.Happened and phGameEnd=0) and (ClientMode<scContact))
-    else
-      FrameImage(canvas,BigImp,xIcon,yIcon,xSizeBig,ySizeBig,
-        56*(CurrentReport.Government-1),40,
-        ContactEnabled and (MyRO.Happened and phGameEnd=0) and (ClientMode<scContact))};
     end;
 
     if CurrentReport.TurnOfCivilReport >= 0 then

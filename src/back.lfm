@@ -16,7 +16,6 @@ object Background: TBackground
   Scaled = False
   WindowState = wsMaximized
   OnClose = FormClose
-  OnCreate = FormCreate
   OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 120

@@ -495,7 +495,7 @@ begin
           end;
           pkBigIcon:
           begin
-            FrameImage(offscreen.canvas, BigImp, x0[i] + 12, i * 24 - 7, 56, 40,
+            FrameImage(offscreen.canvas, wondersTransparent, x0[i] + 12, i * 24 - 7, 56, 40,
               HelpLineInfo.Picpix mod 7 * xSizeBig,
               HelpLineInfo.Picpix div 7 * ySizeBig);
             x0[i] := 64 + 8 + 8 + x0[i];
@@ -672,7 +672,7 @@ begin
           end;
           pkModel:
           begin
-            FrameImage(offscreen.canvas, BigImp, x0[i] + 12, i * 24 - 7, 56, 40, 0, 0);
+            FrameImage(offscreen.canvas, wondersTransparent, x0[i] + 12, i * 24 - 7, 56, 40, 0, 0);
             BitBltTransparent(offscreen.Canvas, x0[i] + 8, i * 24 - 11, 64, 44,
               1 + HelpLineInfo.Picpix mod 10 * 65, 1 + HelpLineInfo.Picpix div 10 * 49, stdUnitsPng);
             x0[i] := 64 + 8 + 8 + x0[i];
