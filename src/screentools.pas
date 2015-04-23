@@ -32,7 +32,7 @@ procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Int
 procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; XSrc, YSrc: Integer; source: TFPImageBitmap);
 procedure BitBltUgly(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
-function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string;
+function LoadLocalizedGraphicFile(bmp: TFPImageBitmap; Path: string;
   Options: integer = 0): boolean;
 function LoadGraphicSet(Name: string): integer;
 procedure Dump(dst: TFPImageBitmap; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
@@ -486,7 +486,7 @@ begin
   end;
 end;
 
-function LoadLocalizedGraphicFile(bmp: TBitmap; Path: string; Options: integer): boolean;
+function LoadLocalizedGraphicFile(bmp: TFPImageBitmap; Path: string; Options: integer): boolean;
 type
   TLine = array[0..9999, 0..2] of byte;
 var
@@ -576,7 +576,7 @@ begin
 
     GrExt[nGrExt].Data := Source;
     GrExt[nGrExt].Data.PixelFormat := pf24bit;
-    GrExt[nGrExt].Mask := TBitmap.Create;
+    GrExt[nGrExt].Mask := TPortableNetworkGraphic.Create;
     GrExt[nGrExt].Mask.PixelFormat := pf24bit;
     GrExt[nGrExt].Mask.Width := Source.Width;
     GrExt[nGrExt].Mask.Height := Source.Height;
@@ -1500,7 +1500,7 @@ initialization
   for section := Low(TFontType) to High(TFontType) do
     UniFont[section] := TFont.Create;
 
-  LogoBuffer := TBitmap.Create;
+  LogoBuffer := TPortableNetworkGraphic.Create;
   LogoBuffer.PixelFormat := pf24bit;
   LogoBuffer.Width := wBBook;
   LogoBuffer.Height := hBBook;
@@ -1559,7 +1559,7 @@ initialization
   Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
   BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
   wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'Icons-transparent');
-  MainTexture.Image := TBitmap.Create;
+  MainTexture.Image := TPortableNetworkGraphic.Create;
   MainTextureAge := -2;
   ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];
   InitOrnamentDone := False;

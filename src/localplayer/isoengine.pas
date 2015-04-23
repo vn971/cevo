@@ -84,7 +84,7 @@ const
 var
   BordersOK: integer;
   OnInitEnemyModel: TInitEnemyModelEvent;
-  LandPatch, OceanPatch, Borders: TBitmap;
+  LandPatch, OceanPatch, Borders: TFPImageBitmap;
   TSpriteSize: array[0..TerrainIconLines * 9 - 1] of TRect;
   DebugMap: ^TTileList;
   CitiesPictures: array[2..3, 0..3] of TCityPicture;
@@ -109,7 +109,7 @@ type
   TLine = array[0..INFIN, 0..2] of byte;
 var
   i, x, y, xSrc, ySrc, HGrTerrainNew, HGrCitiesNew, age, size: integer;
-  LandMore, OceanMore, DitherMask, Mask24: TBitmap;
+  LandMore, OceanMore, DitherMask, Mask24: TFPImageBitmap;
   MaskLine: array[0..32 * 3 - 1] of ^TLine; // 32 = assumed maximum for yyt
   Border: boolean;
 begin
@@ -143,29 +143,29 @@ begin
   {prepare dithered ground tiles}
   if LandPatch <> nil then
     LandPatch.Free;
-  LandPatch := TBitmap.Create;
+  LandPatch := TPortableNetworkGraphic.Create;
   LandPatch.PixelFormat := pf24bit;
   LandPatch.Canvas.Brush.Color := 0;
   LandPatch.Width := xxt * 18;
   LandPatch.Height := yyt * 9;
   if OceanPatch <> nil then
     OceanPatch.Free;
-  OceanPatch := TBitmap.Create;
+  OceanPatch := TPortableNetworkGraphic.Create;
   OceanPatch.PixelFormat := pf24bit;
   OceanPatch.Canvas.Brush.Color := 0;
   OceanPatch.Width := xxt * 8;
   OceanPatch.Height := yyt * 4;
-  LandMore := TBitmap.Create;
+  LandMore := TPortableNetworkGraphic.Create;
   LandMore.PixelFormat := pf24bit;
   LandMore.Canvas.Brush.Color := 0;
   LandMore.Width := xxt * 18;
   LandMore.Height := yyt * 9;
-  OceanMore := TBitmap.Create;
+  OceanMore := TPortableNetworkGraphic.Create;
   OceanMore.PixelFormat := pf24bit;
   OceanMore.Canvas.Brush.Color := 0;
   OceanMore.Width := xxt * 8;
   OceanMore.Height := yyt * 4;
-  DitherMask := TBitmap.Create;
+  DitherMask := TPortableNetworkGraphic.Create;
   DitherMask.PixelFormat := pf24bit;
   DitherMask.Width := xxt * 2;
   DitherMask.Height := yyt * 2;
@@ -336,7 +336,7 @@ begin
   //LandPatch.Savetofile('landpatch.bmp');
 
   // reduce size of terrain icons
-  Mask24 := TBitmap.Create;
+  Mask24 := TPortableNetworkGraphic.Create;
   Mask24.Assign(GrExt[HGrTerrain].Mask);
   Mask24.PixelFormat := pf24bit;
   for ySrc := 0 to TerrainIconLines - 1 do
@@ -392,7 +392,7 @@ begin
 
   if Borders <> nil then
     Borders.Free;
-  Borders := TBitmap.Create;
+  Borders := TPortableNetworkGraphic.Create;
   Borders.PixelFormat := pf24bit;
   Borders.Width := xxt * 2;
   Borders.Height := (yyt * 2) * nPl;
