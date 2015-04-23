@@ -23,7 +23,7 @@ type
   end;
 
   TTribe = class
-    sympix, faceHGr{hard to png-ify}, facepix, cHGr, cpix, //symbol and city graphics
+    sympix, faceHGr{hard to png-ify}, facepix, cpix, //symbol and city graphics
     cAge, mixSlaves: integer;
     symPNG: TFPImageBitmap; // instead of the old `symHGr` variable
     cityPNG: TFPImageBitmap; // city graphics
@@ -312,6 +312,17 @@ begin
     Inc(yp);
 end;
 
+procedure FindPositionInPNG(png: TFPImageBitmap; x, y, xmax, ymax: integer; Mark: TColor; var xp, yp: integer);
+begin
+  xp := 0;
+  while (xp < xmax) and (png.Canvas.Pixels[x + 1 + xp, y] <> Mark) do
+    Inc(xp);
+  yp := 0;
+  while (yp < ymax) and (png.Canvas.Pixels[x, y + 1 + yp] <> Mark) do
+    Inc(yp);
+end;
+
+
 function TTribe.GetCityName(i: integer): string;
 begin
   Result := '';
@@ -406,17 +417,13 @@ begin
               Item := 'Nation2';
             end
           end;
-        cHGr := LoadGraphicSet(Item);
         cityPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'transparent');
         for x := 0 to 3 do
           with CityPicture[x] do
           begin
-            FindPosition(cHGr, x * 65, cpix * 49, 63, 47, $00FFFF, xShield, yShield);
-            //FindPosition(cHGr,x*65,cpix*49,$FFFFFF,xf,yf);
+            FindPositionInPNG(cityPNG, x * 65, cpix * 49, 63, 47, $00FFFF, xShield, yShield);
           end;
-      end
-      else
-        cHGr := -1;
+      end;
 
     {$IFNDEF SCR}
       Get;

@@ -605,7 +605,7 @@ end;{PaintUnit}
 
 procedure TIsoMap.PaintCity(x, y: integer; const CityInfo: TCityInfo; accessory: boolean);
 var
-  age, cHGr, cpix, xGr, xShield, yShield, LabelTextColor, LabelLength: integer;
+  age, cpix, xGr, xShield, yShield, LabelTextColor, LabelLength: integer;
   cpic: TCityPicture;
   s: string;
 begin
@@ -621,10 +621,9 @@ begin
   Tribe[CityInfo.Owner].InitAge(age);
   if age < 2 then
   begin
-    cHGr := Tribe[CityInfo.Owner].cHGr;
     cpix := Tribe[CityInfo.Owner].cpix;
     if (ciWalled and CityInfo.Flags = 0) or
-      (GrExt[cHGr].Data.Canvas.Pixels[(xGr + 4) * 65, cpix * 49 + 48] = $00FFFF) then
+      (Tribe[CityInfo.Owner].cityPNG.Canvas.Pixels[(xGr + 4) * 65, cpix * 49 + 48] = $00FFFF) then
       BitBltTransparent(FOutput.Canvas, x - xxc, y - 2 * yyc, xxc * 2, yyc * 3, xGr * (xxc * 2 + 1) + 1, 1 + cpix * (yyc * 3 + 1), Tribe[CityInfo.Owner].cityPNG);
     if ciWalled and CityInfo.Flags <> 0 then
       BitBltTransparent(FOutput.Canvas, x - xxc, y - 2 * yyc, xxc * 2, yyc * 3, (xGr + 4) * (xxc * 2 + 1) + 1, 1 + cpix * (yyc * 3 + 1), Tribe[CityInfo.Owner].cityPNG);
