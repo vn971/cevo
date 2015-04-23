@@ -53,7 +53,6 @@ procedure CFrame(ca: TCanvas; x0, y0, x1, y1, Corner: integer; cl: TColor);
 procedure FrameImage(ca: TCanvas; src: TFPImageBitmap; x, y, Width, Height, xSrc, ySrc: integer;
   IsControl: boolean = False);
 procedure GlowFrame(dst: TFPImageBitmap; x0, y0, Width, Height: integer; cl: TColor);
-procedure InitCityMark(const T: TTexture);
 procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer);
 procedure FillLarge(ca: TCanvas; x0, y0, x1, y1, xm: integer);
 procedure FillSeamless(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer;
@@ -967,24 +966,6 @@ begin
             (GlowRange - r)) div (GlowRange - 1);
     end;
   end;
-end;
-
-procedure InitCityMark(const T: TTexture);
-var
-  x, y, intensity: integer;
-begin
-  for x := 0 to 9 do
-    for y := 0 to 9 do
-      if GrExt[HGrSystem].Mask.Canvas.Pixels[66 + x, 47 + y] = 0 then
-      begin
-        intensity := GrExt[HGrSystem].Data.Canvas.Pixels[66 + x, 47 + y] and $FF;
-        GrExt[HGrSystem].Data.Canvas.Pixels[77 + x, 47 + y] :=
-          T.clMark and $FF * intensity div $FF + T.clMark shr 8 and
-          $FF * intensity div $FF shl 8 + T.clMark shr 16 and $FF *
-          intensity div $FF shl 16;
-      end;
-  BitBltUgly(GrExt[HGrSystem].Mask.Canvas.Handle, 77, 47, 10, 10,
-    GrExt[HGrSystem].Mask.Canvas.Handle, 66, 47, SRCCOPY);
 end;
 
 procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer);

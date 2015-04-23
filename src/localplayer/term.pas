@@ -1644,7 +1644,6 @@ const
       else
         EOT.ButtonIndex := eotBlinkOn;
     end;
-    InitCityMark(MainTexture);
     CityDlg.CheckAge;
     NatStatDlg.CheckAge;
     UnitStatDlg.CheckAge;
