@@ -156,7 +156,7 @@ begin
     mikTribe:
     begin
       Tribe[IconIndex].InitAge(GetAge(IconIndex));
-      if Tribe[IconIndex].faceHGr >= 0 then
+      if Tribe[IconIndex].flagFaceHGr >= 0 then
         TopSpace := 64;
     end;
     mikFullControl:
@@ -417,12 +417,12 @@ begin
     mikBook:
       PaintBook(Canvas, ClientWidth div 2, 24, MainTexture.clPage, MainTexture.clCover);
     mikTribe:
-      if Tribe[IconIndex].faceHGr >= 0 then
+      if Tribe[IconIndex].flagFaceHGr >= 0 then
       begin
         Frame(Canvas, ClientWidth div 2 - 32 - 1, 24 - 1, ClientWidth div 2 + 32,
           24 + 48, $000000, $000000);
         BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 24, 64, 48,
-          GrExt[Tribe[IconIndex].faceHGr].Data.Canvas.Handle,
+          GrExt[Tribe[IconIndex].flagFaceHGr].Data.Canvas.Handle,
           1 + Tribe[IconIndex].facepix mod 10 * 65,
           1 + Tribe[IconIndex].facepix div 10 * 49, SRCCOPY);
       end;

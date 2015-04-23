@@ -389,8 +389,8 @@ with Offscreen.Canvas do
   Rectangle(x-6,y-1,x+70,y+49);
   Brush.Color:=$000000;
   Tribe[p].InitAge(GetAge(p));
-  if Tribe[p].faceHGr>=0 then
-    Dump(offscreen,Tribe[p].faceHGr,x,y,64,48,
+  if Tribe[p].flagFaceHGr>=0 then
+    Dump(offscreen,Tribe[p].flagFaceHGr,x,y,64,48,
       1+Tribe[p].facepix mod 10 *65,1+Tribe[p].facepix div 10 *49)
   else FillRect(Rect(x,y,x+64,y+48));
   Brush.Style:=bsClear;

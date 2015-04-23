@@ -271,9 +271,9 @@ begin
   begin
     // show leader picture
     Tribe[pView].InitAge(GetAge(pView));
-    if Tribe[pView].faceHGr >= 0 then
+    if Tribe[pView].flagFaceHGr >= 0 then
     begin
-      Dump(offscreen, Tribe[pView].faceHGr, 18, yIcon - 4, 64, 48,
+      Dump(offscreen, Tribe[pView].flagFaceHGr, 18, yIcon - 4, 64, 48,
         1 + Tribe[pView].facepix mod 10 * 65, 1 + Tribe[pView].facepix div 10 * 49);
       frame(offscreen.Canvas, 18 - 1, yIcon - 4 - 1, 18 + 64, yIcon - 4 + 48, $000000, $000000);
     end;

@@ -23,7 +23,9 @@ type
   end;
 
   TTribe = class
-    sympix, faceHGr{hard to png-ify}, facepix, cpix, //symbol and city graphics
+    sympix,
+    flagFaceHGr {tribe flag graphics F9. No need to PNG-ify},
+    facepix, cpix, //symbol and city graphics
     cAge, mixSlaves: integer;
     symPNG: TFPImageBitmap; // instead of the old `symHGr` variable
     cityPNG: TFPImageBitmap; // city graphics
@@ -431,18 +433,18 @@ begin
       GetNum;
       Item := Get;
       if Item = '' then
-        faceHGr := -1
+        flagFaceHGr := -1
       else
       begin
-        faceHGr := LoadGraphicSet(Item);
+        flagFaceHGr := LoadGraphicSet(Item);
         facepix := GetNum;
-        if GrExt[faceHGr].Data.Canvas.Pixels[facepix mod 10 * 65, facepix div
+        if GrExt[flagFaceHGr].Data.Canvas.Pixels[facepix mod 10 * 65, facepix div
           10 * 49 + 48] = $00FFFF then
         begin // generate shield picture
-          GrExt[faceHGr].Data.Canvas.Pixels[facepix mod 10 * 65, facepix div 10 * 49 + 48] :=
+          GrExt[flagFaceHGr].Data.Canvas.Pixels[facepix mod 10 * 65, facepix div 10 * 49 + 48] :=
             $000000;
           gray := $B8B8B8;
-          ImageOp_BCC(GrExt[faceHGr].Data, Templates, facepix mod 10 * 65 + 1,
+          ImageOp_BCC(GrExt[flagFaceHGr].Data, Templates, facepix mod 10 * 65 + 1,
             facepix div 10 * 49 + 1, 1, 25, 64, 48, gray, Color);
         end;
       end;
