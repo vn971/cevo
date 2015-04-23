@@ -529,7 +529,6 @@ begin
           ydivider := ySizeSmall;
         BigImp.BeginUpdate();
         line := BigImp.ScanLine[cut + iy * ySizeBig + y];
-        BigImp.EndUpdate();
         for x := 0 to xSizeBig - 1 do
         begin
           ir := ix * xSizeSmall + iy * nx * ySizeSmall + x * xSizeSmall div
@@ -549,6 +548,7 @@ begin
               Inc(resampled[ir + nx + 1, ch], c * (xSizeSmall - xdivider) * (ySizeSmall - ydivider));
           end;
         end;
+        BigImp.EndUpdate();
       end;
 
   // sharpen resampled icons
@@ -558,7 +558,6 @@ begin
   begin
     SmallImp.BeginUpdate();
     line := SmallImp.ScanLine[y];
-    SmallImp.EndUpdate();
     for x := 0 to nx - 1 do
       for ch := 0 to 2 do
       begin
@@ -582,6 +581,7 @@ begin
           sum := 255;
         line[x][ch] := sum;
       end;
+    SmallImp.EndUpdate();
   end;
   FreeMem(resampled);
   //smallimp.savetofile(BinariesDirectory+'smallimp.bmp'); //!!!
@@ -3950,7 +3950,6 @@ begin
     PrevMiniLine := MiniLine;
     Mini.BeginUpdate();
     MiniLine := Mini.ScanLine[y];
-    Mini.EndUpdate();
     for x := 0 to G.lx - 1 do
       if MyMap[x + G.lx * y] and fTerrain <> fUNKNOWN then
       begin
@@ -4018,6 +4017,7 @@ begin
           MiniLine[xm, 2] := cm and $FF;
         end;
       end;
+    Mini.EndUpdate();
   end;
 end;
 

@@ -307,13 +307,12 @@ begin
   Mask24 := TPortableNetworkGraphic.Create;
   Mask24.Assign(terrainCurrent);
   Mask24.PixelFormat := pf24bit;
+  Mask24.BeginUpdate();
   for ySrc := 0 to TerrainIconLines - 1 do
   begin
     for i := 0 to yyt * 3 - 1 do
     begin
-      Mask24.BeginUpdate();
       MaskLine[i] := Mask24.ScanLine[1 + ySrc * (yyt * 3 + 1) + i];
-      Mask24.EndUpdate();
     end;
     for xSrc := 0 to 9 - 1 do
     begin
@@ -356,6 +355,7 @@ begin
       until not Border or (TSpriteSize[i].Bottom = TSpriteSize[i].Top);
     end;
   end;
+  Mask24.EndUpdate();
   Mask24.Free;
 
   if Borders <> nil then
@@ -473,6 +473,7 @@ end;
 
 procedure TIsoMap.Sprite(HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
+  //BitBltTransparent(FOutput.Canvas, xDst, yDst, Width, Height, xGr, yGr, GrExt[HGr].Data);
   BitBlt_to_isoengine(GrExt[HGr].Mask, xDst, yDst, Width, Height, xGr, yGr, SRCAND);
   BitBlt_to_isoengine(GrExt[HGr].Data, xDst, yDst, Width, Height, xGr, yGr, SRCPAINT);
 end;
@@ -924,7 +925,6 @@ var
           begin
             Borders.BeginUpdate();
             Line := Borders.ScanLine[p1 * (yyt * 2) + dy];
-            Borders.EndUpdate();
             for dx := 0 to xxt * 2 - 1 do
               if Line[dx, 0] = 99 then
               begin
@@ -932,6 +932,7 @@ var
                 Line[dx, 1] := Tribe[p1].Color shr 8 and $FF;
                 Line[dx, 2] := Tribe[p1].Color and $FF;
               end;
+            Borders.EndUpdate();
           end;
           BordersOK := BordersOK or 1 shl p1;
         end;
@@ -1249,7 +1250,6 @@ procedure TIsoMap.Paint(x, y, Loc, nx, ny, CityLoc, CityOwner: integer;
     begin
       FOutput.BeginUpdate();
       line := FOutput.ScanLine[y];
-      FOutput.EndUpdate();
       y_n := (y - ym) / yyt;
       if abs(y_n) < rShade then
       begin
@@ -1260,6 +1260,7 @@ procedure TIsoMap.Paint(x, y, Loc, nx, ny, CityLoc, CityOwner: integer;
       end
       else
         MakeDark(@line[x0], x1 - x0);
+      FOutput.EndUpdate();
     end;
   end;
 

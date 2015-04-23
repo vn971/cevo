@@ -255,7 +255,6 @@ begin
     begin
       BigImp.BeginUpdate();
       SrcLine := BigImp.ScanLine[iy + yIcon];
-      BigImp.EndUpdate();
       for ix := 0 to 55 do
       begin
         xR := ix * (37 + iy * 5 / 40) / 56;
@@ -286,6 +285,7 @@ begin
               Screwed[xDst + dx, yDst + dy, 3] + share;
           end;
       end;
+      BigImp.EndUpdate();
     end;
     xb := xBBook;
     yb := yBBook;

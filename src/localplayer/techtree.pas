@@ -164,15 +164,15 @@ begin
     begin
       Paper.BeginUpdate();
       SrcLine := Paper.ScanLine[y mod TexHeight];
-      Paper.EndUpdate();
       Image.BeginUpdate();
       DstLine := Image.ScanLine[y];
-      Image.EndUpdate();
       for x := 0 to Image.Width - 1 do
       begin
         if cardinal((@DstLine[x])^) and $FFFFFF = $7F007F then // transparent
           DstLine[x] := SrcLine[x mod TexWidth];
       end;
+      Image.EndUpdate();
+      Paper.EndUpdate();
     end;
   end;
 

@@ -840,7 +840,6 @@ begin
   begin // darken texture for empty slot
     EmptyPicture.BeginUpdate();
     PictureLine := EmptyPicture.ScanLine[y];
-    EmptyPicture.EndUpdate();
     for x := 0 to 64 * 3 - 1 do
     begin
       i := integer(PictureLine[x]) - 28;
@@ -848,6 +847,7 @@ begin
         i := 0;
       PictureLine[x] := i;
     end;
+    EmptyPicture.EndUpdate();
   end;
 
   Difficulty[0] := Diff0;
@@ -1024,7 +1024,6 @@ procedure TStartDlg.PaintInfo;
     begin
       Mini.BeginUpdate();
       MiniLine := Mini.ScanLine[y];
-      Mini.EndUpdate();
       for x := 0 to MiniWidth - 1 do
         for i := 0 to 1 do
         begin
@@ -1036,6 +1035,7 @@ procedure TStartDlg.PaintInfo;
           MiniLine[xm, 1] := cm shr 8 and $FF * Brightness div 3;
           MiniLine[xm, 2] := cm and $FF * Brightness div 3;
         end;
+      Mini.EndUpdate();
     end;
   end;
 
@@ -1062,7 +1062,6 @@ var
         PrevMiniLine := MiniLine;
         Mini.BeginUpdate();
         MiniLine := Mini.ScanLine[y];
-        Mini.EndUpdate();
         for x := 0 to MiniWidth - 1 do
           for i := 0 to 1 do
           begin
@@ -1094,6 +1093,7 @@ var
             MiniLine[xm, 1] := cm shr 8 and $FF;
             MiniLine[xm, 2] := cm and $FF;
           end;
+        Mini.EndUpdate();
       end;
     end;
   end;
