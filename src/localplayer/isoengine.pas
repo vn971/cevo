@@ -123,8 +123,10 @@ begin
   xxt := xxtNew;
   yyt := yytNew;
   if yyt = 16 then begin
+    citiesCurrent:=citiesSmall;
     terrainCurrent:=terrainSmall
   end else begin
+    citiesCurrent:=citiesBig;
     terrainCurrent:=terrainBig;
   end;
   HGrTerrain := HGrTerrainNew;
@@ -596,7 +598,7 @@ begin
       begin
 {
     TSprite(x,y+16,12*9+7);}
-        Sprite(HGrStdUnits, x, y, xxu * 2, yyu * 2, 1 + 6 * (xxu * 2 + 1), 1);
+        BitBltTransparent(FOutput.Canvas, x, y, xxu * 2, yyu * 2, 1 + 6 * (xxu * 2 + 1), 1, stdUnitsPng);
       end;
     end;
 end;{PaintUnit}
@@ -630,9 +632,9 @@ begin
   else
   begin
     if ciWalled and CityInfo.Flags <> 0 then
-      Sprite(HGrCities, x - xxt, y - 2 * yyt, 2 * xxt, 3 * yyt, (xGr + 4) * (2 * xxt + 1) + 1, 1 + (age - 2) * (3 * yyt + 1))
+      BitBltTransparent(FOutput.Canvas, x - xxt, y - 2 * yyt, 2 * xxt, 3 * yyt, (xGr + 4) * (2 * xxt + 1) + 1, 1 + (age - 2) * (3 * yyt + 1), citiesCurrent)
     else
-      Sprite(HGrCities, x - xxt, y - 2 * yyt, 2 * xxt, 3 * yyt, xGr * (2 * xxt + 1) + 1, 1 + (age - 2) * (3 * yyt + 1));
+      BitBltTransparent(FOutput.Canvas, x - xxt, y - 2 * yyt, 2 * xxt, 3 * yyt, xGr * (2 * xxt + 1) + 1, 1 + (age - 2) * (3 * yyt + 1), citiesCurrent);
   end;
 
   if not Accessory then
@@ -1153,11 +1155,11 @@ begin
           PaintUnit(x + (xxt - xxu), y + (yyt - yyu_anchor), UnitInfo, 0);
     end
     else if Tile and fHiddenUnit <> 0 then
-      Sprite(HGrStdUnits, x + (xxt - xxu), y + (yyt - yyu_anchor), xxu * 2, yyu * 2,
-        1 + 5 * (xxu * 2 + 1), 1)
+      BitBltTransparent(FOutput.Canvas, x + (xxt - xxu), y + (yyt - yyu_anchor), xxu * 2, yyu * 2,
+        1 + 5 * (xxu * 2 + 1), 1, stdUnitsPng)
     else if Tile and fStealthUnit <> 0 then
-      Sprite(HGrStdUnits, x + (xxt - xxu), y + (yyt - yyu_anchor), xxu * 2, yyu * 2,
-        1 + 5 * (xxu * 2 + 1), 1 + 1 * (yyu * 2 + 1));
+      BitBltTransparent(FOutput.Canvas, x + (xxt - xxu), y + (yyt - yyu_anchor), xxu * 2, yyu * 2,
+        1 + 5 * (xxu * 2 + 1), 1 + 1 * (yyu * 2 + 1), stdUnitsPng);
   end;
 
   if ShowObjects and (Tile and fTerImp = tiFort) and (Tile and fObserved <> 0) then

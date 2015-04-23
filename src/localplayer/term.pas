@@ -397,7 +397,7 @@ var
   CityRepMask: cardinal;
   ReceivedOffer: TOffer;
   Buffer, SmallImp: TBitmap;
-  terrainSmall, terrainBig, terrainCurrent: TFPImageBitmap;
+  terrainSmall, terrainBig, terrainCurrent, citiesSmall, citiesBig, citiesCurrent: TFPImageBitmap;
   BlinkON, DestinationMarkON, StartRunning, StayOnTop_Ensured, supervising: boolean;
   UnusedTribeFiles, TribeNames: TStringList;
   TribeOriginal: array[0..nPl - 1] of boolean;
@@ -4408,7 +4408,7 @@ begin
             Sprite(Panel, HGr, xMidPanel + 7 + 12, yTroop + 1, 64, 48,
               pix mod 10 * 65 + 1, pix div 10 * 49 + 1);
             if MyUn[UnFocus].Flags and unFortified <> 0 then
-              Sprite(Panel, HGrStdUnits, xMidPanel + 7 + 12, yTroop + 1, xxu * 2, yyu * 2, 1 + 6 * (xxu * 2 + 1), 1);
+              BitBltTransparent(Panel.Canvas, xMidPanel + 7 + 12, yTroop + 1, xxu * 2, yyu * 2, 1 + 6 * (xxu * 2 + 1), 1, stdUnitsPng);
           end;
 
           MakeBlue(Panel, xMidPanel + 7 + 12 + 10, yTroop - 13, 44, 12);
@@ -7653,4 +7653,6 @@ end;
 initialization
   terrainSmall := LoadAnyGraphics(GraphicsDirectory + 'Terrain66x32transparent');
   terrainBig := LoadAnyGraphics(GraphicsDirectory + 'Terrain96x48transparent');
+  citiesSmall := LoadAnyGraphics(GraphicsDirectory + 'Cities66x32transparent');
+  citiesBig := LoadAnyGraphics(GraphicsDirectory + 'Cities96x48transparent');
 end.

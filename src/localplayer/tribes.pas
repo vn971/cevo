@@ -23,7 +23,7 @@ type
   end;
 
   TTribe = class
-    symHGr, sympix, faceHGr, facepix, cHGr, cpix, //symbol and city graphics
+    symHGr, sympix, faceHGr{hard to png-ify}, facepix, cHGr, cpix, //symbol and city graphics
     cAge, mixSlaves: integer;
     Color: TColor;
     NumberName: integer;
@@ -49,6 +49,7 @@ type
 var
   Tribe: array[0..nPl - 1] of TTribe;
   HGrStdUnits: integer;
+  stdUnitsPng: TFPImageBitmap;
 
 procedure Init;
 procedure Done;
@@ -595,5 +596,8 @@ begin
   end;
   Result := True;
 end;
+
+initialization
+  stdUnitsPng:=LoadAnyGraphics(GraphicsDirectory + 'StdUnitsTransparent');
 
 end.
