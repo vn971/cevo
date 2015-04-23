@@ -2486,7 +2486,7 @@ end;
 
 procedure DiscoverViewAreas(p: integer);
 var
-  pTell, uix, cix, ecix, Loc, RealOwner: integer;
+  pTell, uix, cix, ecix, _Loc, RealOwner: integer;
   PModel: ^TModel;
 begin // discover unit and city view areas
   for pTell := 0 to nPl - 1 do
@@ -2514,16 +2514,16 @@ begin // discover unit and city view areas
           Discover21(RW[pTell].City[cix].Loc, p, lObserveUnhidden, False, True);
       for ecix := 0 to RW[pTell].nEnemyCity - 1 do
       begin // players know territory, so no use in hiding city owner
-        Loc := RW[pTell].EnemyCity[ecix].Loc;
-        if Loc >= 0 then
+        _Loc := RW[pTell].EnemyCity[ecix].Loc;
+        if _Loc >= 0 then
         begin
-          RealOwner := (RealMap[Loc] shr 27) and $F;
+          RealOwner := (RealMap[_Loc] shr 27) and $F;
           if RealOwner < nPl then
             RW[pTell].EnemyCity[ecix].owner := RealOwner
           else
           begin
             RW[pTell].EnemyCity[ecix].Loc := -1;
-            RW[pTell].Map[Loc] := RW[pTell].Map[Loc] and not fCity;
+            RW[pTell].Map[_Loc] := RW[pTell].Map[_Loc] and not fCity;
           end;
         end;
       end;

@@ -579,15 +579,12 @@ begin
               end;
             DarkGradient(offscreen.Canvas, InnerWidth - 38 - 38 * cnt, i * 24 + 23, cnt * 38 - 2, 1);
             ofs := InnerWidth - (39 + 7) - 19 * cnt;
-            with offscreen.Canvas do
-            begin
-              Brush.Color := $C0C0C0;
-              FrameRect(Rect(ofs, 1 + 23 + i * 24, ofs + 14, 15 + 23 + i * 24));
-              Brush.Style := bsClear;
-              BitBltTransparent(offscreen.Canvas, ofs + 2, 3 + 23 + i * 24, 10, 10,
-                66 + HelpLineInfo.Picpix mod 11 * 11,
-                137 + HelpLineInfo.Picpix div 11 * 11, system1transparent);
-            end;
+            Brush.Color := $C0C0C0;
+            FrameRect(Rect(ofs, 1 + 23 + i * 24, ofs + 14, 15 + 23 + i * 24));
+            Brush.Style := bsClear;
+            BitBltTransparent(offscreen.Canvas, ofs + 2, 3 + 23 + i * 24, 10, 10,
+              66 + HelpLineInfo.Picpix mod 11 * 11,
+              137 + HelpLineInfo.Picpix div 11 * 11, system1transparent);
             x0[i] := x0[i] + 8;
           end;
           pkTer, pkBigTer:

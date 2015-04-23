@@ -39,7 +39,7 @@ type
     procedure PaintTileExtraTerrain(x, y, Loc: integer);
     procedure PaintTileObjects(x, y, Loc, CityLoc, CityOwner: integer; UseBlink: boolean);
     procedure PaintGrid(x, y, nx, ny: integer);
-    procedure FillRect(x, y, Width, Height, Color: integer);
+    procedure FillRect(x, y, w, h, Color: integer);
     procedure Textout(x, y, Color: integer; const s: string);
     procedure Sprite(HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
     procedure TSprite(xDst, yDst, grix: integer; PureBlack: boolean = False);
@@ -443,29 +443,29 @@ begin
   FBottom := Bottom;
 end;
 
-procedure TIsoMap.FillRect(x, y, Width, Height, Color: integer);
+procedure TIsoMap.FillRect(x, y, w, h, Color: integer);
 begin
   if x < FLeft then
   begin
-    Width := Width - (FLeft - x);
+    w := w - (FLeft - x);
     x := FLeft;
   end;
   if y < FTop then
   begin
-    Height := Height - (FTop - y);
+    h := h - (FTop - y);
     y := FTop;
   end;
-  if x + Width >= FRight then
-    Width := FRight - x;
-  if y + Height >= FBottom then
-    Height := FBottom - y;
-  if (Width <= 0) or (Height <= 0) then
+  if x + w >= FRight then
+    w := FRight - x;
+  if y + h >= FBottom then
+    h := FBottom - y;
+  if (w <= 0) or (h <= 0) then
     exit;
 
   with FOutput.Canvas do
   begin
     Brush.Color := Color;
-    FillRect(Rect(x, y, x + Width, y + Height));
+    FillRect(Rect(x, y, x + w, y + h));
     Brush.Style := bsClear;
   end;
 end;

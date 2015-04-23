@@ -47,7 +47,7 @@ function CityTaxBalance(cix: integer; const CityReport: TCityReportNew): integer
 procedure SumCities(var TaxSum, ScienceSum: integer);
 function JobTest(uix, Job: integer; IgnoreResults: JobResultSet = []): boolean;
 procedure GetUnitInfo(Loc: integer; var uix: integer; var UnitInfo: TUnitInfo);
-procedure GetCityInfo(Loc: integer; var cix: integer; var CityInfo: TCityInfo);
+procedure GetCityInfo(_Loc: integer; var cix: integer; var CityInfo: TCityInfo);
 function UnitExhausted(uix: integer): boolean;
 function ModelHash(const ModelInfo: TModelInfo): integer;
 function ProcessEnhancement(uix: integer; const Jobs: TEnhancementJobs): integer;
@@ -299,13 +299,13 @@ begin
   end;
 end;{GetUnitInfo}
 
-procedure GetCityInfo(Loc: integer; var cix: integer; var CityInfo: TCityInfo);
+procedure GetCityInfo(_Loc: integer; var cix: integer; var CityInfo: TCityInfo);
 begin
-  if MyMap[Loc] and fOwned <> 0 then
+  if MyMap[_Loc] and fOwned <> 0 then
   begin
-    CityInfo.Loc := Loc;
+    CityInfo.Loc := _Loc;
     cix := MyRO.nCity - 1;
-    while (cix >= 0) and (MyCity[cix].Loc <> Loc) do
+    while (cix >= 0) and (MyCity[cix].Loc <> _Loc) do
       Dec(cix);
     with CityInfo do
     begin
@@ -331,7 +331,7 @@ begin
   else
   begin
     cix := MyRO.nEnemyCity - 1;
-    while (cix >= 0) and (MyRO.EnemyCity[cix].Loc <> Loc) do
+    while (cix >= 0) and (MyRO.EnemyCity[cix].Loc <> _Loc) do
       Dec(cix);
     CityInfo := MyRO.EnemyCity[cix];
   end;

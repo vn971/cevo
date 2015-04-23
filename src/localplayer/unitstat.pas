@@ -117,7 +117,7 @@ end;
 
 procedure TUnitStatDlg.FormShow(Sender: TObject);
 var
-  owner, mix: integer;
+  _owner, mix: integer;
   IsSpecialUnit: boolean;
 begin
   if Kind in [dkEnemyUnit, dkEnemyCityDefense, dkEnemyCity] then
@@ -180,27 +180,27 @@ begin
     case Kind of
       dkOwnModel:
       begin
-        owner := me;
+        _owner := me;
         mix := mixShow;
         IsSpecialUnit := MyModel[mix].Kind >= $10;
       end;
       dkOwnUnit:
       begin
-        owner := me;
+        _owner := me;
         mix := MyUn[uixShow].mix;
         IsSpecialUnit := MyModel[mix].Kind >= $10;
       end
       else
       begin
-        owner := mox.owner;
+        _owner := mox.owner;
         mix := mox.mix;
         IsSpecialUnit := mox.Kind >= $10;
       end;
     end;
     if MainScreen.mNames.Checked then
-      Caption := Tribe[Owner].ModelName[mix]
+      Caption := Tribe[_Owner].ModelName[mix]
     else
-      Caption := Format(Tribe[Owner].TPhrase('GENMODEL'), [mix]);
+      Caption := Format(Tribe[_Owner].TPhrase('GENMODEL'), [mix]);
   end;
   if IsSpecialUnit then
     HelpBtn.Hint := Phrases.Lookup('CONTROLS', 6);

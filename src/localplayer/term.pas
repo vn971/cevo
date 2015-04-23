@@ -270,7 +270,7 @@ type
     function LocationOfScreenPixel(x, y: integer): integer;
     procedure SetTileSize(x, y: integer);
     procedure RectInvalidate(Left, Top, Rigth, Bottom: integer);
-    procedure SmartRectInvalidate(Left, Top, Rigth, Bottom: integer);
+    procedure SmartRectInvalidate(_Left, _Top, _Rigth, _Bottom: integer);
     procedure SaveSettings;
     procedure OnScroll(var m: TMessage); message WM_VSCROLL;
     procedure OnEOT(var Msg: TMessage); message WM_EOT;
@@ -7377,12 +7377,12 @@ begin
   DeleteObject(r0);
 end;
 
-procedure TMainScreen.SmartRectInvalidate(Left, Top, Rigth, Bottom: integer);
+procedure TMainScreen.SmartRectInvalidate(_Left, _Top, _Rigth, _Bottom: integer);
 var
   i: integer;
   r0, r1: HRgn;
 begin
-  r0 := CreateRectRgn(Left, Top, Rigth, Bottom);
+  r0 := CreateRectRgn(_Left, _Top, _Rigth, _Bottom);
   for i := 0 to ControlCount - 1 do
     if not (Controls[i] is TArea) and Controls[i].Visible then
     begin

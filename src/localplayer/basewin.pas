@@ -335,6 +335,10 @@ begin
     else
       with Canvas do
       begin
+        // lazarus TODO: is importing OK here?
+        // Delphi thinks that `Canvas` belongs to "Forms"
+        // while Lazarus thinks `Canvas` belongs to TCustomControl
+        // maybe it's the same?
         Fill(Canvas, 3 + ModalFrameIndent, 3 + FrameTop, ClientWidth - 6 - 2 * ModalFrameIndent,
           TitleHeight - FrameTop - 4, xTexOffset, yTexOffset);
         Fill(Canvas, ClientWidth - 3 - ModalFrameIndent, 3 + FrameTop, ModalFrameIndent,
