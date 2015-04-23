@@ -420,6 +420,8 @@ var
   png: TPortableNetworkGraphic;
   jpg: TJPEGImage;
   bmp: TBitmap;
+  //x,y: Integer;
+  //c: TColor;
 begin
   Result:=nil;
 
@@ -434,22 +436,15 @@ begin
     end;
   end;
 
-  if (Result<>nil) and (Options and gfNoGamma = 0) then
-  begin
-    Result.PixelFormat := pf24bit;
-  end;
-
-  if (Result<>nil) and (Options and gfNoGamma = 0) and (Gamma <> 100) then
-  begin
-    Result.BeginUpdate();
-    FirstLine := Result.ScanLine[0];
-    LastLine := Result.ScanLine[Result.Height - 1];
-    if integer(FirstLine) < integer(LastLine) then
-      ApplyGamma(pointer(FirstLine), @LastLine[Result.Width])
-    else
-      ApplyGamma(pointer(LastLine), @FirstLine[Result.Width]);
-    Result.EndUpdate();
-  end;
+  //for x:=0 to Result.Width do
+  //  for y:=0 to Result.Height do begin
+  //    c:=Result.Canvas.Pixels[x,y];
+  //    Result.Canvas.Pixels[x,y]:= RGBToColor(
+  //      GammaLUT[Red(c)],
+  //      GammaLUT[Green(c)],
+  //      GammaLUT[Blue(c)]
+  //    );
+  //  end;
 
   if Result=nil then
   begin

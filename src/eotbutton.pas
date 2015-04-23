@@ -58,11 +58,11 @@ var
   ix, iy, amp0, amp1, trans, Value: integer;
   SrcLine, DstLine: ^TLine;
 begin
+  Src.BeginUpdate();
+  Dst.BeginUpdate();
   for iy := 0 to h - 1 do
   begin
-    Src.BeginUpdate();
     SrcLine := Src.ScanLine[ySrc + iy];
-    Dst.BeginUpdate();
     DstLine := Dst.ScanLine[yDst + iy];
     for ix := 0 to w - 1 do
     begin
@@ -91,9 +91,9 @@ begin
           DstLine[xDst + ix][2] := 255;
       end;
     end;
-    Dst.EndUpdate();
-    Src.EndUpdate();
   end;
+  Dst.EndUpdate();
+  Src.EndUpdate();
 end;
 
 constructor TEOTButton.Create;
