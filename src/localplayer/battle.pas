@@ -158,15 +158,6 @@ begin
 
   NoMap.SetOutput(Buffer);
   BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, SRCCOPY);
-{if TerrType<fForest then
-  Sprite(Buffer,HGrTerrain,0,16,66,32,1+TerrType*(xxt*2+1),1+yyt)
-else
-  begin
-  Sprite(Buffer,HGrTerrain,0,16,66,32,1+2*(xxt*2+1),1+yyt+2*(yyt*3+1));
-  if (TerrType=fForest) and IsJungle(ToLoc div G.lx) then
-    Sprite(Buffer,HGrTerrain,0,16,66,32,1+7*(xxt*2+1),1+yyt+19*(yyt*3+1))
-  else Sprite(Buffer,HGrTerrain,0,16,66,32,1+7*(xxt*2+1),1+yyt+2*(2+TerrType-fForest)*(yyt*3+1));
-  end;}
   NoMap.PaintUnit(1, 0, UnitInfo, 0);
   BitBltUgly(ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
 
