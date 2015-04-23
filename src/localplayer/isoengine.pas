@@ -639,13 +639,6 @@ begin
   if not Accessory then
     exit;
 
-{
-if ciCapital and CityInfo.Flags<>0 then
-  Sprite(Tribe[CityInfo.Owner].symHGr,x+cpic.xf,y-13+cpic.yf,13,14,
-    1+Tribe[CityInfo.Owner].sympix mod 10 *65,
-    1+Tribe[CityInfo.Owner].sympix div 10 *49); //capital -- paint flag
-}
-
   if MyMap[CityInfo.Loc] and fObserved <> 0 then
   begin
     if age < 2 then
