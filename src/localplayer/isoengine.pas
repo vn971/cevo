@@ -333,7 +333,7 @@ begin
 
   // reduce size of terrain icons
   Mask24 := TPortableNetworkGraphic.Create;
-  Mask24.Assign(GrExt[HGrTerrain].Mask);
+  Mask24.Assign(terrainCurrent);
   Mask24.PixelFormat := pf24bit;
   for ySrc := 0 to TerrainIconLines - 1 do
   begin
