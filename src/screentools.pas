@@ -683,8 +683,8 @@ begin
   h := yDst + h;
   while yDst < h do
   begin
-    PixelDst := pointer(integer(Dst.ScanLine[yDst]) + 3 * xDst);
-    PixelSrc := pointer(integer(Src.ScanLine[ySrc]) + xSrc);
+    PixelDst := Dst.ScanLine[yDst] + (Dst.RawImage.Description.BitsPerPixel div 8) * xDst;
+    PixelSrc := Src.ScanLine[ySrc] + (Src.RawImage.Description.BitsPerPixel div 8) * xSrc;
     for i := 0 to w - 1 do
     begin
       Brightness := PixelSrc^;
@@ -703,8 +703,8 @@ begin
         PixelDst[2] := 255
       else
         PixelDst[0] := test; // Blue
-      PixelDst := pointer(integer(PixelDst) + 3);
-      PixelSrc := pointer(integer(PixelSrc) + 1);
+      PixelDst := pointer(integer(PixelDst) + Dst.RawImage.Description.BitsPerPixel div 8);
+      PixelSrc := pointer(integer(PixelSrc) + Src.RawImage.Description.BitsPerPixel div 8);
     end;
     Inc(yDst);
     Inc(ySrc);
@@ -798,7 +798,7 @@ begin
   h := y + h;
   while y < h do
   begin
-    Pixel := pointer(integer(Bmp.ScanLine[y]) + 3 * x);
+    Pixel := Bmp.ScanLine[y] + (Bmp.RawImage.Description.BitsPerPixel div 8) * x;
     for i := 0 to w - 1 do
     begin
       Red := (Pixel[0] * (Color0 and $0000FF) + Pixel[1] *
@@ -810,7 +810,7 @@ begin
       // Blue
       Pixel[1] := Green;
       Pixel[2] := Red;
-      Pixel := pointer(integer(pixel) + 3);
+      Pixel := pointer(integer(pixel) + (Bmp.RawImage.Description.BitsPerPixel div 8));
     end;
     Inc(y);
   end;
