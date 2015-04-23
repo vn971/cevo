@@ -469,7 +469,7 @@ procedure CreateOffscreen;
 begin
   if OffScreen <> nil then
     exit;
-  offscreen := TBitmap.Create;
+  offscreen := TPortableNetworkGraphic.Create;
   Offscreen.PixelFormat := pf24bit;
   offscreen.Width := Screen.Width;
   if Screen.Height - yUnused < 480 then

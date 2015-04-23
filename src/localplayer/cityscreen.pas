@@ -211,7 +211,7 @@ begin
     ProjectArea.Hint := Phrases2.Lookup('TIP_PROJECT');
   end;
 
-  Back := TBitmap.Create;
+  Back := TPortableNetworkGraphic.Create;
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
@@ -221,11 +221,11 @@ begin
   CityMapTemplate.PixelFormat := pf8bit;
   SmallCityMapTemplate := LoadAnyGraphics(GraphicsDirectory + 'SmallCityMap', gfNoGamma);
   SmallCityMapTemplate.PixelFormat := pf24bit;
-  SmallCityMap := TBitmap.Create;
+  SmallCityMap := TPortableNetworkGraphic.Create;
   SmallCityMap.PixelFormat := pf24bit;
   SmallCityMap.Width := 98;
   SmallCityMap.Height := 74;
-  ZoomCityMap := TBitmap.Create;
+  ZoomCityMap := TPortableNetworkGraphic.Create;
   ZoomCityMap.PixelFormat := pf24bit;
   ZoomCityMap.Width := 228;
   ZoomCityMap.Height := 124;

@@ -77,7 +77,7 @@ begin
   TitleHeight := Screen.Height;
   InitButtons();
 
-  Back := TBitmap.Create;
+  Back := TPortableNetworkGraphic.Create;
   Back.PixelFormat := pf24bit;
   Back.Width := 5 * wCommon;
   Back.Height := hMax;

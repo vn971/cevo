@@ -62,7 +62,7 @@ type
     code: array[0..MaxLayer - 1, 0..4095] of integer;
     Column: array[0..nPl - 1] of integer;
     Closable, MultiPage: boolean;
-    ScienceNationDot: TBitmap;
+    ScienceNationDot: TFPImageBitmap;
     procedure InitLines;
     procedure lineMod(ca: TCanvas; l: integer; NonText, lit: boolean);
     function RenameCity(cix: integer): boolean;
@@ -107,7 +107,7 @@ begin
   Layer0Btn.Hint := Phrases.Lookup('BTN_IMPRS');
   Layer1Btn.Hint := Phrases.Lookup('BTN_WONDERS');
   Layer2Btn.Hint := Phrases.Lookup('BTN_CLASSES');
-  ScienceNationDot := TBitmap.Create;
+  ScienceNationDot := TPortableNetworkGraphic.Create;
   ScienceNationDot.PixelFormat := pf24bit;
   ScienceNationDot.Width := 17;
   ScienceNationDot.Height := 17;

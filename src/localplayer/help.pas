@@ -76,7 +76,7 @@ type
     CaptionFont: TFont;
     MainText, SearchResult: THyperText;
     HelpText: TStringTable;
-    ExtPic, TerrIcon: TBitmap;
+    ExtPic, TerrIcon: TFPImageBitmap;
     sb: TPVScrollbar;
     x0: array[-2..18] of integer;
     HistKind: array[0..MaxHist - 1] of integer;
@@ -217,8 +217,8 @@ begin
   BackBtn.Hint := Phrases.Lookup('BTN_BACK');
   SearchBtn.Hint := Phrases.Lookup('BTN_SEARCH');
 
-  ExtPic := TBitmap.Create;
-  TerrIcon := TBitmap.Create;
+  ExtPic := TPortableNetworkGraphic.Create;
+  TerrIcon := TPortableNetworkGraphic.Create;
   TerrIcon.PixelFormat := pf24bit;
   TerrIcon.Width := xSizeBig;
   TerrIcon.Height := ySizeBig;

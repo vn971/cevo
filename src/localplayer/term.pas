@@ -230,7 +230,7 @@ type
     BrushType: cardinal;
     trix: array[0..63] of integer;
     AILogo: array[0..nPl - 1] of TFPImageBitmap;
-    Mini, Panel, TopBar: TBitmap;
+    Mini, Panel, TopBar: TFPImageBitmap;
     sb: TPVScrollbar;
     Closable, RepaintOnResize, Tracking, TurnComplete, Edited, GoOnPhase,
     HaveStrategyAdvice, FirstMovieTurn: boolean;
@@ -396,7 +396,7 @@ var
   MovieSpeed: integer;
   CityRepMask: cardinal;
   ReceivedOffer: TOffer;
-  Buffer, SmallImp: TBitmap;
+  Buffer, SmallImp: TFPImageBitmap;
   terrainSmall, terrainBig, terrainCurrent, citiesSmall, citiesBig, citiesCurrent: TFPImageBitmap;
   BlinkON, DestinationMarkON, StartRunning, StayOnTop_Ensured, supervising: boolean;
   UnusedTribeFiles, TribeNames: TStringList;
@@ -818,7 +818,7 @@ begin
     end;
 end;
 
-procedure PaintZoomedTile(dst: TBitmap; x, y, Loc: integer);
+procedure PaintZoomedTile(dst: TFPImageBitmap; x, y, Loc: integer);
 
   procedure TSprite(xDst, yDst, xSrc, ySrc: integer);
   begin
@@ -1437,7 +1437,7 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     MainMap.SetOutput(offscreen);
 
     HGrStdUnits := LoadGraphicSet('StdUnits');
-    SmallImp := TBitmap.Create;
+    SmallImp := TPortableNetworkGraphic.Create;
     SmallImp.PixelFormat := pf24bit;
     InitSmallImp;
     SoundPreloadDone := 0;
@@ -3379,17 +3379,17 @@ begin
     mRep[i].Checked := CityRepMask and (1 shl j) <> 0;
   end;
 
-  Mini := TBitmap.Create;
+  Mini := TPortableNetworkGraphic.Create;
   Mini.PixelFormat := pf24bit;
-  Panel := TBitmap.Create;
+  Panel := TPortableNetworkGraphic.Create;
   Panel.PixelFormat := pf24bit;
   Panel.Canvas.Font.Assign(UniFont[ftSmall]);
   Panel.Canvas.Brush.Style := bsClear;
-  TopBar := TBitmap.Create;
+  TopBar := TPortableNetworkGraphic.Create;
   TopBar.PixelFormat := pf24bit;
   TopBar.Canvas.Font.Assign(UniFont[ftNormal]);
   TopBar.Canvas.Brush.Style := bsClear;
-  Buffer := TBitmap.Create;
+  Buffer := TPortableNetworkGraphic.Create;
   Buffer.PixelFormat := pf24bit;
   if 2 * lxmax > 3 * xSizeBig then
     Buffer.Width := 2 * lxmax
