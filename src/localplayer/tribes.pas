@@ -60,6 +60,7 @@ function ModelCode(const ModelInfo: TModelInfo): integer;
 procedure FindStdModelPicture(code: integer; var pix: integer; var Name: string);
 function GetTribeInfo(FileName: string; var Name: string; var Color: TColor): boolean;
 procedure FindPosition(HGr, x, y, xmax, ymax: integer; Mark: TColor; var xp, yp: integer);
+procedure FindPositionInPNG(png: TFPImageBitmap; x, y, xmax, ymax: integer; Mark: TColor; var xp, yp: integer);
 
 
 implementation
