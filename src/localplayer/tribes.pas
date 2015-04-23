@@ -288,7 +288,7 @@ begin
       Delete(Input, 1, 9);
       Item := Get;
       sympix := GetNum;
-      symPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'transparent');
+      symPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'Transparent');
     end;
   end;
   FillChar(ModelPicture, SizeOf(ModelPicture), 0);
@@ -418,7 +418,7 @@ begin
               Item := 'Nation2';
             end
           end;
-        cityPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'transparent');
+        cityPNG := LoadAnyGraphics(GraphicsDirectory + Item + 'Transparent');
         for x := 0 to 3 do
           with CityPicture[x] do
           begin
