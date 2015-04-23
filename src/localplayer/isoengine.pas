@@ -108,15 +108,12 @@ function ApplyTileSize(xxtNew, yytNew: integer): boolean;
 type
   TLine = array[0..INFIN, 0..2] of byte;
 var
-  i, x, y, xSrc, ySrc, HGrTerrainNew, age, size: integer;
+  i, x, y, xSrc, ySrc, age, size: integer;
   LandMore, OceanMore, DitherMask, Mask24: TFPImageBitmap;
   MaskLine: array[0..32 * 3 - 1] of ^TLine; // 32 = assumed maximum for yyt
   Border: boolean;
 begin
   Result := False;
-  HGrTerrainNew := LoadGraphicSet('Terrain' + IntToStr(xxtNew * 2) +'x'+ IntToStr(yytNew * 2));
-  if HGrTerrainNew < 0 then
-    exit;
   xxt := xxtNew;
   yyt := yytNew;
   if yyt = 16 then begin
@@ -126,7 +123,6 @@ begin
     citiesCurrent:=citiesBig;
     terrainCurrent:=terrainBig;
   end;
-  HGrTerrain := HGrTerrainNew;
   Result := True;
 
   // prepare age 2+3 cities
@@ -265,7 +261,7 @@ begin
     end;
 
   BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2, DitherMask.Canvas.Handle, 0, 0, DSTINVERT); {invert dither mask}
-  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2, GrExt[HGrTerrain].Mask.Canvas.Handle, 1, 1 + yyt, SRCPAINT);
+  BitBltTransparent(DitherMask.Canvas, 0, 0, xxt * 2, yyt * 2, 1, 1 + yyt, terrainCurrent);
 
   for x := -1 to 6 do
     for y := -2 to 6 do
@@ -292,7 +288,7 @@ begin
     Brush.Color := $FFFFFF;
     FillRect(Rect(0, 0, xxt * 2, yyt));
   end;
-  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt, GrExt[HGrTerrain].Mask.Canvas.Handle, 1, 1 + yyt, SRCCOPY);
+  BitBltTransparent(DitherMask.Canvas, 0, 0, xxt * 2, yyt, 1, 1 + yyt, terrainCurrent);
 
   for x := 0 to 6 do
     BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), yyt, xxt * 2, yyt, DitherMask.Canvas.Handle, 0, 0, SRCAND);

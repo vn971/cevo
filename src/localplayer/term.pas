@@ -392,7 +392,7 @@ var
   AdvIcon: array[0..nAdv - 1] of integer; {icons displayed with the technologies}
   xxt, yyt, // half of tile size x/y
   GameMode, ClientMode, Age, UnFocus, OptionChecked, MapOptionChecked, nLostArmy,
-  ScienceSum, TaxSum, SoundPreloadDone, MarkCityLoc, HGrTerrain,
+  ScienceSum, TaxSum, SoundPreloadDone, MarkCityLoc,
   MovieSpeed: integer;
   CityRepMask: cardinal;
   ReceivedOffer: TOffer;
