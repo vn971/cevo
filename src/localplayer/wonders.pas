@@ -93,29 +93,8 @@ type
     x0Dst := ClientWidth div 2 - xSizeBig div 2 + RingPosition[i, 0];
     y0Dst := ClientHeight div 2 - ySizeBig div 2 + RingPosition[i, 1];
     x0Src := (i mod 7) * xSizeBig;
-    y0Src := (i div 7 + SystemIconLines) * ySizeBig;
-    for y := 0 to ySizeBig - 1 do
-    begin
-      BigImp.BeginUpdate();
-      Src := BigImp.ScanLine[y0Src + y];
-      Offscreen.BeginUpdate();
-      Dst := Offscreen.ScanLine[y0Dst + y];
-      for x := 0 to xSizeBig - 1 do
-      begin
-        darken := ((255 - Src[x0Src + x][0]) * 3 + (255 - Src[x0Src + x][1]) * 15 +
-          (255 - Src[x0Src + x][2]) * 9) div 128;
-        for ch := 0 to 2 do
-        begin
-          c := Dst[x0Dst + x][ch] - darken;
-          if c < 0 then
-            Dst[x0Dst + x][ch] := 0
-          else
-            Dst[x0Dst + x][ch] := c;
-        end;
-      end;
-      Offscreen.EndUpdate();
-      BigImp.EndUpdate();
-    end;
+    y0Src := (i div 7) * ySizeBig;
+    BitBltTransparent(Offscreen.Canvas, x0Dst, y0Dst,xSizeBig,ySizeBig, x0Src, y0Src, wondersGrayedOut);
   end;
 
   procedure Glow(i, GlowColor: integer);
@@ -211,9 +190,9 @@ begin
         begin
           HaveWonder := True;
           Glow(i, $000000);
-          BitBltUgly(Offscreen.Canvas.Handle, xm - xSizeBig div 2 + RingPosition[i, 0],
+          BitBltTransparent(Offscreen.Canvas, xm - xSizeBig div 2 + RingPosition[i, 0],
             ym - ySizeBig div 2 + RingPosition[i, 1], xSizeBig, ySizeBig,
-            BigImp.Canvas.Handle, 0, (SystemIconLines + 3) * ySizeBig, SRCCOPY);
+            0, (SystemIconLines + 3) * ySizeBig, wondersTransparent);
         end;
         else
         begin
@@ -222,10 +201,10 @@ begin
             Glow(i, Tribe[MyRO.Wonder[i].EffectiveOwner].Color)
           else
             Glow(i, $000000);
-          BitBltUgly(Offscreen.Canvas.Handle, xm - xSizeBig div 2 + RingPosition[i, 0],
+          BitBltTransparent(Offscreen.Canvas, xm - xSizeBig div 2 + RingPosition[i, 0],
             ym - ySizeBig div 2 + RingPosition[i, 1], xSizeBig, ySizeBig,
-            BigImp.Canvas.Handle, (i mod 7) * xSizeBig,
-            (i div 7 + SystemIconLines) * ySizeBig, SRCCOPY);
+            (i mod 7) * xSizeBig,
+            (i div 7 + SystemIconLines) * ySizeBig, wondersTransparent);
         end
       end;
     end;

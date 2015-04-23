@@ -176,6 +176,7 @@ var
   ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
   Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
+  wondersGrayedOut: TFPImageBitmap;
   wondersTransparent, system2transparent, system1transparent: TFPImageBitmap;
   FullScreen: Boolean = False; // lazarus todo: stop using this hardcoded fullscreen override
   GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
@@ -1528,6 +1529,7 @@ initialization
   Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
   BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
   wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'IconsTransparent');
+  wondersGrayedOut:=LoadAnyGraphics(GraphicsDirectory + 'WondersGrayedOut');
   MainTexture.Image := TPortableNetworkGraphic.Create;
   MainTextureAge := -2;
   ClickFrameColor := system1transparent.Canvas.Pixels[187, 175];
@@ -1551,6 +1553,7 @@ finalization
   system1transparent.Free;
   system2transparent.Free;
   wondersTransparent.Free;
+  wondersGrayedOut.Free;
   Paper.Free;
   Templates.Free;
   Colors.Free;
