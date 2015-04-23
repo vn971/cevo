@@ -1,2 +1,7 @@
 *.txt      eol=crlf
+*.bat      eol=crlf
 *.cfg      eol=crlf
+*.dof      eol=crlf
+*.dpr      eol=crlf
+*.pas      eol=crlf
+*.rc       eol=crlf
