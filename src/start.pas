@@ -836,9 +836,9 @@ begin
   List.Font.Color := MainTexture.clMark;
   Fill(EmptyPicture.Canvas, 0, 0, 64, 64, (wMaintexture - 64) div 2,
     (hMaintexture - 64) div 2);
+  EmptyPicture.BeginUpdate();
   for y := 0 to 63 do
   begin // darken texture for empty slot
-    EmptyPicture.BeginUpdate();
     PictureLine := EmptyPicture.ScanLine[y];
     for x := 0 to 64 * 3 - 1 do
     begin
@@ -847,8 +847,8 @@ begin
         i := 0;
       PictureLine[x] := i;
     end;
-    EmptyPicture.EndUpdate();
   end;
+  EmptyPicture.EndUpdate();
 
   Difficulty[0] := Diff0;
 

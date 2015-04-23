@@ -579,11 +579,11 @@ begin
     GrExt[nGrExt].Mask.Width := Source.Width;
     GrExt[nGrExt].Mask.Height := Source.Height;
 
+    GrExt[nGrExt].Data.BeginUpdate();
+    GrExt[nGrExt].Mask.BeginUpdate();
     for y := 0 to Source.Height - 1 do
     begin
-      GrExt[nGrExt].Data.BeginUpdate();
       DataLine := GrExt[nGrExt].Data.ScanLine[y];
-      GrExt[nGrExt].Mask.BeginUpdate();
       MaskLine := GrExt[nGrExt].Mask.ScanLine[y];
       for x := 0 to xmax - 1 do
       begin
@@ -604,9 +604,9 @@ begin
           end;
         end;
       end;
-      GrExt[nGrExt].Mask.EndUpdate();
-      GrExt[nGrExt].Data.EndUpdate();
     end;
+    GrExt[nGrExt].Mask.EndUpdate();
+    GrExt[nGrExt].Data.EndUpdate();
 
     FillChar(GrExt[nGrExt].pixUsed, GrExt[nGrExt].Data.Height div 49 * 10, 0);
     Inc(nGrExt);
@@ -639,12 +639,12 @@ type
 var
   i: integer;
 begin
+  Dst.BeginUpdate();
   for i := 0 to h - 1 do
   begin
-    Dst.BeginUpdate();
     BlueLine(@(PLine(Dst.ScanLine[y + i])[x]), w);
-    Dst.EndUpdate();
   end;
+  Dst.EndUpdate();
 end;
 
 procedure ImageOp_B(Dst, Src: TFPImageBitmap; xDst, yDst, xSrc, ySrc, w, h: integer);
@@ -678,12 +678,12 @@ begin
   if (w < 0) or (h < 0) then
     exit;
 
+  Dst.BeginUpdate();
+  Src.BeginUpdate();
   h := yDst + h;
   while yDst < h do
   begin
-    Dst.BeginUpdate();
     PixelDst := pointer(integer(Dst.ScanLine[yDst]) + 3 * xDst);
-    Src.BeginUpdate();
     PixelSrc := pointer(integer(Src.ScanLine[ySrc]) + xSrc);
     for i := 0 to w - 1 do
     begin
@@ -706,11 +706,11 @@ begin
       PixelDst := pointer(integer(PixelDst) + 3);
       PixelSrc := pointer(integer(PixelSrc) + 1);
     end;
-    Src.EndUpdate();
-    Dst.EndUpdate();
     Inc(yDst);
     Inc(ySrc);
   end;
+  Src.EndUpdate();
+  Dst.EndUpdate();
 end;
 
 procedure ImageOp_BCC(Dst, Src: TFPImageBitmap;
@@ -744,11 +744,11 @@ begin
   if (w < 0) or (h < 0) then
     exit;
 
+  Src.BeginUpdate();
+  Dst.BeginUpdate();
   for iy := 0 to h - 1 do
   begin
-    Src.BeginUpdate();
     SrcLine := Src.ScanLine[ySrc + iy];
-    Dst.BeginUpdate();
     DstLine := Dst.ScanLine[yDst + iy];
     for ix := 0 to w - 1 do
     begin
@@ -777,9 +777,9 @@ begin
           DstLine[xDst + ix][2] := 255;
       end;
     end;
-    Dst.EndUpdate();
-    Src.EndUpdate();
   end;
+  Dst.EndUpdate();
+  Src.EndUpdate();
 end;
 
 procedure ImageOp_CCC(Bmp: TFPImageBitmap; x, y, w, h, Color0, Color1, Color2: integer);
@@ -794,10 +794,10 @@ var
   Pixel: ^TPixel;
 begin
   assert(Bmp.PixelFormat = pf24bit);
+  Bmp.BeginUpdate();
   h := y + h;
   while y < h do
   begin
-    Bmp.BeginUpdate();
     Pixel := pointer(integer(Bmp.ScanLine[y]) + 3 * x);
     for i := 0 to w - 1 do
     begin
@@ -813,8 +813,8 @@ begin
       Pixel := pointer(integer(pixel) + 3);
     end;
     Inc(y);
-    Bmp.EndUpdate();
   end;
+  Bmp.EndUpdate();
 end;
 
 procedure Sprite(Canvas: TCanvas; HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
@@ -929,9 +929,9 @@ var
   x, y, ch, r: integer;
   DstLine: ^TLine;
 begin
+  dst.BeginUpdate();
   for y := -GlowRange + 1 to Height - 1 + GlowRange - 1 do
   begin
-    dst.BeginUpdate();
     DstLine := dst.ScanLine[y0 + y];
     for x := -GlowRange + 1 to Width - 1 + GlowRange - 1 do
     begin
@@ -963,8 +963,8 @@ begin
             (DstLine[x0 + x][2 - ch] * (r - 1) + (cl shr (8 * ch) and $FF) *
             (GlowRange - r)) div (GlowRange - 1);
     end;
-    dst.EndUpdate();
   end;
+  dst.EndUpdate();
 end;
 
 procedure Fill(ca: TCanvas; Left, Top, Width, Height, xOffset, yOffset: integer);
