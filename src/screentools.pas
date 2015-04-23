@@ -175,7 +175,7 @@ var
   Phrases, Phrases2, Sounds: TStringTable;
   nGrExt: integer;
   GrExt: array[0..nGrExtmax - 1] of ^TGrExtDescr;
-  HGrSystem, HGrSystem2, ClickFrameColor, SoundMode, MainTextureAge: integer;
+  ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
   Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
   wondersTransparent, system2transparent, system1transparent: TFPImageBitmap;
@@ -1530,10 +1530,8 @@ initialization
   end;
 
   nGrExt := 0;
-  HGrSystem := LoadGraphicSet('System');
-  system1transparent := LoadAnyGraphics(GraphicsDirectory + 'System-transparent');
-  HGrSystem2 := LoadGraphicSet('System2');
-  system2transparent := LoadAnyGraphics(GraphicsDirectory + 'System2-transparent');
+  system1transparent := LoadAnyGraphics(GraphicsDirectory + 'System1Transparent');
+  system2transparent := LoadAnyGraphics(GraphicsDirectory + 'System2Transparent');
   Templates := LoadAnyGraphics(GraphicsDirectory + 'Templates', gfNoGamma);
   Templates.PixelFormat := pf24bit;
   Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors');
