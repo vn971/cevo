@@ -7650,8 +7650,8 @@ begin
 end;
 
 initialization
-  terrainSmall := LoadAnyGraphics(GraphicsDirectory + 'Terrain66x32transparent');
-  terrainBig := LoadAnyGraphics(GraphicsDirectory + 'Terrain96x48transparent');
-  citiesSmall := LoadAnyGraphics(GraphicsDirectory + 'Cities66x32transparent');
-  citiesBig := LoadAnyGraphics(GraphicsDirectory + 'Cities96x48transparent');
+  terrainSmall := LoadAnyGraphics(GraphicsDirectory + 'Terrain66x32Transparent');
+  terrainBig := LoadAnyGraphics(GraphicsDirectory + 'Terrain96x48Transparent');
+  citiesSmall := LoadAnyGraphics(GraphicsDirectory + 'Cities66x32Transparent');
+  citiesBig := LoadAnyGraphics(GraphicsDirectory + 'Cities96x48Transparent');
 end.

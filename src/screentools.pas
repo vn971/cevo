@@ -1537,7 +1537,7 @@ initialization
   Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors');
   Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
   BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
-  wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'Icons-transparent');
+  wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'IconsTransparent');
   MainTexture.Image := TPortableNetworkGraphic.Create;
   MainTextureAge := -2;
   ClickFrameColor := system1transparent.Canvas.Pixels[187, 175];
