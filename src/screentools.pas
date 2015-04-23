@@ -1183,7 +1183,7 @@ begin
   BiColorTextOut(ca, $FFFFFF, $000000, x, y, s);
 end;
 
-procedure Gradient(ca: TCanvas; x, y, dx, dy, Width, Height, Color: integer;
+procedure Gradient(ca: TCanvas; x, y, dx, dy, gWidth, gHeight, Color: integer;
   Brightness: array of integer);
 var
   i, r, g, b: integer;
@@ -1209,12 +1209,12 @@ begin
         b := 255;
       pen.color := r + g shl 8 + b shl 16;
       MoveTo(x + dx * i, y + dy * i);
-      LineTo(x + dx * i + Width, y + dy * i + Height);
+      LineTo(x + dx * i + gWidth, y + dy * i + gHeight);
     end;
     pen.color := $000000;
-    MoveTo(x + 1, y + 16 * dy + Height);
-    LineTo(x + 16 * dx + Width, y + 16 * dy + Height);
-    LineTo(x + 16 * dx + Width, y);
+    MoveTo(x + 1, y + 16 * dy + gHeight);
+    LineTo(x + 16 * dx + gWidth, y + 16 * dy + gHeight);
+    LineTo(x + 16 * dx + gWidth, y);
   end;
 end;
 
