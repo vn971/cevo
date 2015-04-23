@@ -666,7 +666,7 @@ begin
   else
     with Tribe[p].ModelPicture[mix] do
     begin
-      HGr := LoadGraphicSet(Picture.GrName);
+      HGr := LoadGraphicSet(Picture.GrName + 'Transparent');
       pix := Picture.pix;
     end;
 end;
@@ -1436,7 +1436,7 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     MainMap := TIsoMap.Create;
     MainMap.SetOutput(offscreen);
 
-    HGrStdUnits := LoadGraphicSet('StdUnits');
+    HGrStdUnits := LoadGraphicSet('StdUnitsTransparent');
     SmallImp := TPortableNetworkGraphic.Create;
     SmallImp.PixelFormat := pf24bit;
     InitSmallImp;

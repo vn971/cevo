@@ -466,7 +466,7 @@ begin
       while (i >= 0) and (PictureList[i].Hash <> Info.Hash) do
         Dec(i);
       assert(i >= 0);
-      assert(PictureList[i].HGr = LoadGraphicSet(GrName));
+      assert(PictureList[i].HGr = LoadGraphicSet(GrName + 'Transparent'));
       assert(PictureList[i].pix = pix);
       ModelPicture[mix].HGr := PictureList[i].HGr;
       ModelPicture[mix].pix := PictureList[i].pix;
@@ -476,7 +476,7 @@ begin
     begin
       with ModelPicture[mix] do
       begin
-        HGr := LoadGraphicSet(GrName);
+        HGr := LoadGraphicSet(GrName + 'Transparent');
         pix := Info.pix;
         Inc(GrExt[HGr].pixUsed[pix]);
       end;
