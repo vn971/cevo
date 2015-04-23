@@ -11,11 +11,8 @@ type
   TButtonB = class(TButtonBase)
     constructor Create(aOwner: TComponent); override;
   private
-    FMask: TFPImageBitmap;
     FIndex: integer;
     procedure SetIndex(x: integer);
-  public
-    property Mask: TFPImageBitmap read FMask write FMask;
   published
     property Visible;
     property ButtonIndex: integer read FIndex write SetIndex;
@@ -47,14 +44,11 @@ begin
   with Canvas do
     if FGraphic <> nil then
     begin
-      BitBltUgly(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
-        169, 243 + 26 * byte(FDown), SRCCOPY);
+      BitBltTransparent(Canvas, 0, 0, 25, 25, 169, 243 + 26 * byte(FDown), FGraphic);
       if FIndex >= 0 then
       begin
-        BitBltUgly(Canvas.Handle, 0, 0, 25, 25, FMask.Canvas.Handle,
-          1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, SRCAND);
-        BitBltUgly(Canvas.Handle, 0, 0, 25, 25, FGraphic.Canvas.Handle,
-          1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, SRCPAINT);
+        BitBltTransparent(Canvas, 0, 0, 25, 25,
+          1 + FIndex mod 12 * 26, 337 + FIndex div 12 * 26, FGraphic);
       end;
     end
     else

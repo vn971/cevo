@@ -367,7 +367,7 @@ procedure TCityDlg.OffscreenPaint;
     Tex := MainTexture;
     if Kind = 3 then
     begin
-      Tex.clBevelLight := GrExt[HGrSystem].Data.Canvas.Pixels[104, 36];
+      Tex.clBevelLight := system1transparent.Canvas.Pixels[104, 36];
       Tex.clBevelShade := Tex.clBevelLight;
     end;
     PaintRelativeProgressBar(offscreen.Canvas, Kind, x - 3, y, wBar - 4, pos, Growth, max,
@@ -624,9 +624,6 @@ begin
       xGr := 29
     else
       xGr := 141;
-    // lazarus TODO: find out whether this new code works...
-    //BitBltUgly(offscreen.Canvas.Handle, xmArea - 192 + 5 + i * d, ymArea - 96 - 29,
-    //  27, 30, GrExt[HGrSystem].Mask.Canvas.Handle, xGr, 171, SRCAND); {shadow}
     BitBltTransparent(offscreen.Canvas, xmArea - 192 + 4 + i * d, ymArea - 96 - 30, 27, 30, xGr, 171, system1transparent);
   end;
   if c.Size - Report.Working > 1 then
@@ -636,9 +633,6 @@ begin
   for i := 0 to c.Size - Report.Working - 1 do
   begin
     xGr := 1 + 112;
-    // lazarus TODO: find out whether this new code works...
-    //BitBltUgly(offscreen.Canvas.Handle, xmArea + 192 - 27 + 1 - i * d, 29 + 1,
-    //  27, 30, GrExt[HGrSystem].Mask.Canvas.Handle, xGr, 171, SRCAND); {shadow}
     BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 - i * d, 29, 27, 30, xGr, 171, system1transparent);
     BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 + 4 - i * d, 29 + 32, 10, 10, 121, 126, system1transparent);
     BitBltTransparent(offscreen.Canvas, xmArea + 192 - 27 + 13 - i * d, 29 + 32, 10, 10, 121, 126, system1transparent);

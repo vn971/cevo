@@ -135,8 +135,7 @@ InitButtons();
 for cix:=0 to ComponentCount-1 do
   if Components[cix] is TButtonN then with TButtonN(Components[cix]) do
     begin
-    Graphic:=GrExt[HGrSystem].Data;
-    Mask:=GrExt[HGrSystem].Mask;
+    Graphic:=system1transparent;
     BackGraphic:=system2transparent;
     case Tag shr 8 of
       1: SmartHint:=Phrases.Lookup('WANT', ButtonIndex-6);

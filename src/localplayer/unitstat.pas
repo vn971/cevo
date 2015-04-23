@@ -502,7 +502,7 @@ begin
         MainTexture.clBevelShade,MainTexture.clBevelLight);}
           with offscreen.canvas do
           begin
-            Brush.Color := GrExt[HGrSystem].Data.Canvas.Pixels[98, 67];
+            Brush.Color := system1transparent.Canvas.Pixels[98, 67];
             offscreen.canvas.FillRect(Rect(xView, yView, xView + 64, yView + 16));
             Brush.Style := bsClear;
           end;

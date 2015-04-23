@@ -314,14 +314,14 @@ begin
   for i := 0 to nPlOffered - 1 do
   begin
     DiffUpBtn[i] := TButtonC.Create(self);
-    DiffUpBtn[i].Graphic := GrExt[HGrSystem].Data;
+    DiffUpBtn[i].Graphic := system1transparent;
     DiffUpBtn[i].Left := xBrain[i] - 18;
     DiffUpBtn[i].Top := yBrain[i] + 39;
     DiffUpBtn[i].ButtonIndex := 1;
     DiffUpBtn[i].Parent := self;
     DiffUpBtn[i].OnClick := DiffBtnClick;
     DiffDownBtn[i] := TButtonC.Create(self);
-    DiffDownBtn[i].Graphic := GrExt[HGrSystem].Data;
+    DiffDownBtn[i].Graphic := system1transparent;
     DiffDownBtn[i].Left := xBrain[i] - 18;
     DiffDownBtn[i].Top := yBrain[i] + 51;
     DiffDownBtn[i].ButtonIndex := 0;
@@ -331,7 +331,7 @@ begin
   for i := 6 to 8 do
   begin
     MultiBtn[i] := TButtonC.Create(self);
-    MultiBtn[i].Graphic := GrExt[HGrSystem].Data;
+    MultiBtn[i].Graphic := system1transparent;
     MultiBtn[i].Left := xBrain[i] - 18;
     MultiBtn[i].Top := yBrain[i];
     MultiBtn[i].Parent := self;
@@ -397,7 +397,7 @@ begin
   Mini := TPortableNetworkGraphic.Create;
   for x := 0 to 11 do
     for y := 0 to 1 do
-      MiniColors[x, y] := GrExt[HGrSystem].Data.Canvas.Pixels[66 + x, 67 + y];
+      MiniColors[x, y] := system1transparent.Canvas.Pixels[66 + x, 67 + y];
   InitButtons();
 
   bixView[0] := bixTerm;
@@ -1049,8 +1049,8 @@ var
     i, x, y, xm, cm, Tile, OwnColor, EnemyColor: integer;
     MiniLine, PrevMiniLine: ^TLine;
   begin
-    OwnColor := GrExt[HGrSystem].Data.Canvas.Pixels[95, 67];
-    EnemyColor := GrExt[HGrSystem].Data.Canvas.Pixels[96, 67];
+    OwnColor := system1transparent.Canvas.Pixels[95, 67];
+    EnemyColor := system1transparent.Canvas.Pixels[96, 67];
     Mini.PixelFormat := pf24bit;
     Mini.Width := MiniWidth * 2;
     Mini.Height := MiniHeight;

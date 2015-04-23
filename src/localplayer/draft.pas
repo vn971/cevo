@@ -306,7 +306,7 @@ begin
 
           // paint cost
           LightGradient(offscreen.Canvas, xFeature + 34, yFeature + LinePitch * i, 50,
-            GrExt[HGrSystem].Data.Canvas.Pixels[187, 137]);
+            system1transparent.Canvas.Pixels[187, 137]);
           if (Domain = dGround) and (code[i] = mcDefense) then
             CapWeight := 2
           else

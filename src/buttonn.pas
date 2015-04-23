@@ -11,7 +11,7 @@ type
     constructor Create(aOwner: TComponent); override;
   private
     FPossible, FLit: boolean;
-    FGraphic, FMask, FBackGraphic: TFPImageBitmap;
+    FGraphic, FBackGraphic: TFPImageBitmap;
     FIndex, BackIndex: integer;
     FSmartHint: string;
     ChangeProc: TNotifyEvent;
@@ -24,7 +24,6 @@ type
     property Lit: boolean read FLit write SetLit;
     property SmartHint: string read FSmartHint write SetSmartHint;
     property Graphic: TFPImageBitmap read FGraphic write FGraphic;
-    property Mask: TFPImageBitmap read FMask write FMask;
     property BackGraphic: TFPImageBitmap read FBackGraphic write FBackGraphic;
     property ButtonIndex: integer read FIndex write SetIndex;
     property OnClick: TNotifyEvent read ChangeProc write ChangeProc;
@@ -68,10 +67,8 @@ begin
         1 + 80 * BackIndex + 40 * byte(FPossible and FLit), 176, SRCCOPY);
       if FPossible then
       begin
-        BitBltUgly(Canvas.Handle, 3, 3, 36, 36, FMask.Canvas.Handle,
-          195 + 37 * (FIndex mod 3), 21 + 37 * (FIndex div 3), SRCAND);
-        BitBltUgly(Canvas.Handle, 3, 3, 36, 36, FGraphic.Canvas.Handle,
-          195 + 37 * (FIndex mod 3), 21 + 37 * (FIndex div 3), SRCPAINT);
+        BitBltTransparent(Canvas, 3, 3, 36, 36,
+          195 + 37 * (FIndex mod 3), 21 + 37 * (FIndex div 3), FGraphic);
       end;
     end;
     MoveTo(0, 41);

@@ -1429,7 +1429,7 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
 
     for x := 0 to 11 do
       for y := 0 to 1 do
-        MiniColors[x, y] := GrExt[HGrSystem].Data.Canvas.Pixels[66 + x, 67 + y];
+        MiniColors[x, y] := system1transparent.Canvas.Pixels[66 + x, 67 + y];
     IsoEngine.Init(InitEnemyModel);
     if not IsoEngine.ApplyTileSize(xxt, yyt) and ((xxt <> 48) or (yyt <> 24)) then
       ApplyTileSize(48, 24); // non-default tile size is missing a file, switch to default
@@ -3937,8 +3937,8 @@ var
   uix, cix, x, y, Loc, i, hw, xm, cm, cmPolOcean, cmPolNone: integer;
   PrevMiniLine, MiniLine: ^TLine;
 begin
-  cmPolOcean := GrExt[HGrSystem].Data.Canvas.Pixels[101, 67];
-  cmPolNone := GrExt[HGrSystem].Data.Canvas.Pixels[102, 67];
+  cmPolOcean := system1transparent.Canvas.Pixels[101, 67];
+  cmPolNone := system1transparent.Canvas.Pixels[102, 67];
   hw := MapWidth div (xxt * 2);
   with Mini.Canvas do
   begin

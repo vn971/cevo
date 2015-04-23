@@ -127,9 +127,6 @@ begin
 
   if Forecast.EndHealthDef <= 0 then
   begin
-    // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
-    //BitBltUgly(ca.Handle, xm + 9 + LDDamage - 7, ym - 6, 14, 17,
-    //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
     BitBltTransparent(ca, xm + 8 + LDDamage - 7, ym - 7, 14, 17,
       51, 153, system1transparent);
   end;
@@ -145,9 +142,6 @@ begin
 
   if Forecast.EndHealthAtt <= 0 then
   begin
-    // lazarus TODO: numbers differ a bit, and there were _three_ BitBlt here. Make sure this works.
-    //BitBltUgly(ca.Handle, xm - 6, ym + 9 + LADamage - 7, 14, 17,
-    //  GrExt[HGrSystem].Mask.Canvas.Handle, 51, 153, SRCAND);
     BitBltTransparent(ca, xm - 7, ym + 8 + LADamage - 7, 14, 17,
       51, 153, system1transparent);
   end;

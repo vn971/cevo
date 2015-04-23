@@ -1233,7 +1233,7 @@ const
     (16, 12, 8, 4, 0, -4, -8, -12 - 24, -16 + 16, -20, -24, -28, -32, -36, -40, -44);
 begin
   Gradient(ca, x, y, 0, 1, Width, 0,
-    GrExt[HGrSystem].Data.Canvas.Pixels[187, 137 + Kind], Brightness);
+    system1transparent.Canvas.Pixels[187, 137 + Kind], Brightness);
 end;
 
 procedure VLightGradient(ca: TCanvas; x, y, Height, Color: integer);
@@ -1250,7 +1250,7 @@ const
     (16, 12, 8, 4, 0, -4, -8, -12 - 24, -16 + 16, -20, -24, -28, -32, -36, -40, -44);
 begin
   Gradient(ca, x, y, 1, 0, 0, Height,
-    GrExt[HGrSystem].Data.Canvas.Pixels[187, 137 + Kind], Brightness);
+    system1transparent.Canvas.Pixels[187, 137 + Kind], Brightness);
 end;
 
 procedure NumberBar(dst: TFPImageBitmap; x, y: integer; Cap: string; val: integer;
@@ -1561,7 +1561,7 @@ initialization
   wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'Icons-transparent');
   MainTexture.Image := TPortableNetworkGraphic.Create;
   MainTextureAge := -2;
-  ClickFrameColor := GrExt[HGrSystem].Data.Canvas.Pixels[187, 175];
+  ClickFrameColor := system1transparent.Canvas.Pixels[187, 175];
   InitOrnamentDone := False;
   GenerateNames := True;
 

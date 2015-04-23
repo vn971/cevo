@@ -472,7 +472,7 @@ begin
             Server(sGetVersion, 0, 0, j);
             s := Format('%d.%d.%d', [j shr 16 and $FF, j shr 8 and $FF, j and $FF]);
             PaintLogo(offscreen.canvas, (InnerWidth - 122) div 2, i * 24 + 1,
-              GrExt[HGrSystem].Data.Canvas.Pixels[95, 1], $000000);
+              system1transparent.Canvas.Pixels[95, 1], $000000);
             Font.Assign(UniFont[ftSmall]);
             BiColorTextout(offscreen.Canvas, $000000, $7F007F,
               (InnerWidth - TextWidth(s)) div 2, i * 24 + 26, s);
