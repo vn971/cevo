@@ -70,7 +70,7 @@ type
     procedure ReplayBtnClick(Sender: TObject);
   public
     BrainPicture: array[0..maxBrain - 1] of TFPImageBitmap;
-    EmptyPicture: TBitmap;
+    EmptyPicture: TFPImageBitmap;
     procedure UpdateFormerGames;
     procedure UpdateMaps;
   private
@@ -345,22 +345,22 @@ begin
   else
     CustomizeBtn.ButtonIndex := 2;
 
-  BrainPicture[0] := TBitmap.Create;
+  BrainPicture[0] := TPortableNetworkGraphic.Create;
   BrainPicture[0].Width := 64;
   BrainPicture[0].Height := 64;
   BitBltTransparent(BrainPicture[0].Canvas, 0, 0, 64, 64,
     1, 111, system2transparent);
-  BrainPicture[1] := TBitmap.Create;
+  BrainPicture[1] := TPortableNetworkGraphic.Create;
   BrainPicture[1].Width := 64;
   BrainPicture[1].Height := 64;
   BitBltTransparent(BrainPicture[1].Canvas, 0, 0, 64, 64,
     66, 111, system2transparent);
-  BrainPicture[2] := TBitmap.Create;
+  BrainPicture[2] := TPortableNetworkGraphic.Create;
   BrainPicture[2].Width := 64;
   BrainPicture[2].Height := 64;
   BitBltTransparent(BrainPicture[2].Canvas, 0, 0, 64, 64,
     131, 111, system2transparent);
-  BrainPicture[3] := TBitmap.Create;
+  BrainPicture[3] := TPortableNetworkGraphic.Create;
   BrainPicture[3].Width := 64;
   BrainPicture[3].Height := 64;
   BitBltTransparent(BrainPicture[3].Canvas, 0, 0, 64, 64,
@@ -385,16 +385,16 @@ begin
     end;
   end;
 
-  EmptyPicture := TBitmap.Create;
+  EmptyPicture := TPortableNetworkGraphic.Create;
   EmptyPicture.PixelFormat := pf24bit;
   EmptyPicture.Width := 64;
   EmptyPicture.Height := 64;
-  LogoBuffer := TBitmap.Create;
+  LogoBuffer := TPortableNetworkGraphic.Create;
   LogoBuffer.PixelFormat := pf24bit;
   LogoBuffer.Width := wBuffer;
   LogoBuffer.Height := 56;
 
-  Mini := TBitmap.Create;
+  Mini := TPortableNetworkGraphic.Create;
   for x := 0 to 11 do
     for y := 0 to 1 do
       MiniColors[x, y] := GrExt[HGrSystem].Data.Canvas.Pixels[66 + x, 67 + y];

@@ -85,7 +85,7 @@ begin
     AirArea.Hint := Phrases.Lookup('DOMAIN', 2);
   end;
 
-  Back := TBitmap.Create;
+  Back := TPortableNetworkGraphic.Create;
   Back.PixelFormat := pf24bit;
   Back.Width := ClientWidth;
   Back.Height := ClientHeight;
