@@ -165,8 +165,10 @@ begin
   DitherMask.PixelFormat := pf24bit;
   DitherMask.Width := xxt * 2;
   DitherMask.Height := yyt * 2;
-  BitBltUgly(DitherMask.Canvas.Handle, 0, 0, xxt * 2, yyt * 2,
-    GrExt[HGrTerrain].Mask.Canvas.Handle, 1 + 7 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1), SRCAND);
+  // The meaning of this BitBlt differs from a normal usage radically.
+  // Be careful not to assume anything wrong
+  BitBltTransparent(DitherMask.Canvas, 0, 0, xxt * 2, yyt * 2,
+    1 + 7 * (xxt * 2 + 1), 1 + yyt + 15 * (yyt * 3 + 1), terrainCurrent);
 
   for x := -1 to 6 do
   begin
@@ -186,20 +188,15 @@ begin
       ySrc := 1 + yyt;
     end;
     for y := -1 to 6 do
-      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt,
-        xSrc, ySrc, terrainCurrent);
+      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2),       (y + 2) * yyt, xxt * 2, yyt, xSrc, ySrc, terrainCurrent);
     for y := -2 to 6 do
-      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
-        xSrc + xxt, ySrc + yyt, terrainCurrent);
+      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2),       (y + 2) * yyt, xxt, yyt, xSrc + xxt, ySrc + yyt, terrainCurrent);
     for y := -2 to 6 do
-      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt,
-        xSrc, ySrc + yyt, terrainCurrent);
+      BitBltTransparent(LandPatch.Canvas, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt, xSrc, ySrc + yyt, terrainCurrent);
     for y := -2 to 6 do
-      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt, yyt,
-        DitherMask.Canvas.Handle, xxt, yyt, SRCAND);
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2),       (y + 2) * yyt, xxt, yyt, DitherMask.Canvas.Handle, xxt, yyt, SRCCOPY);
     for y := -2 to 6 do
-      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt,
-        DitherMask.Canvas.Handle, 0, yyt, SRCAND);
+      BitBltUgly(LandPatch.Canvas.Handle, (x + 2) * (xxt * 2) + xxt, (y + 2) * yyt, xxt, yyt, DitherMask.Canvas.Handle, 0, yyt, SRCCOPY);
   end;
 
   for y := -1 to 6 do
