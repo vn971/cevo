@@ -108,7 +108,7 @@ function ApplyTileSize(xxtNew, yytNew: integer): boolean;
 type
   TLine = array[0..INFIN, 0..2] of byte;
 var
-  i, x, y, xSrc, ySrc, HGrTerrainNew, HGrCitiesNew, age, size: integer;
+  i, x, y, xSrc, ySrc, HGrTerrainNew, age, size: integer;
   LandMore, OceanMore, DitherMask, Mask24: TFPImageBitmap;
   MaskLine: array[0..32 * 3 - 1] of ^TLine; // 32 = assumed maximum for yyt
   Border: boolean;
@@ -116,9 +116,6 @@ begin
   Result := False;
   HGrTerrainNew := LoadGraphicSet('Terrain' + IntToStr(xxtNew * 2) +'x'+ IntToStr(yytNew * 2));
   if HGrTerrainNew < 0 then
-    exit;
-  HGrCitiesNew := LoadGraphicSet('Cities' + IntToStr(xxtNew * 2) +'x'+ IntToStr(yytNew * 2));
-  if HGrCitiesNew < 0 then
     exit;
   xxt := xxtNew;
   yyt := yytNew;
@@ -130,7 +127,6 @@ begin
     terrainCurrent:=terrainBig;
   end;
   HGrTerrain := HGrTerrainNew;
-  HGrCities := HGrCitiesNew;
   Result := True;
 
   // prepare age 2+3 cities
