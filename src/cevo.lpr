@@ -52,7 +52,6 @@ uses
 
 begin
 Application.Initialize;
-Application.Title := 'C-evo';
 Application.CreateForm(TDirectDlg, DirectDlg);
 Application.CreateForm(TStartDlg, StartDlg);
 Application.CreateForm(TMessgDlg, MessgDlg);
