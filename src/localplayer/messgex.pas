@@ -339,10 +339,7 @@ begin
       y := 26 + Border + TopSpace + Lines * MessageLineSpacing + iy * 48;
       with MyRO.EnemyModel[emix], Tribe[Owner].ModelPicture[mix] do
       begin
-        BitBltUgly(Canvas.Handle, x, y, 64, 48, GrExt[HGr].Mask.Canvas.Handle,
-          pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCAND);
-        BitBltUgly(Canvas.Handle, x, y, 64, 48, GrExt[HGr].Data.Canvas.Handle,
-          pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCPAINT);
+        BitBltTransparent(Canvas, x, y, 64, 48, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, GrExt[HGr].Data);
       end;
 
       // next position
@@ -409,10 +406,7 @@ begin
       with Tribe[me].ModelPicture[IconIndex] do
       begin
         FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig, 0, 0);
-        BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
-          GrExt[HGr].Mask.Canvas.Handle, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCAND);
-        BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 20, 64, 44,
-          GrExt[HGr].Data.Canvas.Handle, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, SRCPAINT);
+        BitBltTransparent(Canvas, ClientWidth div 2 - 32, 20, 64, 44, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, GrExt[HGr].Data);
       end;
     mikBook:
       PaintBook(Canvas, ClientWidth div 2, 24, MainTexture.clPage, MainTexture.clCover);

@@ -28,7 +28,6 @@ function MovementToString(Movement: integer): string;
 procedure BtnFrame(ca: TCanvas; p: TRect; const T: TTexture);
 procedure EditFrame(ca: TCanvas; p: TRect; const T: TTexture);
 function HexStringToColor(s: string): integer;
-procedure BitBlt_cevo_hack(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; SrcCanvas: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
 procedure BitBltTransparent(DestCanvas: TCanvas; destX, destY, Width, Height: Integer; XSrc, YSrc: Integer; source: TFPImageBitmap);
 procedure BitBltUgly(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
