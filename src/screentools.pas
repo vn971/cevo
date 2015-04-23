@@ -167,7 +167,7 @@ type
   TGrExtDescrSize = record {for size calculation only - must be the same as
   TGrExtDescr, but without pixUsed}
     Name: string[31];
-    Data, Mask: TBitmap;
+    Data, Mask: TFPImageBitmap;
   end;
 
   TFontType = (ftNormal, ftSmall, ftTiny, ftCaption, ftButton);
@@ -388,9 +388,9 @@ end;
 procedure BitBlt_onlyCopy(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
 begin
   if (Rop = SRCCOPY) then begin
-    BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, SRCCOPY);
-  end else if Rop = SRCPAINT then begin
-    //BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, SRCPAINT);
+    BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+  end else if (Rop = SRCAND)or (Rop=SRCPAINT) then begin
+    BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
   end;
 end;
 
