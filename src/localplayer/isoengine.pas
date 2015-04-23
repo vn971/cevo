@@ -473,9 +473,7 @@ end;
 
 procedure TIsoMap.Sprite(HGr, xDst, yDst, Width, Height, xGr, yGr: integer);
 begin
-  //BitBltTransparent(FOutput.Canvas, xDst, yDst, Width, Height, xGr, yGr, GrExt[HGr].Data);
-  BitBlt_to_isoengine(GrExt[HGr].Mask, xDst, yDst, Width, Height, xGr, yGr, SRCAND);
-  BitBlt_to_isoengine(GrExt[HGr].Data, xDst, yDst, Width, Height, xGr, yGr, SRCPAINT);
+  BitBltTransparent(FOutput.Canvas, xDst, yDst, Width, Height, xGr, yGr, GrExt[HGr].Data);
 end;
 
 procedure TIsoMap.TSprite(xDst, yDst, grix: integer; PureBlack: boolean = False);
