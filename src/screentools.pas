@@ -394,14 +394,24 @@ begin
   end;
 end;
 
+procedure BitBltWindowsSpecific(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
+begin
+  {$ifdef WINDOWS}
+  Windows.BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+  {$else}
+  LCLIntf.BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+  {$endif}
+end;
+
 procedure BitBltUgly(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
 var
   img: TFPImageBitmap;
   x,y: Integer;
   color: TFPColor;
 begin
-  BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+  LCLIntf.BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
   //BitBlt_onlyCopy(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+  //BitBltWindowsSpecific(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
 end;
 
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;

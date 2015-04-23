@@ -10,7 +10,7 @@ of this repository.
 This branch's goal is to port C-Evo
 to the free development environment called "Lazarus".
 Apart from switching to a free IDE,
-it will also make the project cross-compilable.
+this will also make the project cross-compilable.
 That is, you would be able to launch the game on Linux/MacOS.
 
 
