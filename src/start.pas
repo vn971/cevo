@@ -1020,22 +1020,15 @@ procedure TStartDlg.PaintInfo;
     Mini.PixelFormat := pf24bit;
     Mini.Width := MiniWidth * 2;
     Mini.Height := MiniHeight;
-    for y := 0 to MiniHeight - 1 do
-    begin
-      Mini.BeginUpdate();
-      MiniLine := Mini.ScanLine[y];
-      for x := 0 to MiniWidth - 1 do
-        for i := 0 to 1 do
-        begin
+    for y := 0 to MiniHeight - 1 do begin
+      for x := 0 to MiniWidth - 1 do begin
+        for i := 0 to 1 do begin
           xm := (x * 2 + i + y and 1) mod (MiniWidth * 2);
-          cm := MiniColors[Map[x * lxmax div MiniWidth + lxmax *
-            ((y * (lymax - 1) + MiniHeight div 2) div (MiniHeight - 1))] and
-            fTerrain, i];
-          MiniLine[xm, 0] := cm shr 16 * Brightness div 3;
-          MiniLine[xm, 1] := cm shr 8 and $FF * Brightness div 3;
-          MiniLine[xm, 2] := cm and $FF * Brightness div 3;
+          Mini.Canvas.Pixels[xm,y]:= MiniColors[Map[x * lxmax div MiniWidth + lxmax *
+              ((y * (lymax - 1) + MiniHeight div 2) div (MiniHeight - 1))] and
+              fTerrain, i];
         end;
-      Mini.EndUpdate();
+      end;
     end;
   end;
 
