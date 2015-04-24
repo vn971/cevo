@@ -123,13 +123,9 @@ begin
   with Canvas do
     if FGraphic <> nil then
     begin
-      BitBltUgly(Buffer.Canvas.Handle, 0, 0, 48, 48, Back.Canvas.Handle, 0, 0, SRCCOPY);
-      ImageOp_CBC(Buffer, Template, 0, 0, 133, 149 + 48 * byte(FDown), 48,
-        48, $000000, $FFFFFF);
+      BitBltTransparent(Canvas, 0, 0, 48, 48, 0,48 * byte(FDown), endOfTurnButton);
       if FIndex >= 0 then
-        ImageOp_CBC(Buffer, Template, 8, 8, 1 + 32 * byte(FIndex), 246, 32,
-          32, $000000, $FFFFFF);
-      BitBltUgly(Canvas.Handle, 0, 0, 48, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
+        BitBltTransparent(Canvas, 8, 8, 32, 32, 1 + 32 * byte(FIndex), 0, endOfTurnImages);
     end
     else
     begin
