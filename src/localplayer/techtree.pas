@@ -35,6 +35,7 @@ var
 implementation
 
 uses
+  math,
   Directories;
 
 {$R *.lfm}
@@ -52,22 +53,6 @@ const
   xLegend = 44;
   yLegend = 79;
   yLegendPitch = 32;
-
-function min(a, b: integer): integer;
-begin
-  if a < b then
-    Result := a
-  else
-    Result := b;
-end;
-
-function max(a, b: integer): integer;
-begin
-  if a > b then
-    Result := a
-  else
-    Result := b;
-end;
 
 procedure TTechTreeDlg.FormCreate(Sender: TObject);
 begin
@@ -160,20 +145,20 @@ begin
     // texturize background
     TexWidth := Paper.Width;
     TexHeight := Paper.Height;
+    Paper.BeginUpdate();
+    Image.BeginUpdate();
     for y := 0 to Image.Height - 1 do
     begin
-      Paper.BeginUpdate();
       SrcLine := Paper.ScanLine[y mod TexHeight];
-      Image.BeginUpdate();
       DstLine := Image.ScanLine[y];
       for x := 0 to Image.Width - 1 do
       begin
         if cardinal((@DstLine[x])^) and $FFFFFF = $7F007F then // transparent
           DstLine[x] := SrcLine[x mod TexWidth];
       end;
-      Image.EndUpdate();
-      Paper.EndUpdate();
     end;
+    Image.EndUpdate();
+    Paper.EndUpdate();
   end;
 
   // fit window to image, center image in window, center window to screen

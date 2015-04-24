@@ -242,8 +242,6 @@ var
   ix, iy, xDst, yDst, dx, dy, xIcon, yIcon, xb, yb, wb, hb: integer;
   x1, xR, yR, share: single;
   Screwed: array[0..wScrewed - 1, 0..hScrewed - 1, 0..3] of single;
-  SrcLine: ^TLine;
-
 begin
   if IconIndex >= 0 then
   begin
@@ -253,8 +251,6 @@ begin
     fillchar(Screwed, sizeof(Screwed), 0);
     for iy := 0 to 39 do
     begin
-      BigImp.BeginUpdate();
-      SrcLine := BigImp.ScanLine[iy + yIcon];
       for ix := 0 to 55 do
       begin
         xR := ix * (37 + iy * 5 / 40) / 56;
@@ -276,16 +272,15 @@ begin
             else
               share := share * yR;
             Screwed[xDst + dx, yDst + dy, 0] :=
-              Screwed[xDst + dx, yDst + dy, 0] + share * SrcLine[ix + xIcon, 0];
+              Screwed[xDst + dx, yDst + dy, 0] + share * Blue(wondersTransparent.Canvas.Pixels[ix + xIcon, iy + yIcon]);
             Screwed[xDst + dx, yDst + dy, 1] :=
-              Screwed[xDst + dx, yDst + dy, 1] + share * SrcLine[ix + xIcon, 1];
+              Screwed[xDst + dx, yDst + dy, 1] + share * Green(wondersTransparent.Canvas.Pixels[ix + xIcon, iy + yIcon]);
             Screwed[xDst + dx, yDst + dy, 2] :=
-              Screwed[xDst + dx, yDst + dy, 2] + share * SrcLine[ix + xIcon, 2];
+              Screwed[xDst + dx, yDst + dy, 2] + share * Red(wondersTransparent.Canvas.Pixels[ix + xIcon, iy + yIcon]);
             Screwed[xDst + dx, yDst + dy, 3] :=
               Screwed[xDst + dx, yDst + dy, 3] + share;
           end;
       end;
-      BigImp.EndUpdate();
     end;
     xb := xBBook;
     yb := yBBook;
