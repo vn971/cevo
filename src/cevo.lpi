@@ -357,6 +357,9 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <Target>
+      <Filename Value="../bin/cevo"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="localplayer;$(ProjOutDir)"/>
       <OtherUnitFiles Value="localplayer"/>
