@@ -331,7 +331,7 @@ begin
       end;
 
       if Extinct then
-        FrameImage(canvas, wondersTransparent, xIcon, yIcon, xSizeBig, ySizeBig, 0, 200)
+        FrameImage(canvas, improvementsPNG, xIcon, yIcon, xSizeBig, ySizeBig, 0, 200)
     end;
 
     if CurrentReport.TurnOfCivilReport >= 0 then

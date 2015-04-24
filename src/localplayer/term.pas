@@ -505,7 +505,7 @@ end;
 procedure InitSmallImp;
 begin
   FreeAndNil(SmallImp);
-  SmallImp:=LoadAnyGraphics(Directories.GraphicsDirectory + 'IconsMini');
+  SmallImp:=LoadAnyGraphics(Directories.GraphicsDirectory + 'ImprovementsMini');
 end;
 
 procedure ImpImage(ca: TCanvas; x, y, iix: integer; Government: integer;
@@ -515,7 +515,7 @@ begin
     Government := MyRO.Government;
   if (iix = imPalace) and (Government <> gAnarchy) then
     iix := Government - 8;
-  FrameImage(ca, wondersTransparent, x, y, xSizeBig, ySizeBig,
+  FrameImage(ca, improvementsPNG, x, y, xSizeBig, ySizeBig,
     (iix + SystemIconLines * 7) mod 7 * xSizeBig,
     (iix + SystemIconLines * 7) div 7 * ySizeBig, IsControl);
 end;

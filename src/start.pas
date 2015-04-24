@@ -470,7 +470,7 @@ const
       0, 0, SRCCOPY);
     BitBltTransparent(Canvas, xActionIcon, y, 40, 40,
       (IconIndex mod 7) * xSizeBig + 8,
-      (IconIndex div 7) * ySizeBig, wondersTransparent);
+      (IconIndex div 7) * ySizeBig, improvementsPNG);
     RFrame(Canvas, xActionIcon - 1, y - 1, xActionIcon + 40, y + 40, $000000, $000000);
   end;
 

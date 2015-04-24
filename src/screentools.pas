@@ -175,10 +175,10 @@ var
   GrExt: array[0..nGrExtmax - 1] of ^TGrExtDescr;
   ClickFrameColor, SoundMode, MainTextureAge: integer;
   MainTexture: TTexture;
-  Paper, BigImp, LogoBuffer, Colors, Templates: TFPImageBitmap;
+  Paper, LogoBuffer, Colors, Templates: TFPImageBitmap;
   wondersGrayedOut: TFPImageBitmap;
   endOfTurnButton, endOfTurnImages: TFPImageBitmap;
-  wondersTransparent, system2transparent, system1transparent: TFPImageBitmap;
+  improvementsPNG, system2transparent, system1transparent: TFPImageBitmap;
   FullScreen: Boolean = False; // lazarus todo: stop using this hardcoded fullscreen override
   GenerateNames, InitOrnamentDone, Phrases2FallenBackToEnglish: boolean;
 
@@ -1523,8 +1523,7 @@ initialization
   Templates.PixelFormat := pf24bit;
   Colors := LoadAnyGraphics(GraphicsDirectory + 'Colors');
   Paper := LoadAnyGraphics(GraphicsDirectory + 'Paper');
-  BigImp := LoadAnyGraphics(GraphicsDirectory + 'Icons');
-  wondersTransparent := LoadAnyGraphics(GraphicsDirectory + 'IconsTransparent');
+  improvementsPNG := LoadAnyGraphics(GraphicsDirectory + 'Improvements');
   wondersGrayedOut:=LoadAnyGraphics(GraphicsDirectory + 'WondersGrayedOut');
   endOfTurnButton:=LoadAnyGraphics(GraphicsDirectory + 'EndOfTurnButton');
   endOfTurnImages:=LoadAnyGraphics(GraphicsDirectory + 'EndOfTurnImages');
@@ -1547,10 +1546,9 @@ finalization
   if Sounds <> nil then
     Sounds.Free;
   LogoBuffer.Free;
-  BigImp.Free;
   system1transparent.Free;
   system2transparent.Free;
-  wondersTransparent.Free;
+  improvementsPNG.Free;
   wondersGrayedOut.Free;
   endOfTurnButton.Free;
   endOfTurnImages.Free;

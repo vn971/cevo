@@ -353,12 +353,11 @@ type
 var
   x, y, dx, dy, xSrc, ySrc, sum, xx: integer;
   Heaven: array[0..nHeaven] of integer;
-  PaintLine, CoalLine: ^TLine;
-  ImpLine: array[-1..1] of ^TLine;
+  clr: TColor;
 begin
   // assume eiffel tower has free common heaven
   for dy := 0 to nHeaven - 1 do
-    Heaven[dy] := BigImp.Canvas.Pixels[woEiffel mod 7 * xSizeBig,
+    Heaven[dy] := improvementsPNG.Canvas.Pixels[woEiffel mod 7 * xSizeBig,
       (SystemIconLines + woEiffel div 7) * ySizeBig + dy];
 
   xSrc := iix mod 7 * xSizeBig;
@@ -366,16 +365,6 @@ begin
   for y := 0 to ySizeBig * 2 - 1 do
     if (y0 + y >= 0) and (y0 + y < InnerHeight) then
     begin
-      Offscreen.BeginUpdate();
-      PaintLine := OffScreen.ScanLine[y0 + y];
-      Templates.BeginUpdate();
-      CoalLine := Templates.ScanLine[yCoal + y];
-      BigImp.BeginUpdate();
-      for dy := -1 to 1 do
-        if ((y + dy) shr 1 >= 0) and ((y + dy) shr 1 < ySizeBig) then
-        begin
-          ImpLine[dy] := BigImp.ScanLine[ySrc + (y + dy) shr 1];
-        end;
       for x := 0 to xSizeBig * 2 - 1 do
       begin
         sum := 0;
@@ -385,23 +374,21 @@ begin
           for dy := -1 to 1 do
             if ((y + dy) shr 1 < 0) or ((y + dy) shr 1 >= ySizeBig) or
               ((x + dx) shr 1 < 0) or ((x + dx) shr 1 >= xSizeBig) or
-              ((y + dy) shr 1 < nHeaven) and (ImpLine[dy, xx, 0] shl 16 + ImpLine[dy, xx, 1] shl
-              8 + ImpLine[dy, xx, 2] = Heaven[(y + dy) shr 1]) then
+              ((y + dy) shr 1 < nHeaven) and (improvementsPNG.Canvas.Pixels[xx, ySrc + (y + dy) shr 1] = Heaven[(y + dy) shr 1]) then
               sum := sum + 9 * 255
-            else
-              sum := sum + ImpLine[dy, xx, 0] + 5 * ImpLine[dy, xx, 1] + 3 * ImpLine[dy, xx, 2];
+            else begin
+              clr:=improvementsPNG.Canvas.Pixels[xx, ySrc + (y + dy) shr 1];
+              sum := sum + Blue(clr) + 5 * Green(clr) + 3 * Red(clr);
+            end;
         end;
         if sum < maxsum then
         begin // no saturation
-          sum := 1 shl 22 - (maxsum - sum) * (256 - CoalLine[xCoal + x, 0] * 2);
-          PaintLine[x0 + x, 0] := PaintLine[x0 + x, 0] * sum shr 22;
-          PaintLine[x0 + x, 1] := PaintLine[x0 + x, 1] * sum shr 22;
-          PaintLine[x0 + x, 2] := PaintLine[x0 + x, 2] * sum shr 22;
+          sum := 1 shl 22 - (maxsum - sum) * (256 - Blue(Templates.Canvas.Pixels[xCoal + x, yCoal + y]) * 2);
+          Offscreen.Canvas.Pixels[x0 + x, y0 + y]:=Offscreen.Canvas.Pixels[x0 + x, y0 + y];
+          clr:=Offscreen.Canvas.Pixels[x0 + x, y0 + y];
+          clr:=RGBToColor(Red(clr) * sum shr 22, Green(clr) * sum shr 22, Blue(clr) * sum shr 22);
         end;
       end;
-      BigImp.EndUpdate();
-      Templates.EndUpdate();
-      Offscreen.EndUpdate();
     end;
 end;
 
@@ -495,7 +482,7 @@ begin
           end;
           pkBigIcon:
           begin
-            FrameImage(offscreen.canvas, wondersTransparent, x0[i] + 12, i * 24 - 7, 56, 40,
+            FrameImage(offscreen.canvas, improvementsPNG, x0[i] + 12, i * 24 - 7, 56, 40,
               HelpLineInfo.Picpix mod 7 * xSizeBig,
               HelpLineInfo.Picpix div 7 * ySizeBig);
             x0[i] := 64 + 8 + 8 + x0[i];
@@ -672,7 +659,7 @@ begin
           end;
           pkModel:
           begin
-            FrameImage(offscreen.canvas, wondersTransparent, x0[i] + 12, i * 24 - 7, 56, 40, 0, 0);
+            FrameImage(offscreen.canvas, improvementsPNG, x0[i] + 12, i * 24 - 7, 56, 40, 0, 0);
             BitBltTransparent(offscreen.Canvas, x0[i] + 8, i * 24 - 11, 64, 44,
               1 + HelpLineInfo.Picpix mod 10 * 65, 1 + HelpLineInfo.Picpix div 10 * 49, stdUnitsPng);
             x0[i] := 64 + 8 + 8 + x0[i];

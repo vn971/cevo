@@ -96,7 +96,7 @@ begin
       52, xSizeBig, ySizeBig, Tribe[me].Color);
     BitBltTransparent(Offscreen.Canvas, ClientWidth div 2 - xSizeBig div 2,
       52, xSizeBig, ySizeBig,
-      (woLiberty mod 7) * xSizeBig, (woLiberty div 7 + SystemIconLines) * ySizeBig, wondersTransparent);
+      (woLiberty mod 7) * xSizeBig, (woLiberty div 7 + SystemIconLines) * ySizeBig, improvementsPNG);
   end
   else
   begin

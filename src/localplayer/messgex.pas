@@ -272,11 +272,11 @@ begin
             else
               share := share * yR;
             Screwed[xDst + dx, yDst + dy, 0] :=
-              Screwed[xDst + dx, yDst + dy, 0] + share * Blue(wondersTransparent.Canvas.Pixels[ix + xIcon, iy + yIcon]);
+              Screwed[xDst + dx, yDst + dy, 0] + share * Blue(improvementsPNG.Canvas.Pixels[ix + xIcon, iy + yIcon]);
             Screwed[xDst + dx, yDst + dy, 1] :=
-              Screwed[xDst + dx, yDst + dy, 1] + share * Green(wondersTransparent.Canvas.Pixels[ix + xIcon, iy + yIcon]);
+              Screwed[xDst + dx, yDst + dy, 1] + share * Green(improvementsPNG.Canvas.Pixels[ix + xIcon, iy + yIcon]);
             Screwed[xDst + dx, yDst + dy, 2] :=
-              Screwed[xDst + dx, yDst + dy, 2] + share * Red(wondersTransparent.Canvas.Pixels[ix + xIcon, iy + yIcon]);
+              Screwed[xDst + dx, yDst + dy, 2] + share * Red(improvementsPNG.Canvas.Pixels[ix + xIcon, iy + yIcon]);
             Screwed[xDst + dx, yDst + dy, 3] :=
               Screwed[xDst + dx, yDst + dy, 3] + share;
           end;
@@ -378,7 +378,7 @@ begin
           Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange, SRCCOPY);
         BitBltTransparent(Buffer.Canvas, GlowRange, GlowRange, xSizeBig, ySizeBig,
           IconIndex mod 7 * xSizeBig,
-          (IconIndex + SystemIconLines * 7) div 7 * ySizeBig, wondersTransparent);
+          (IconIndex + SystemIconLines * 7) div 7 * ySizeBig, improvementsPNG);
         if p1 < 0 then
           GlowFrame(Buffer, GlowRange, GlowRange, xSizeBig, ySizeBig, $000000)
         else
@@ -400,7 +400,7 @@ begin
     mikModel:
       with Tribe[me].ModelPicture[IconIndex] do
       begin
-        FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig, 0, 0);
+        FrameImage(Canvas, improvementsPNG, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig, 0, 0);
         BitBltTransparent(Canvas, ClientWidth div 2 - 32, 20, 64, 44, pix mod 10 * 65 + 1, pix div 10 * 49 + 1, GrExt[HGr].Data);
       end;
     mikBook:
@@ -416,11 +416,11 @@ begin
           1 + Tribe[IconIndex].facepix div 10 * 49, SRCCOPY);
       end;
     mikPureIcon:
-      FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig,
+      FrameImage(Canvas, improvementsPNG, ClientWidth div 2 - 28, 24, xSizeBig, ySizeBig,
         IconIndex mod 7 * xSizeBig,
         IconIndex div 7 * ySizeBig);
     mikBigIcon:
-      FrameImage(Canvas, wondersTransparent, ClientWidth div 2 - 3 * 28, 32, xSizeBig * 3, ySizeBig * 3,
+      FrameImage(Canvas, improvementsPNG, ClientWidth div 2 - 3 * 28, 32, xSizeBig * 3, ySizeBig * 3,
         IconIndex mod 2 * 3 * xSizeBig,
         IconIndex div 2 * 3 * ySizeBig);
     mikEnemyShipComplete:

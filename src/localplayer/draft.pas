@@ -364,7 +364,7 @@ begin
 
   with Tribe[me].ModelPicture[MyRO.nModel] do
   begin
-    FrameImage(offscreen.canvas, wondersTransparent, xView + 4, yView + 4, xSizeBig, ySizeBig, 0, 0);
+    FrameImage(offscreen.canvas, improvementsPNG, xView + 4, yView + 4, xSizeBig, ySizeBig, 0, 0);
     Sprite(offscreen, HGr, xView, yView, 64, 44, pix mod 10 * 65 + 1, pix div 10 * 49 + 1);
   end;
   MarkUsedOffscreen(ClientWidth, ClientHeight);

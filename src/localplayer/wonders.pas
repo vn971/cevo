@@ -192,7 +192,7 @@ begin
           Glow(i, $000000);
           BitBltTransparent(Offscreen.Canvas, xm - xSizeBig div 2 + RingPosition[i, 0],
             ym - ySizeBig div 2 + RingPosition[i, 1], xSizeBig, ySizeBig,
-            0, (SystemIconLines + 3) * ySizeBig, wondersTransparent);
+            0, (SystemIconLines + 3) * ySizeBig, improvementsPNG);
         end;
         else
         begin
@@ -204,7 +204,7 @@ begin
           BitBltTransparent(Offscreen.Canvas, xm - xSizeBig div 2 + RingPosition[i, 0],
             ym - ySizeBig div 2 + RingPosition[i, 1], xSizeBig, ySizeBig,
             (i mod 7) * xSizeBig,
-            (i div 7 + SystemIconLines) * ySizeBig, wondersTransparent);
+            (i div 7 + SystemIconLines) * ySizeBig, improvementsPNG);
         end
       end;
     end;

@@ -561,7 +561,7 @@ begin
         end
       else
       begin
-        FrameImage(offscreen.canvas, wondersTransparent, xView + 4, yView, 56, 40, 0, 0);
+        FrameImage(offscreen.canvas, improvementsPNG, xView + 4, yView, 56, 40, 0, 0);
         Sprite(offscreen, HGr, xView, yView - 4, 64, 44, pix mod 10 * 65 + 1, pix div 10 * 49 + 1);
       end;
 
