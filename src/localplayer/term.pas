@@ -503,88 +503,9 @@ begin
 end;
 
 procedure InitSmallImp;
-const
-  cut = 4;
-  Sharpen = 80;
-type
-  TLine = array[0..99999, 0..2] of byte;
-  TBuffer = array[0..99999, 0..2] of integer;
-var
-  sum, Cnt, dx, dy, nx, ny, ix, iy, ir, x, y, c, ch, xdivider, ydivider: integer;
-  resampled: ^TBuffer;
-  line: ^TLine;
 begin
-  nx := BigImp.Width div xSizeBig * xSizeSmall;
-  ny := BigImp.Height div ySizeBig * ySizeSmall;
-
-  // resample icons
-  GetMem(resampled, nx * ny * 12);
-  FillChar(resampled^, nx * ny * 12, 0);
-  for ix := 0 to BigImp.Width div xSizeBig - 1 do
-    for iy := 0 to BigImp.Height div ySizeBig - 1 do
-      for y := 0 to ySizeBig - 2 * cut - 1 do
-      begin
-        ydivider := (y * ySizeSmall div (ySizeBig - 2 * cut) + 1) * (ySizeBig - 2 * cut) - y * ySizeSmall;
-        if ydivider > ySizeSmall then
-          ydivider := ySizeSmall;
-        BigImp.BeginUpdate();
-        line := BigImp.ScanLine[cut + iy * ySizeBig + y];
-        for x := 0 to xSizeBig - 1 do
-        begin
-          ir := ix * xSizeSmall + iy * nx * ySizeSmall + x * xSizeSmall div
-            xSizeBig + y * ySizeSmall div (ySizeBig - 2 * cut) * nx;
-          xdivider := (x * xSizeSmall div xSizeBig + 1) * xSizeBig - x * xSizeSmall;
-          if xdivider > xSizeSmall then
-            xdivider := xSizeSmall;
-          for ch := 0 to 2 do
-          begin
-            c := line[ix * xSizeBig + x, ch];
-            Inc(resampled[ir, ch], c * xdivider * ydivider);
-            if xdivider < xSizeSmall then
-              Inc(resampled[ir + 1, ch], c * (xSizeSmall - xdivider) * ydivider);
-            if ydivider < ySizeSmall then
-              Inc(resampled[ir + nx, ch], c * xdivider * (ySizeSmall - ydivider));
-            if (xdivider < xSizeSmall) and (ydivider < ySizeSmall) then
-              Inc(resampled[ir + nx + 1, ch], c * (xSizeSmall - xdivider) * (ySizeSmall - ydivider));
-          end;
-        end;
-        BigImp.EndUpdate();
-      end;
-
-  // sharpen resampled icons
-  SmallImp.Width := nx;
-  SmallImp.Height := ny;
-  for y := 0 to ny - 1 do
-  begin
-    SmallImp.BeginUpdate();
-    line := SmallImp.ScanLine[y];
-    for x := 0 to nx - 1 do
-      for ch := 0 to 2 do
-      begin
-        sum := 0;
-        Cnt := 0;
-        for dy := -1 to 1 do
-          if ((dy >= 0) or (y mod ySizeSmall > 0)) and
-            ((dy <= 0) or (y mod ySizeSmall < ySizeSmall - 1)) then
-            for dx := -1 to 1 do
-              if ((dx >= 0) or (x mod xSizeSmall > 0)) and
-                ((dx <= 0) or (x mod xSizeSmall < xSizeSmall - 1)) then
-              begin
-                Inc(sum, resampled[x + dx + nx * (y + dy), ch]);
-                Inc(Cnt);
-              end;
-        sum := ((Cnt * Sharpen + 800) * resampled[x + nx * y, ch] - sum * Sharpen) div
-          (800 * xSizeBig * (ySizeBig - 2 * cut));
-        if sum < 0 then
-          sum := 0;
-        if sum > 255 then
-          sum := 255;
-        line[x][ch] := sum;
-      end;
-    SmallImp.EndUpdate();
-  end;
-  FreeMem(resampled);
-  //smallimp.savetofile(BinariesDirectory+'smallimp.bmp'); //!!!
+  FreeAndNil(SmallImp);
+  SmallImp:=LoadAnyGraphics(Directories.GraphicsDirectory + 'IconsMini');
 end;
 
 procedure ImpImage(ca: TCanvas; x, y, iix: integer; Government: integer;
