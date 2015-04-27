@@ -49,8 +49,19 @@ uses
   wonders in 'localplayer\wonders.pas' {wonderdlg};
 
 {$R *.res}
-
+var
+  i: Integer;
 begin
+for i:= 1 to Paramcount do begin
+  if (ParamStr(i) = '--help') or (ParamStr(i) = '-h') then begin
+    WriteLn('C-evo, a free empire building game');
+    WriteLn('Options:');
+    WriteLn('  --help, -h      show this text');
+    WriteLn('  -man, \man      show in-game manual');
+    halt;
+  end;
+end;
+
 Application.Initialize;
 Application.CreateForm(TDirectDlg, DirectDlg);
 Application.CreateForm(TStartDlg, StartDlg);
