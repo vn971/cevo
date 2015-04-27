@@ -1,3 +1,3 @@
-del ..\target\cevo.exe
+del ..\bin\cevo.exe
 lazbuild.exe -B cevo.lpr --build-mode=Default
-..\target\cevo.exe
+..\bin\cevo.exe

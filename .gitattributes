@@ -1,3 +1,2 @@
 *.bat               eol=crlf
 /bin/**/*.txt       eol=crlf
-/target/**/*.txt    eol=crlf

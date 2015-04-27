@@ -30,7 +30,6 @@ uses
 
 procedure TBackground.FormShow(Sender: TObject);
 begin
-  img := nil;
   if FullScreen or True then // lazarus todo: stop using this hardcoded fullscreen override
   begin
     img := LoadAnyGraphics(GraphicsDirectory + 'Background');
@@ -56,11 +55,7 @@ end;
 
 procedure TBackground.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if img <> nil then
-  begin
-    img.Free;
-    img := nil;
-  end;
+  FreeAndNil(img);
 end;
 
 end.
