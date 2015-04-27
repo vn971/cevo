@@ -1,5 +1,8 @@
 {$INCLUDE switches.pas}
 
+// lazarus todo:
+// delete this file totally.
+// It was needed for "fullscreen" mode. It seems platform-specific to me (vn971).
 unit back;
 
 interface
@@ -30,7 +33,7 @@ uses
 
 procedure TBackground.FormShow(Sender: TObject);
 begin
-  if FullScreen or True then // lazarus todo: stop using this hardcoded fullscreen override
+  if FullScreen then
   begin
     img := LoadAnyGraphics(GraphicsDirectory + 'Background');
   end

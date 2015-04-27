@@ -156,7 +156,7 @@ begin
     end;
     ntBackOn:
     begin
-      background.Show;
+      //background.Show;
       background.update;
       sleep(50); // prevent flickering
     end;
@@ -238,7 +238,7 @@ begin
   end;
   if not Quick then
   begin
-    background.Show;
+    // background.Show;
     StartDlg.Show;
   end;
 end;
