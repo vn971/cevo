@@ -254,7 +254,7 @@ begin
   begin
     AgePrepared := MainTextureAge;
     BitBltUgly(Back.Canvas.Handle, 0, 0, ClientWidth, ClientHeight,
-      MainTexture.Image.Canvas.Handle, 0, 0, SRCCOPY);
+      MainTexture.Image.Canvas, 0, 0, SRCCOPY);
     ImageOp_B(Back, Template, 0, 0, 0, 0, ClientWidth, ClientHeight);
   end;
 end;
@@ -280,12 +280,12 @@ begin
   Color0 := Colors.Canvas.Pixels[clkAge0 + Age, cliRoad];
   Color1 := Colors.Canvas.Pixels[clkCity, cli1];
   Color2 := Colors.Canvas.Pixels[clkAge0 + Age, cliHouse];
-  BitBltUgly(SmallCityMap.Canvas.Handle, 0, 0, 83, hSmallMap, SmallCityMapTemplate.Canvas.Handle,
+  BitBltUgly(SmallCityMap.Canvas.Handle, 0, 0, 83, hSmallMap, SmallCityMapTemplate.Canvas,
     83 * SizeClass, 0, SRCCOPY);
   if IsPort then
   begin
     BitBltUgly(SmallCityMap.Canvas.Handle, 83, 0, 15, hSmallMap,
-      SmallCityMapTemplate.Canvas.Handle, 332 + 15, 0, SRCCOPY);
+      SmallCityMapTemplate.Canvas, 332 + 15, 0, SRCCOPY);
     ImageOp_CCC(SmallCityMap, 0, 0, 83, hSmallMap, Color0, Color1, Color2);
     Color2 := Colors.Canvas.Pixels[clkCity, cliWater];
     ImageOp_CCC(SmallCityMap, 83, 0, 15, hSmallMap, Color0, Color1, Color2);
@@ -293,7 +293,7 @@ begin
   else
   begin
     BitBltUgly(SmallCityMap.Canvas.Handle, 83, 0, 15, hSmallMap,
-      SmallCityMapTemplate.Canvas.Handle, 332, 0, SRCCOPY);
+      SmallCityMapTemplate.Canvas, 332, 0, SRCCOPY);
     ImageOp_CCC(SmallCityMap, 0, 0, wSmallMap, hSmallMap, Color0, Color1, Color2);
   end;
 
@@ -341,7 +341,7 @@ end;
 
 procedure TCityDlg.InitZoomCityMap;
 begin
-  BitBltUgly(ZoomCityMap.canvas.handle, 0, 0, wZoomMap, hZoomMap, Back.Canvas.handle,
+  BitBltUgly(ZoomCityMap.canvas.handle, 0, 0, wZoomMap, hZoomMap, Back.Canvas,
     xZoomMap, yZoomMap, SRCCOPY);
   if Mode = mImp then
   begin
@@ -527,7 +527,7 @@ begin
   RedTex.clTextLight := $000000;
   RedTex.clTextShade := $0000FF;
 
-  BitBltUgly(offscreen.canvas.handle, 0, 0, 640, 480, Back.Canvas.handle, 0, 0, SRCCOPY);
+  BitBltUgly(offscreen.canvas.handle, 0, 0, 640, 480, Back.Canvas, 0, 0, SRCCOPY);
 
   offscreen.Canvas.Font.Assign(UniFont[ftCaption]);
   RisedTextout(offscreen.Canvas, 42, 7, Caption);
@@ -596,7 +596,7 @@ begin
   AreaMap.Paint(xmArea - xxt * 2 * rx, ymArea - yyt * 2 * ry - 3 * yyt, dLoc(cLoc, -2 * rx + 1, -2 * ry - 1),
     4 * rx - 1, 4 * ry + 1, cLoc, cOwner,
     False, AllowChange and IsCityAlive and (c.Status and csResourceWeightsMask = 0));
-  BitBltUgly(offscreen.canvas.handle, xmArea + 102, 42, 90, 33, Back.Canvas.handle,
+  BitBltUgly(offscreen.canvas.handle, xmArea + 102, 42, 90, 33, Back.Canvas,
     xmArea + 102, 42, SRCCOPY);
 
   if IsCityAlive then
@@ -772,7 +772,7 @@ begin
 
   // small map
   BitBltUgly(Offscreen.Canvas.Handle, xSmallMap, ySmallmap, wSmallMap, hSmallMap,
-    SmallCitymap.Canvas.Handle, 0, 0, SRCCOPY);
+    SmallCitymap.Canvas, 0, 0, SRCCOPY);
   if Mode = mImp then
     Frame(Offscreen.Canvas, xSmallMap + 48 * (ZoomArea div 3), ySmallmap + 24 * (ZoomArea mod 3),
       xSmallMap + 48 * (ZoomArea div 3) + 49, ySmallmap + 24 * (ZoomArea mod 3) + 25,
@@ -799,7 +799,7 @@ begin
   BitBltTransparent(offscreen.Canvas, x + 6, y - 5, 10, 10, 154, 126, system1transparent);
 
   BitBltUgly(Offscreen.Canvas.Handle, xZoomMap, yZoommap, wZoomMap, hZoomMap,
-    ZoomCitymap.Canvas.Handle, 0, 0, SRCCOPY);
+    ZoomCitymap.Canvas, 0, 0, SRCCOPY);
 
   for i := 0 to 5 do
     imix[i] := -1;
@@ -1544,11 +1544,11 @@ begin
       with Canvas do
       begin
         BitBltUgly(canvas.Handle, xView + 5, yView + 1, 64, 2,
-          back.Canvas.Handle, xView + 5, yView + 1, SRCCOPY);
+          back.Canvas, xView + 5, yView + 1, SRCCOPY);
         BitBltUgly(canvas.Handle, xView + 5, yView + 3, 2, 42,
-          back.Canvas.Handle, xView + 5, yView + 3, SRCCOPY);
+          back.Canvas, xView + 5, yView + 3, SRCCOPY);
         BitBltUgly(canvas.Handle, xView + 5 + 62, yView + 3, 2, 42,
-          back.Canvas.Handle, xView + 5 + 62, yView + 3, SRCCOPY);
+          back.Canvas, xView + 5 + 62, yView + 3, SRCCOPY);
         ScreenTools.Frame(canvas, xView + 9 - 1, yView + 5 - 1, xView + 9 + xSizeBig, yView + 5 + ySizeBig, $B0B0B0, $FFFFFF);
         RFrame(canvas, xView + 9 - 2, yView + 5 - 2, xView + 9 + xSizeBig + 1, yView + 5 +
           ySizeBig + 1, $FFFFFF, $B0B0B0);

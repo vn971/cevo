@@ -111,7 +111,7 @@ begin
       Frame(offscreen.Canvas, xSwitch + 1 + i * 42, ySwitch + 1, xSwitch + 38 + i * 42, ySwitch + 22,
         MainTexture.clBevelLight, MainTexture.clBevelShade);
     BitBltUgly(offscreen.Canvas.Handle, xSwitch + 2 + i * 42, ySwitch + 2, xSizeSmall,
-      ySizeSmall, SmallImp.Canvas.Handle, (i + 3) * xSizeSmall, 0, SRCCOPY);
+      ySizeSmall, SmallImp.Canvas, (i + 3) * xSizeSmall, 0, SRCCOPY);
   end;
   RisedTextOut(offscreen.Canvas, 8, yList + 32 * nListRow + 2, Phrases.Lookup('BUILDORDER'));
   RisedTextOut(offscreen.Canvas, 8, ySwitch + 26, Phrases.Lookup('CITYTYPE', ctype));
@@ -145,7 +145,7 @@ begin
     BitBltUgly(offscreen.Canvas.Handle,
       xList + 21 - xSizeSmall div 2 + i mod nListCol * 42,
       yList + 16 - ySizeSmall div 2 + i div nListCol * 32,
-      xSizeSmall, ySizeSmall, SmallImp.Canvas.Handle,
+      xSizeSmall, ySizeSmall, SmallImp.Canvas,
       MyData.ImpOrder[ctype, i] mod 7 * xSizeSmall,
       (MyData.ImpOrder[ctype, i] + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY);
     Inc(i);
@@ -167,7 +167,7 @@ begin
       BitBltUgly(offscreen.Canvas.Handle,
         xPool + 21 - xSizeSmall div 2 + nPool mod nPoolCol * 42,
         yPool + 16 - ySizeSmall div 2 + nPool div nPoolCol * 32,
-        xSizeSmall, ySizeSmall, SmallImp.Canvas.Handle,
+        xSizeSmall, ySizeSmall, SmallImp.Canvas,
         iix mod 7 * xSizeSmall, (iix + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY);
       Inc(nPool);
     end;

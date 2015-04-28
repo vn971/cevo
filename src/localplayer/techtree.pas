@@ -98,7 +98,7 @@ begin
     min(ClientWidth - 2 * BlackBorder, ClientWidth - 2 * BlackBorder - xOffset))),
     min(Image.Height, min(Image.Height + yOffset,
     min(ClientHeight - 2 * BlackBorder, ClientHeight - 2 * BlackBorder - yOffset))),
-    Image.Canvas.Handle, max(0, -xOffset), max(0, -yOffset), SRCCOPY);
+    Image.Canvas, max(0, -xOffset), max(0, -yOffset), SRCCOPY);
 end;
 
 procedure TTechTreeDlg.FormShow(Sender: TObject);

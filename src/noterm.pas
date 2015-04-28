@@ -126,7 +126,7 @@ begin
   Fill(State.Canvas, 0, 0, 192, 20, 64, 287 + 138);
   RisedTextOut(State.Canvas, 0, 0, Format(Phrases.Lookup('AIT_ROUND'), [Round]) +
     ' ' + TurnToString(G.RO[me].Turn));
-  BitBltUgly(Canvas.Handle, 64, 287 + 138, 192, 20, State.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(Canvas.Handle, 64, 287 + 138, 192, 20, State.Canvas, 0, 0, SRCCOPY);
 end;
 
 procedure TNoTermDlg.Client(Command, Player: integer; var Data);
@@ -346,7 +346,7 @@ begin
         yBrain[i] - 16, 64, 64, 0, 0);
       if 1 shl i and G.RO[me].Alive = 0 then
         BitBltUgly(Canvas.Handle, xBrain[i], yBrain[i] - 16, 64, 64,
-          Shade.Canvas.Handle, 0, 0, SRCAND);
+          Shade.Canvas, 0, 0, SRCAND);
       BitBltTransparent(Canvas, xBrain[i] + 30 - 14, yBrain[i] + 53, 14, 14, 1, 316, system1transparent);
       RisedTextout(Canvas, xBrain[i] + 30 - 16 -
         BiColorTextWidth(Canvas, IntToStr(WinStat[i])),

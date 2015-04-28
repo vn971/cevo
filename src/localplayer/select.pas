@@ -200,15 +200,15 @@ procedure TListDlg.lineMod(ca: TCanvas; l: integer; NonText, lit: boolean);
       if pix and cpType = 0 then
         if (pix and cpIndex = imPalace) and (MyRO.Government <> gAnarchy) then
           BitBltUgly(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
-            SmallImp.Canvas.Handle, (MyRO.Government - 1) * xSizeSmall,
+            SmallImp.Canvas, (MyRO.Government - 1) * xSizeSmall,
             ySizeSmall, SRCCOPY)
         else
           BitBltUgly(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
-            SmallImp.Canvas.Handle, pix and cpIndex mod 7 * xSizeSmall,
+            SmallImp.Canvas, pix and cpIndex mod 7 * xSizeSmall,
             (pix and cpIndex + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
       else
         BitBltUgly(offscreen.Canvas.Handle, x + 16, y + (16 - 1), xSizeSmall, ySizeSmall,
-          SmallImp.Canvas.Handle, (3 + pix and cpIndex) * xSizeSmall, 0, SRCCOPY);
+          SmallImp.Canvas, (3 + pix and cpIndex) * xSizeSmall, 0, SRCCOPY);
     end;
   end;
 
@@ -556,7 +556,7 @@ begin
                 y0 + ySizeSmall, MainTexture.clBevelLight, MainTexture.clBevelShade);
               if AdvIcon[lix] < 84 then
                 BitBltUgly(offscreen.Canvas.Handle, (8 + 16), y0, xSizeSmall, ySizeSmall,
-                  SmallImp.Canvas.Handle, (AdvIcon[lix] + SystemIconLines * 7) mod 7 * xSizeSmall,
+                  SmallImp.Canvas, (AdvIcon[lix] + SystemIconLines * 7) mod 7 * xSizeSmall,
                   (AdvIcon[lix] + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
               else
                 BitBltTransparent(offscreen.Canvas, (8 + 16), y0, 36, 20,
@@ -654,7 +654,7 @@ begin
           Frame(offscreen.Canvas, 8 + 16 - 1, y0 - 15 + (16 - 2), 8 + 16 + xSizeSmall,
             y0 - 15 + (16 - 1 + ySizeSmall), MainTexture.clBevelLight, MainTexture.clBevelShade);
           BitBltUgly(offscreen.Canvas.Handle, 8 + 16, y0 - 15 + (16 - 1), xSizeSmall, ySizeSmall,
-            SmallImp.Canvas.Handle, (lix - 1) * xSizeSmall, ySizeSmall, SRCCOPY);
+            SmallImp.Canvas, (lix - 1) * xSizeSmall, ySizeSmall, SRCCOPY);
         end;
       end;
       kMission:
@@ -783,12 +783,12 @@ begin
         // old report
         xScreen := (ClientWidth - BiColorTextWidth(Canvas, s)) div 2;
         LoweredTextOut(Canvas, -1, MainTexture, xScreen + 10, ClientHeight - 29, s);
-        BitBltUgly(ScienceNationDot.Canvas.Handle, 0, 0, 17, 17, Canvas.Handle, xScreen - 10,
+        BitBltUgly(ScienceNationDot.Canvas.Handle, 0, 0, 17, 17, Canvas, xScreen - 10,
           ClientHeight - 27, SRCCOPY);
         ImageOp_BCC(ScienceNationDot, Templates, 0, 0, 114, 211, 17, 17,
           MainTexture.clBevelShade, Tribe[ScienceNation].Color);
         BitBltUgly(Canvas.Handle, xScreen - 10, ClientHeight - 27, 17, 17,
-          ScienceNationDot.Canvas.Handle, 0, 0, SRCCOPY);
+          ScienceNationDot.Canvas, 0, 0, SRCCOPY);
       end;
     end;
   end;

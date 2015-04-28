@@ -141,7 +141,7 @@ end;
 procedure TBufferedDrawDlg.VPaint;
 begin
   BitBltUgly(Canvas.Handle, 0, 0, ClientWidth,
-    ClientHeight, offscreen.Canvas.Handle, 0, 0, SRCCOPY);
+    ClientHeight, offscreen.Canvas, 0, 0, SRCCOPY);
 end;
 
 procedure TBufferedDrawDlg.ShowNewContent(NewMode: integer; forceclose: boolean);
@@ -420,7 +420,7 @@ begin
     end;
 
   BitBltUgly(Canvas.Handle, SideFrame, TitleHeight, ClientWidth - 2 * SideFrame,
-    InnerBottom - TitleHeight, offscreen.Canvas.Handle, 0, 0, SRCCOPY);
+    InnerBottom - TitleHeight, offscreen.Canvas, 0, 0, SRCCOPY);
 end;
 
 procedure TFramedDlg.InitWindowRegion;

@@ -43,7 +43,7 @@ procedure TButtonC.Paint;
 begin
   with Canvas do
     if FGraphic <> nil then
-      BitBltUgly(Canvas.Handle, 0, 0, 12, 12, FGraphic.Canvas.Handle,
+      BitBltUgly(Canvas.Handle, 0, 0, 12, 12, FGraphic.Canvas,
         169 + 13 * byte(FDown), 159 + 13 * FIndex, SRCCOPY)
     else
     begin

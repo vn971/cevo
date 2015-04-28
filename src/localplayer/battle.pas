@@ -157,15 +157,15 @@ begin
       (LADamage - LAAvoidedDamage - TextSize.cy) div 2, LabelText);
 
   NoMap.SetOutput(Buffer);
-  BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, SRCCOPY);
+  BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca, xm + 8 + 4, ym - 8 - 12 - 48, SRCCOPY);
   NoMap.PaintUnit(1, 0, UnitInfo, 0);
-  BitBltUgly(ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(ca.Handle, xm + 8 + 4, ym - 8 - 12 - 48, 66, 48, Buffer.Canvas, 0, 0, SRCCOPY);
 
-  BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, SRCCOPY);
+  BitBltUgly(Buffer.Canvas.Handle, 0, 0, 66, 48, ca, xm - 8 - 4 - 66, ym + 8 + 12, SRCCOPY);
   MakeUnitInfo(me, MyUn[uix], UnitInfo);
   UnitInfo.Flags := UnitInfo.Flags and not unFortified;
   NoMap.PaintUnit(1, 0, UnitInfo, 0);
-  BitBltUgly(ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, 66, 48, Buffer.Canvas.Handle, 0, 0, SRCCOPY);
+  BitBltUgly(ca.Handle, xm - 8 - 4 - 66, ym + 8 + 12, 66, 48, Buffer.Canvas, 0, 0, SRCCOPY);
 end; {PaintBattleOutcome}
 
 
