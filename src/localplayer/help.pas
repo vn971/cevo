@@ -431,7 +431,7 @@ begin
           yl := ExtPic.Height;
           if 4 + i * 24 + yl > InnerHeight then
             yl := InnerHeight - (4 + i * 24);
-          BitBltUgly(Handle, 8, 4 + i * 24, ExtPic.Width, yl,
+          BitBltUgly(offscreen.Canvas, 8, 4 + i * 24, ExtPic.Width, yl,
             ExtPic.Canvas, 0, 0, SRCCOPY);
         end;
       end;
@@ -470,11 +470,11 @@ begin
             ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + 20 + i * 24,
               $000000, $000000);
             if HelpLineInfo.Picpix = imPalace then
-              BitBltUgly(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall,
+              BitBltUgly(offscreen.Canvas, 8 + x0[i], 2 + i * 24, xSizeSmall,
                 ySizeSmall, SmallImp.Canvas,
                 0 * xSizeSmall, 1 * ySizeSmall, SRCCOPY)
             else
-              BitBltUgly(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall, ySizeSmall,
+              BitBltUgly(offscreen.Canvas, 8 + x0[i], 2 + i * 24, xSizeSmall, ySizeSmall,
                 SmallImp.Canvas,
                 HelpLineInfo.Picpix mod 7 * xSizeSmall,
                 (HelpLineInfo.Picpix + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY);
@@ -529,7 +529,7 @@ begin
             ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + ySizeSmall + i * 24,
               $000000, $000000);
             if AdvIcon[HelpLineInfo.Picpix] < 84 then
-              BitBltUgly(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall, ySizeSmall,
+              BitBltUgly(offscreen.Canvas, 8 + x0[i], 2 + i * 24, xSizeSmall, ySizeSmall,
                 SmallImp.Canvas,
                 (AdvIcon[HelpLineInfo.Picpix] + SystemIconLines * 7) mod 7 * xSizeSmall,
                 (AdvIcon[HelpLineInfo.Picpix] + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY)
@@ -688,7 +688,7 @@ begin
           begin
             ScreenTools.Frame(offscreen.Canvas, 8 - 1 + x0[i], 2 - 1 + i * 24, 8 + xSizeSmall + x0[i], 2 + 20 + i * 24,
               $000000, $000000);
-            BitBltUgly(offscreen.Canvas.Handle, 8 + x0[i], 2 + i * 24, xSizeSmall,
+            BitBltUgly(offscreen.Canvas, 8 + x0[i], 2 + i * 24, xSizeSmall,
               ySizeSmall, SmallImp.Canvas,
               (HelpLineInfo.Picpix - 1) * xSizeSmall, ySizeSmall, SRCCOPY);
             x0[i] := x0[i] + (8 + 8 + 36);

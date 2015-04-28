@@ -218,18 +218,18 @@ begin
   ClientHeight := Template.Height - Cut;
   if ClientHeight > hMainTexture then // assemble background from 2 texture tiles
   begin
-    BitBltUgly(Back.Canvas.Handle, 0, 0, ClientWidth, 64, MainTexture.Image.Canvas,
+    BitBltUgly(Back.Canvas, 0, 0, ClientWidth, 64, MainTexture.Image.Canvas,
       (wMainTexture - ClientWidth) div 2, hMainTexture - 64, SRCCOPY);
-    BitBltUgly(Back.Canvas.Handle, 0, 64, ClientWidth, ClientHeight - 64,
+    BitBltUgly(Back.Canvas, 0, 64, ClientWidth, ClientHeight - 64,
       MainTexture.Image.Canvas, (wMainTexture - ClientWidth) div 2, 0, SRCCOPY);
   end
   else
-    BitBltUgly(Back.Canvas.Handle, 0, 0, ClientWidth, ClientHeight, MainTexture.Image.Canvas,
+    BitBltUgly(Back.Canvas, 0, 0, ClientWidth, ClientHeight, MainTexture.Image.Canvas,
       (wMainTexture - ClientWidth) div 2, (hMainTexture - ClientHeight) div 2, SRCCOPY);
   ImageOp_B(Back, Template, 0, 0, 0, 0, Template.Width, 64);
   ImageOp_B(Back, Template, 0, 64, 0, 64 + Cut, Template.Width, Template.Height - 64 - Cut);
 
-  BitBltUgly(offscreen.canvas.handle, 0, 0, ClientWidth, ClientHeight,
+  BitBltUgly(offscreen.canvas, 0, 0, ClientWidth, ClientHeight,
     Back.Canvas, 0, 0, SRCCOPY);
 
   offscreen.Canvas.Font.Assign(UniFont[ftCaption]);

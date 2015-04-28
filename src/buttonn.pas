@@ -63,7 +63,7 @@ begin
   begin
     if FGraphic <> nil then
     begin
-      BitBltUgly(Canvas.Handle, 1, 1, 40, 40, FBackGraphic.Canvas,
+      BitBltUgly(Canvas, 1, 1, 40, 40, FBackGraphic.Canvas,
         1 + 80 * BackIndex + 40 * byte(FPossible and FLit), 176, SRCCOPY);
       if FPossible then
       begin

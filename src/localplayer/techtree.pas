@@ -92,7 +92,7 @@ begin
       FillRectSeamless(Canvas, x, BlackBorder + yOffset + Image.Height, w,
         ClientHeight - BlackBorder, -BlackBorder - xOffset, -BlackBorder - yOffset, Paper);
   end;
-  BitBltUgly(Canvas.Handle, max(BlackBorder, BlackBorder + xOffset),
+  BitBltUgly(Canvas, max(BlackBorder, BlackBorder + xOffset),
     max(BlackBorder, BlackBorder + yOffset),
     min(Image.Width, min(Image.Width + xOffset,
     min(ClientWidth - 2 * BlackBorder, ClientWidth - 2 * BlackBorder - xOffset))),

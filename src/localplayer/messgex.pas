@@ -297,7 +297,7 @@ begin
   x := x - wb div 2;
 
   // paint
-  BitBltUgly(LogoBuffer.Canvas.Handle, 0, 0, wb, hb, ca, x, y, SRCCOPY);
+  BitBltUgly(LogoBuffer.Canvas, 0, 0, wb, hb, ca, x, y, SRCCOPY);
 
   if IconIndex >= 0 then
     for iy := 0 to hScrewed - 1 do
@@ -310,7 +310,7 @@ begin
 
   ImageOp_BCC(LogoBuffer, Templates, 0, 0, xb, yb, wb, hb, clCover, clPage);
 
-  BitBltUgly(ca.handle, x, y, wb, hb, LogoBuffer.Canvas, 0, 0, SRCCOPY);
+  BitBltUgly(ca, x, y, wb, hb, LogoBuffer.Canvas, 0, 0, SRCCOPY);
 end;
 
 procedure TMessgExDlg.PaintMyArmy;
@@ -374,7 +374,7 @@ begin
       if Imp[IconIndex].Kind = ikWonder then
       begin
         p1 := MyRO.Wonder[IconIndex].EffectiveOwner;
-        BitBltUgly(Buffer.Canvas.Handle, 0, 0, xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange,
+        BitBltUgly(Buffer.Canvas, 0, 0, xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange,
           Canvas, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange, SRCCOPY);
         BitBltTransparent(Buffer.Canvas, GlowRange, GlowRange, xSizeBig, ySizeBig,
           IconIndex mod 7 * xSizeBig,
@@ -384,7 +384,7 @@ begin
         else
           GlowFrame(Buffer, GlowRange, GlowRange, xSizeBig, ySizeBig,
             Tribe[p1].Color);
-        BitBltUgly(Canvas.Handle, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange,
+        BitBltUgly(Canvas, ClientWidth div 2 - (28 + GlowRange), 24 - GlowRange,
           xSizeBig + 2 * GlowRange, ySizeBig + 2 * GlowRange, Buffer.Canvas, 0, 0,
           SRCCOPY);
       end
@@ -410,7 +410,7 @@ begin
       begin
         Frame(Canvas, ClientWidth div 2 - 32 - 1, 24 - 1, ClientWidth div 2 + 32,
           24 + 48, $000000, $000000);
-        BitBltUgly(Canvas.Handle, ClientWidth div 2 - 32, 24, 64, 48,
+        BitBltUgly(Canvas, ClientWidth div 2 - 32, 24, 64, 48,
           GrExt[Tribe[IconIndex].flagFaceHGr].Data.Canvas,
           1 + Tribe[IconIndex].facepix mod 10 * 65,
           1 + Tribe[IconIndex].facepix div 10 * 49, SRCCOPY);
@@ -425,10 +425,10 @@ begin
         IconIndex div 2 * 3 * ySizeBig);
     mikEnemyShipComplete:
     begin
-      BitBltUgly(Buffer.Canvas.Handle, 0, 0, 140, 120, Canvas,
+      BitBltUgly(Buffer.Canvas, 0, 0, 140, 120, Canvas,
         (ClientWidth - 140) div 2, 24, SRCCOPY);
       ImageOp_BCC(Buffer, Templates, 0, 0, 1, 279, 140, 120, 0, $FFFFFF);
-      BitBltUgly(Canvas.Handle, (ClientWidth - 140) div 2, 24, 140,
+      BitBltUgly(Canvas, (ClientWidth - 140) div 2, 24, 140,
         120, Buffer.Canvas, 0, 0, SRCCOPY);
     end;
     mikMyArmy:

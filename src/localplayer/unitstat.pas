@@ -96,19 +96,19 @@ begin
   if MainTextureAge <> AgePrepared then
   begin
     AgePrepared := MainTextureAge;
-    BitBltUgly(Back.Canvas.Handle, 0, 0, wCommon, hOwnModel,
+    BitBltUgly(Back.Canvas, 0, 0, wCommon, hOwnModel,
       MainTexture.Image.Canvas, (wMainTexture - wCommon) div 2,
       (hMainTexture - hOwnModel) div 2, SRCCOPY);
-    BitBltUgly(Back.Canvas.Handle, wCommon, 0, wCommon, hEnemyModel,
+    BitBltUgly(Back.Canvas, wCommon, 0, wCommon, hEnemyModel,
       MainTexture.Image.Canvas, (wMainTexture - wCommon) div 2,
       (hMainTexture - hEnemyModel) div 2, SRCCOPY);
-    BitBltUgly(Back.Canvas.Handle, 2 * wCommon, 0, wCommon, hEnemyUnit,
+    BitBltUgly(Back.Canvas, 2 * wCommon, 0, wCommon, hEnemyUnit,
       MainTexture.Image.Canvas, (wMainTexture - wCommon) div 2,
       (hMainTexture - hEnemyUnit) div 2, SRCCOPY);
-    BitBltUgly(Back.Canvas.Handle, 3 * wCommon, 0, wCommon, hEnemyCityDefense,
+    BitBltUgly(Back.Canvas, 3 * wCommon, 0, wCommon, hEnemyCityDefense,
       MainTexture.Image.Canvas, (wMainTexture - wCommon) div 2,
       (hMainTexture - hEnemyCityDefense) div 2, SRCCOPY);
-    BitBltUgly(Back.Canvas.Handle, 4 * wCommon, 0, wCommon, hEnemyCity,
+    BitBltUgly(Back.Canvas, 4 * wCommon, 0, wCommon, hEnemyCity,
       MainTexture.Image.Canvas, (wMainTexture - wCommon) div 2,
       (hMainTexture - hEnemyCity) div 2, SRCCOPY);
     ImageOp_B(Back, Template, 0, 0, 0, 0, 5 * wCommon, hMax);
@@ -369,34 +369,34 @@ begin
   case Kind of
     dkOwnModel:
     begin
-      BitBltUgly(offscreen.canvas.handle, 0, 0, wCommon, hOwnModel, Back.Canvas, 0, 0, SRCCOPY);
+      BitBltUgly(offscreen.canvas, 0, 0, wCommon, hOwnModel, Back.Canvas, 0, 0, SRCCOPY);
       yView := 13;
       yTotal := 92;
     end;
     dkEnemyModel:
     begin
-      BitBltUgly(offscreen.canvas.handle, 0, 0, wCommon, hEnemyModel, Back.Canvas,
+      BitBltUgly(offscreen.canvas, 0, 0, wCommon, hEnemyModel, Back.Canvas,
         wCommon, 0, SRCCOPY);
       yView := 13;
       yTotal := 92;
     end;
     dkEnemyUnit, dkOwnUnit:
     begin
-      BitBltUgly(offscreen.canvas.handle, 0, 0, wCommon, hEnemyUnit, Back.Canvas,
+      BitBltUgly(offscreen.canvas, 0, 0, wCommon, hEnemyUnit, Back.Canvas,
         2 * wCommon, 0, SRCCOPY);
       yView := 13;
       yTotal := 123;
     end;
     dkEnemyCityDefense:
     begin
-      BitBltUgly(offscreen.canvas.handle, 0, 0, wCommon, hEnemyCityDefense,
+      BitBltUgly(offscreen.canvas, 0, 0, wCommon, hEnemyCityDefense,
         Back.Canvas, 3 * wCommon, 0, SRCCOPY);
       yView := 171;
       yTotal := 231;
     end;
     dkEnemyCity:
     begin
-      BitBltUgly(offscreen.canvas.handle, 0, 0, wCommon, hEnemyCity, Back.Canvas,
+      BitBltUgly(offscreen.canvas, 0, 0, wCommon, hEnemyCity, Back.Canvas,
         4 * wCommon, 0, SRCCOPY);
     end;
   end;
@@ -421,7 +421,7 @@ begin
         end;
         Frame(offscreen.Canvas, x - 1, yImp - 1, x + xSizeSmall, yImp + ySizeSmall,
           MainTexture.clBevelLight, MainTexture.clBevelShade);
-        BitBltUgly(offscreen.Canvas.Handle, x, yImp, xSizeSmall, ySizeSmall,
+        BitBltUgly(offscreen.Canvas, x, yImp, xSizeSmall, ySizeSmall,
           SmallImp.Canvas, j mod 7 * xSizeSmall,
           (j + SystemIconLines * 7) div 7 * ySizeSmall, SRCCOPY);
         Inc(x, xSizeSmall + 4);
@@ -533,7 +533,7 @@ begin
                   BitBltTransparent(Buffer.Canvas, i * xxt, j * yyt, xxt * 2, yyt * 2, 1 + 7 * (xxt * 2 + 1),
                     1 + yyt + 2 * integer(2 + MyMap[Loc] and fTerrain - fForest) * (yyt * 3 + 1), terrainCurrent);
               end;
-          BitBltUgly(offscreen.canvas.handle, xView, yView + 16, 64, 32, Buffer.Canvas, 1, 0,
+          BitBltUgly(offscreen.canvas, xView, yView + 16, 64, 32, Buffer.Canvas, 1, 0,
             SRCCOPY);
 
           // show unit, experience and health

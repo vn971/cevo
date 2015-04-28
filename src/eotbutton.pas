@@ -157,7 +157,7 @@ end;
 
 procedure TEOTButton.SetBack(ca: TCanvas; x, y: integer);
 begin
-  BitBltUgly(Back.Canvas.Handle, 0, 0, 48, 48, ca, x, y, SRCCOPY);
+  BitBltUgly(Back.Canvas, 0, 0, 48, 48, ca, x, y, SRCCOPY);
 end;
 
 end.

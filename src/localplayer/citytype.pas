@@ -110,7 +110,7 @@ begin
     else
       Frame(offscreen.Canvas, xSwitch + 1 + i * 42, ySwitch + 1, xSwitch + 38 + i * 42, ySwitch + 22,
         MainTexture.clBevelLight, MainTexture.clBevelShade);
-    BitBltUgly(offscreen.Canvas.Handle, xSwitch + 2 + i * 42, ySwitch + 2, xSizeSmall,
+    BitBltUgly(offscreen.Canvas, xSwitch + 2 + i * 42, ySwitch + 2, xSizeSmall,
       ySizeSmall, SmallImp.Canvas, (i + 3) * xSizeSmall, 0, SRCCOPY);
   end;
   RisedTextOut(offscreen.Canvas, 8, yList + 32 * nListRow + 2, Phrases.Lookup('BUILDORDER'));
@@ -142,7 +142,7 @@ begin
       xList + 21 + xSizeSmall div 2 + i mod nListCol * 42,
       yList + 16 + ySizeSmall div 2 + i div nListCol * 32,
       MainTexture.clBevelLight, MainTexture.clBevelShade);
-    BitBltUgly(offscreen.Canvas.Handle,
+    BitBltUgly(offscreen.Canvas,
       xList + 21 - xSizeSmall div 2 + i mod nListCol * 42,
       yList + 16 - ySizeSmall div 2 + i div nListCol * 32,
       xSizeSmall, ySizeSmall, SmallImp.Canvas,
@@ -164,7 +164,7 @@ begin
         xPool + 21 + xSizeSmall div 2 + nPool mod nPoolCol * 42,
         yPool + 16 + ySizeSmall div 2 + nPool div nPoolCol * 32,
         MainTexture.clBevelLight, MainTexture.clBevelShade);
-      BitBltUgly(offscreen.Canvas.Handle,
+      BitBltUgly(offscreen.Canvas,
         xPool + 21 - xSizeSmall div 2 + nPool mod nPoolCol * 42,
         yPool + 16 - ySizeSmall div 2 + nPool div nPoolCol * 32,
         xSizeSmall, ySizeSmall, SmallImp.Canvas,

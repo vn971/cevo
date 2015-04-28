@@ -110,7 +110,7 @@ begin
   if MainTextureAge <> AgePrepared then
   begin
     AgePrepared := MainTextureAge;
-    BitBltUgly(Back.Canvas.Handle, 0, 0, ClientWidth, ClientHeight,
+    BitBltUgly(Back.Canvas, 0, 0, ClientWidth, ClientHeight,
       MainTexture.Image.Canvas, (wMainTexture - ClientWidth) div 2,
       (hMainTexture - ClientHeight) div 2, SRCCOPY);
     ImageOp_B(Back, Template, 0, 0, 0, 0, ClientWidth, ClientHeight);
@@ -258,7 +258,7 @@ begin
 
   Extinct := 1 shl pView and MyRO.Alive = 0;
 
-  BitBltUgly(offscreen.canvas.handle, 0, 0, ClientWidth, ClientHeight,
+  BitBltUgly(offscreen.canvas, 0, 0, ClientWidth, ClientHeight,
     Back.Canvas, 0, 0, SRCCOPY);
 
   offscreen.Canvas.Font.Assign(UniFont[ftCaption]);
