@@ -5,6 +5,7 @@
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -72,6 +73,9 @@
       <Item3 Name="release">
         <CompilerOptions>
           <Version Value="11"/>
+          <Target>
+            <Filename Value="../bin/cevo"/>
+          </Target>
           <SearchPaths>
             <IncludeFiles Value="localplayer;$(ProjOutDir)"/>
             <OtherUnitFiles Value="localplayer"/>
