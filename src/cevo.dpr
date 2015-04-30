@@ -48,17 +48,32 @@ uses
 {$R *.RES}
 
 procedure Run(clientPtr: pointer); stdcall;
+var
+  i: Integer;
 begin
-DotNetClient:=TClientCall(clientPtr);
-Application.Initialize;
-Application.Title := '';
-Application.CreateForm(TDirectDlg, DirectDlg);
-Application.CreateForm(TStartDlg, StartDlg);
-Application.CreateForm(TMessgDlg, MessgDlg);
-Application.CreateForm(TInputDlg, InputDlg);
-Application.CreateForm(TBackground, Background);
-Application.CreateForm(TLogDlg, LogDlg);
-Application.Run;
+  for i:= 1 to Paramcount do
+  begin
+    if (ParamStr(i) = '--help') or (ParamStr(i) = '-h') then begin
+      WriteLn('C-evo, a free empire building game');
+      WriteLn('Options:');
+      WriteLn('  --help, -h        show this text');
+      WriteLn('  -man, \man        show in-game manual');
+      WriteLn('  --windowed, -w    start the game in windowed mode');
+      halt;
+    end;
+  end;
+
+
+  DotNetClient:=TClientCall(clientPtr);
+  Application.Initialize;
+  Application.Title := '';
+  Application.CreateForm(TDirectDlg, DirectDlg);
+  Application.CreateForm(TStartDlg, StartDlg);
+  Application.CreateForm(TMessgDlg, MessgDlg);
+  Application.CreateForm(TInputDlg, InputDlg);
+  Application.CreateForm(TBackground, Background);
+  Application.CreateForm(TLogDlg, LogDlg);
+  Application.Run;
 end;
 
 exports

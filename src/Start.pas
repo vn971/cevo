@@ -266,6 +266,9 @@ begin
     Reg.closekey;
   end;
   Reg.Free;
+  for i:= 1 to Paramcount do
+    if (ParamStr(i) = '--windowed') or (ParamStr(i) = '-w') then
+      FullScreen := False;
 
   ActionsOffered := [maManual, maCredits, maWeb];
   if FileExists(BinariesDirectory + 'Configurator.exe') then
