@@ -1,6 +1,6 @@
 {$INCLUDE switches}
 
-library cevo;
+program cevo;
 
 uses
   Forms,
@@ -45,15 +45,15 @@ uses
   Rates in 'LocalPlayer\Rates.pas' {RatesDlg},
   TechTree in 'LocalPlayer\TechTree.pas' {TechTreeDlg};
 
-{$R *.RES}
+{$R cevo.RES}
 
-procedure Run(clientPtr: pointer); stdcall;
 var
   i: Integer;
 begin
   for i:= 1 to Paramcount do
   begin
-    if (ParamStr(i) = '--help') or (ParamStr(i) = '-h') then begin
+    if (ParamStr(i) = '--help') or (ParamStr(i) = '-h') then
+    begin
       WriteLn('C-evo, a free empire building game');
       WriteLn('Options:');
       WriteLn('  --help, -h        show this text');
@@ -63,10 +63,9 @@ begin
     end;
   end;
 
-
-  DotNetClient:=TClientCall(clientPtr);
+  DotNetClient := nil;
   Application.Initialize;
-  Application.Title := '';
+  Application.Title := 'C-evo';
   Application.CreateForm(TDirectDlg, DirectDlg);
   Application.CreateForm(TStartDlg, StartDlg);
   Application.CreateForm(TMessgDlg, MessgDlg);
@@ -74,10 +73,5 @@ begin
   Application.CreateForm(TBackground, Background);
   Application.CreateForm(TLogDlg, LogDlg);
   Application.Run;
-end;
-
-exports
-Run name 'Run';
-
 end.
 
