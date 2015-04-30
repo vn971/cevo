@@ -1,17 +1,13 @@
 #### compilation output
-*.dcu
-*.ddp
-*.drc
+/target/
 *.exe
-*.map
-*.rsm
-/target/cevo.dll
+*.dll
 
-#### backups by delphi
+#### other
+/bin/AI/
+/bin/AppData/Saved/
+
+#### backups
 *.~*
-
-#### exclude AI files
-/target/AI/*
-
 
 #### dcc32 configuration files (*.cfg) are included to allow building from command line
