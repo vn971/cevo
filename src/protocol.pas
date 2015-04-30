@@ -593,65 +593,65 @@ Imp: array[0..nImp-1] of // city improvements
 (Kind:ikWonder;Preq:adPhilosophy;Cost:500;Maint:0;Expiration:-1), //woLeo
 (Kind:ikWonder;Preq:adNavigation;Cost:300;Maint:0;Expiration:-1), //woMagellan
 (Kind:ikWonder;Preq:adMonotheism;Cost:400;Maint:0;Expiration:-1), //woMich
-(Kind:ikNA;Preq:preNA), // 11
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), // 11
 (Kind:ikWonder;Preq:adTheoryOfGravity;Cost:400;Maint:0;Expiration:-1), //woNewton
 (Kind:ikWonder;Preq:adTheology;Cost:400;Maint:0;Expiration:-1), //woBach
-(Kind:ikNA;Preq:preNA), // 14
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), // 14
 (Kind:ikWonder;Preq:adDemocracy;Cost:500;Maint:0;Expiration:-1), //woLiberty
 (Kind:ikWonder;Preq:adSteel;Cost:800;Maint:0;Expiration:-1), //woEiffel
 (Kind:ikWonder;Preq:adElectronics;Cost:800;Maint:0;Expiration:-1), //woHoover
 (Kind:ikWonder;Preq:adPlastics;Cost:500;Maint:0;Expiration:-1), //woShinkansen
 (Kind:ikWonder;Preq:adNuclearFission;Cost:400;Maint:0;Expiration:-1), //woManhattan
 (Kind:ikWonder;Preq:adSpaceFlight;Cost:800;Maint:0;Expiration:-1), //woMir
-(Kind:ikNA;Preq:preNA), //{21}
-(Kind:ikNA;Preq:preNA), //{22}
-(Kind:ikNA;Preq:preNA), //{23}
-(Kind:ikNA;Preq:preNA), //{24}
-(Kind:ikNA;Preq:preNA), //{25}
-(Kind:ikNA;Preq:preNA), //{26}
-(Kind:ikNA;Preq:preNA), //{27}
-(Kind:ikTrGoods;Preq:preNone;Cost:0;Maint:0), //imTrGoods
-(Kind:ikCommon;Preq:adWarriorCode;Cost:40;Maint:1), //imBarracks
-(Kind:ikCommon;Preq:adPottery;Cost:60;Maint:1), //imGranary
-(Kind:ikCommon;Preq:adCeremonialBurial;Cost:40;Maint:1), //imTemple
-(Kind:ikCommon;Preq:adCurrency;Cost:60;Maint:1), //imMarket
-(Kind:ikCommon;Preq:adWriting;Cost:80;Maint:3), //imLibrary
-(Kind:ikCommon;Preq:adCodeOfLaws;Cost:80;Maint:2), //imCourt
-(Kind:ikCommon;Preq:adMasonry;Cost:80;Maint:1), //imWalls
-(Kind:ikCommon;Preq:adConstruction;Cost:80;Maint:1), //imAqueduct
-(Kind:ikCommon;Preq:adBanking;Cost:120;Maint:2), //imBank
-(Kind:ikCommon;Preq:adMonotheism;Cost:100;Maint:1), //imCathedral
-(Kind:ikCommon;Preq:adUniversity;Cost:160;Maint:5), //imUniversity
-(Kind:ikCommon;Preq:adSeafaring;Cost:60;Maint:1), //imHarbor
-(Kind:ikCommon;Preq:adPoetry;Cost:60;Maint:2), //imTheater
-(Kind:ikCommon;Preq:adIndustrialization;Cost:200;Maint:3), //imFactory
-(Kind:ikCommon;Preq:adRobotics;Cost:320;Maint:5), //imMfgPlant
-(Kind:ikCommon;Preq:adRecycling;Cost:320;Maint:4), //imRecycling
-(Kind:ikCommon;Preq:adElectricity;Cost:120;Maint:2), //imPower
-(Kind:ikCommon;Preq:adEnvironmentalism;Cost:120;Maint:1), //imHydro
-(Kind:ikCommon;Preq:adNuclearPower;Cost:240;Maint:2), //imNuclear
-(Kind:ikCommon;Preq:adRefining;Cost:160;Maint:2), //imPlatform
-(Kind:ikCommon;Preq:preNone;Cost:40;Maint:1), //imTownHall
-(Kind:ikCommon;Preq:adSanitation;Cost:120;Maint:2), //imSewer
-(Kind:ikCommon;Preq:adRefrigeration;Cost:80;Maint:2), //imSupermarket
-(Kind:ikCommon;Preq:adAutomobile;Cost:160;Maint:4), //imHighways
-(Kind:ikCommon;Preq:adComputers;Cost:240;Maint:7), //imResLab
-(Kind:ikCommon;Preq:adAdvancedRocketry;Cost:100;Maint:1), //imMissileBat
-(Kind:ikCommon;Preq:adMetallurgy;Cost:80;Maint:1), //imCoastalFort
-(Kind:ikCommon;Preq:adAdvancedFlight;Cost:160;Maint:1), //imAirport
-(Kind:ikCommon;Preq:adAmphibiousWarfare;Cost:80;Maint:1), //imDockyard
-(Kind:ikNatLocal;Preq:preNone;Cost:100;Maint:0), //imPalace
-(Kind:ikNatLocal;Preq:adEngineering;Cost:400;Maint:4), //imGrWall
-(Kind:ikNatLocal;Preq:adConstruction;Cost:200;Maint:4), //imColosseum
-(Kind:ikNatLocal;Preq:adAstronomy;Cost:300;Maint:4), //imObservatory
-(Kind:ikNatLocal;Preq:adTactics;Cost:100;Maint:4), //imMilAcademy
-(Kind:ikNatLocal;Preq:adSteel;Cost:200;Maint:2), //imBunker
-(Kind:ikNatLocal;Preq:adSyntheticFood;Cost:120;Maint:2), //imAlgae
-(Kind:ikNatGlobal;Preq:adTheCorporation;Cost:320;Maint:4), //imStockEx
-(Kind:ikNatLocal;Preq:adSpaceFlight;Cost:400;Maint:0), //imSpacePort
-(Kind:ikShipPart;Preq:adTransstellarColonization;Cost:240;Maint:0), //imShipComp
-(Kind:ikShipPart;Preq:adImpulseDrive;Cost:600;Maint:0), //imShipPow
-(Kind:ikShipPart;Preq:adSelfContainedEnvironment;Cost:800;Maint:0)); //imShipHab
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{21}
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{22}
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{23}
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{24}
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{25}
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{26}
+(Kind:ikNA;Preq:preNA;Cost:0;Maint:0;Expiration:0), //{27}
+(Kind:ikTrGoods;Preq:preNone;Cost:0;Maint:0;Expiration:0), //imTrGoods
+(Kind:ikCommon;Preq:adWarriorCode;Cost:40;Maint:1;Expiration:0), //imBarracks
+(Kind:ikCommon;Preq:adPottery;Cost:60;Maint:1;Expiration:0), //imGranary
+(Kind:ikCommon;Preq:adCeremonialBurial;Cost:40;Maint:1;Expiration:0), //imTemple
+(Kind:ikCommon;Preq:adCurrency;Cost:60;Maint:1;Expiration:0), //imMarket
+(Kind:ikCommon;Preq:adWriting;Cost:80;Maint:3;Expiration:0), //imLibrary
+(Kind:ikCommon;Preq:adCodeOfLaws;Cost:80;Maint:2;Expiration:0), //imCourt
+(Kind:ikCommon;Preq:adMasonry;Cost:80;Maint:1;Expiration:0), //imWalls
+(Kind:ikCommon;Preq:adConstruction;Cost:80;Maint:1;Expiration:0), //imAqueduct
+(Kind:ikCommon;Preq:adBanking;Cost:120;Maint:2;Expiration:0), //imBank
+(Kind:ikCommon;Preq:adMonotheism;Cost:100;Maint:1;Expiration:0), //imCathedral
+(Kind:ikCommon;Preq:adUniversity;Cost:160;Maint:5;Expiration:0), //imUniversity
+(Kind:ikCommon;Preq:adSeafaring;Cost:60;Maint:1;Expiration:0), //imHarbor
+(Kind:ikCommon;Preq:adPoetry;Cost:60;Maint:2;Expiration:0), //imTheater
+(Kind:ikCommon;Preq:adIndustrialization;Cost:200;Maint:3;Expiration:0), //imFactory
+(Kind:ikCommon;Preq:adRobotics;Cost:320;Maint:5;Expiration:0), //imMfgPlant
+(Kind:ikCommon;Preq:adRecycling;Cost:320;Maint:4;Expiration:0), //imRecycling
+(Kind:ikCommon;Preq:adElectricity;Cost:120;Maint:2;Expiration:0), //imPower
+(Kind:ikCommon;Preq:adEnvironmentalism;Cost:120;Maint:1;Expiration:0), //imHydro
+(Kind:ikCommon;Preq:adNuclearPower;Cost:240;Maint:2;Expiration:0), //imNuclear
+(Kind:ikCommon;Preq:adRefining;Cost:160;Maint:2;Expiration:0), //imPlatform
+(Kind:ikCommon;Preq:preNone;Cost:40;Maint:1;Expiration:0), //imTownHall
+(Kind:ikCommon;Preq:adSanitation;Cost:120;Maint:2;Expiration:0), //imSewer
+(Kind:ikCommon;Preq:adRefrigeration;Cost:80;Maint:2;Expiration:0), //imSupermarket
+(Kind:ikCommon;Preq:adAutomobile;Cost:160;Maint:4;Expiration:0), //imHighways
+(Kind:ikCommon;Preq:adComputers;Cost:240;Maint:7;Expiration:0), //imResLab
+(Kind:ikCommon;Preq:adAdvancedRocketry;Cost:100;Maint:1;Expiration:0), //imMissileBat
+(Kind:ikCommon;Preq:adMetallurgy;Cost:80;Maint:1;Expiration:0), //imCoastalFort
+(Kind:ikCommon;Preq:adAdvancedFlight;Cost:160;Maint:1;Expiration:0), //imAirport
+(Kind:ikCommon;Preq:adAmphibiousWarfare;Cost:80;Maint:1;Expiration:0), //imDockyard
+(Kind:ikNatLocal;Preq:preNone;Cost:100;Maint:0;Expiration:0), //imPalace
+(Kind:ikNatLocal;Preq:adEngineering;Cost:400;Maint:4;Expiration:0), //imGrWall
+(Kind:ikNatLocal;Preq:adConstruction;Cost:200;Maint:4;Expiration:0), //imColosseum
+(Kind:ikNatLocal;Preq:adAstronomy;Cost:300;Maint:4;Expiration:0), //imObservatory
+(Kind:ikNatLocal;Preq:adTactics;Cost:100;Maint:4;Expiration:0), //imMilAcademy
+(Kind:ikNatLocal;Preq:adSteel;Cost:200;Maint:2;Expiration:0), //imBunker
+(Kind:ikNatLocal;Preq:adSyntheticFood;Cost:120;Maint:2;Expiration:0), //imAlgae
+(Kind:ikNatGlobal;Preq:adTheCorporation;Cost:320;Maint:4;Expiration:0), //imStockEx
+(Kind:ikNatLocal;Preq:adSpaceFlight;Cost:400;Maint:0;Expiration:0), //imSpacePort
+(Kind:ikShipPart;Preq:adTransstellarColonization;Cost:240;Maint:0;Expiration:0), //imShipComp
+(Kind:ikShipPart;Preq:adImpulseDrive;Cost:600;Maint:0;Expiration:0), //imShipPow
+(Kind:ikShipPart;Preq:adSelfContainedEnvironment;Cost:800;Maint:0;Expiration:0)); //imShipHab
 
 nImpReplacement=5;
 ImpReplacement: array[0..nImpReplacement-1] of
@@ -677,7 +677,6 @@ Terrain:array[0..11] of record
   MoveCost,Defense,ClearTerrain,IrrEff,IrrClearWork,AfforestTerrain,MineEff,
     MineAfforestWork,TransTerrain,TransWork:integer;
   FoodRes,ProdRes,TradeRes:array[0..2] of integer;
-  Filler: array[0..12] of integer;
   end=
 ((MoveCost:1;Defense:4;ClearTerrain:-1;IrrEff:0;IrrClearWork:0;
   AfforestTerrain:-1;MineEff:0;MineAfforestWork:0;TransTerrain:-1;
@@ -703,7 +702,7 @@ Terrain:array[0..11] of record
 (MoveCost:2;Defense:6;ClearTerrain:fGrass;IrrEff:0;IrrClearWork:2400;
   AfforestTerrain:fForest;MineEff:0;MineAfforestWork:2400;TransTerrain:fHills;
   TransWork:3000;FoodRes:(1,1,1);ProdRes:(0,4,1);TradeRes:(1,1,5)), {Swa}
-(), {-}
+(MoveCost:0;Defense:0;ClearTerrain:0;IrrEff:0;IrrClearWork:0;AfforestTerrain:0;MineEff:0;MineAfforestWork:0;TransTerrain:0; TransWork:0;FoodRes:(0,0,0);ProdRes:(0,0,0);TradeRes:(0,0,0)), {-}
 (MoveCost:2;Defense:6;ClearTerrain:fPrairie;IrrEff:0;IrrClearWork:600;
   AfforestTerrain:-1;MineEff:0;MineAfforestWork:0;TransTerrain:-1;
   TransWork:0;FoodRes:(1,3,1);ProdRes:(2,2,2);TradeRes:(1,1,4)), {For}
@@ -759,7 +758,11 @@ upgrade: array [0..nDomains-1,0..nUpgrade-1] of
 (Preq:adAdvancedRocketry;Strength:32;Trans:0;Cost:38),
 (Preq:futMaterialTechnology;Strength:14;Trans:0;Cost:4),
 (Preq:futArtificialIntelligence;Strength:14;Trans:0;Cost:4),
-(Preq:preNA),(Preq:preNA),(Preq:preNA),(Preq:preNA)),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0)
+),
 ((Preq:adFlight;Strength:12;Trans:1;Cost:14),
 (Preq:adTactics;Strength:6;Trans:0;Cost:17),
 (Preq:adElectronics;Strength:6;Trans:0;Cost:20),
@@ -767,8 +770,15 @@ upgrade: array [0..nDomains-1,0..nUpgrade-1] of
 (Preq:adComposites;Strength:8;Trans:0;Cost:26),
 (Preq:adSmartWeapons;Strength:11;Trans:0;Cost:32),
 (Preq:futArtificialIntelligence;Strength:7;Trans:0;Cost:4),
-(Preq:preNA),(Preq:preNA),(Preq:preNA),(Preq:preNA),(Preq:preNA),(Preq:preNA),
-(Preq:preNA),(Preq:preNA)));
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0),
+(Preq:preNA;Strength:0;Trans:0;Cost:0)
+));
 
 {model features}
 nFeature=27;
@@ -1103,7 +1113,6 @@ TPlayerContext=record
   LastCancelTreaty: array[0..nPl-1] of integer; // turn of last treaty cancel
   OracleIncome: integer;
   DefaultDebugMap:^TIntList;
-  Filler: array[0..879] of byte;
   end;
 
 TInitModuleData=record

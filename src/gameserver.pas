@@ -2657,16 +2657,12 @@ const
       Result := ptImp;
   end;
 
-const
-  Dirx: array[0..7] of integer = (1, 2, 1, 0, -1, -2, -1, 0);
-  Diry: array[0..7] of integer = (-1, 0, 1, 2, 1, 0, -1, -2);
-
 var
   d, i, j, p1, p2, pt0, pt1, uix1, cix1, Loc0, Loc1, dx, dy, NewCap,
   MinCap, MaxCap, CapWeight, Cost, NextProd, Preq, TotalFood, TotalProd,
   CheckSum, StopTurn, FutureMCost, NewProject, OldImp, mix, V8, V21,
   AStr, DStr, ABaseDamage, DBaseDamage: integer;
-  CityReport, AltCityReport: TCityReport;
+  CityReport: TCityReport;
   FormerCLState: TCmdListState;
   Adjacent: TVicinity8Loc;
   Radius: TVicinity21Loc;

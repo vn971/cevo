@@ -17,7 +17,6 @@ const
 type
   TEOTButton = class(TButtonBase)
     constructor Create(aOwner: TComponent); override;
-    destructor Destroy; override;
     procedure SetButtonIndexFast(x: integer);
     procedure SetBack(ca: TCanvas; x, y: integer);
   private
@@ -25,6 +24,7 @@ type
     FIndex: integer;
     procedure SetIndex(x: integer);
   public
+    destructor Destroy; override;
     property Template: TFPImageBitmap read FTemplate write FTemplate;
   published
     property Visible;

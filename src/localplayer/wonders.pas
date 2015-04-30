@@ -87,8 +87,7 @@ type
 
   procedure DarkIcon(i: integer);
   var
-    x, y, ch, x0Dst, y0Dst, x0Src, y0Src, darken, c: integer;
-    Src, Dst: ^TLine;
+    x0Dst, y0Dst, x0Src, y0Src: integer;
   begin
     x0Dst := ClientWidth div 2 - xSizeBig div 2 + RingPosition[i, 0];
     y0Dst := ClientHeight div 2 - ySizeBig div 2 + RingPosition[i, 1];

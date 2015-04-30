@@ -1009,8 +1009,7 @@ procedure TStartDlg.PaintInfo;
   type
     TLine = array[0..lxmax * 2, 0..2] of byte;
   var
-    i, x, y, xm, cm: integer;
-    MiniLine: ^TLine;
+    i, x, y, xm: integer;
     Map: ^TTileList;
   begin
     Map := PreviewMap(StartLandMass);

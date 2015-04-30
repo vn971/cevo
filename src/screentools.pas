@@ -9,8 +9,8 @@ uses
   {$ifdef WINDOWS}
     windows,
   {$endif}
-  LCLIntf, LCLType, LMessages, LazLogger,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus;
+  LCLIntf, LCLType, LazLogger,
+  SysUtils, Classes, Graphics, Controls, Forms, Menus;
 
 type
   TTexture = record
@@ -191,7 +191,7 @@ uses
     sound in 'sound.pas',
   {$endif}
   IntfGraphics, FPimage, FileUtil,
-  Directories, ButtonBase, ButtonA, ButtonB,
+  Directories,
   //JPEGLib does not seem to be needed (was in Steffen-s source code)
   Registry;
 
@@ -201,10 +201,13 @@ var
 
 function Play(Item: string; Index: integer = -1): boolean;
 {$IFNDEF DEBUG}
+{$ifdef WINDOWS}
 var
   WAVFileName: string;
+{$endif}
 {$ENDIF}
 begin
+Result:=False;
 {$IFNDEF DEBUG}
 {$ifdef WINDOWS}
   if (Sounds = nil) or (SoundMode = smOff) or (Item = '') then
@@ -224,8 +227,10 @@ end;
 
 procedure PreparePlay(Item: string; Index: integer = -1);
 {$IFNDEF DEBUG}
+{$ifdef WINDOWS}
 var
   WAVFileName: string;
+{$endif}
 {$ENDIF}
 begin
 {$IFNDEF DEBUG}
@@ -351,7 +356,7 @@ end;
 
 procedure ApplyGamma(Start, Stop: pbyte);
 begin
-  while integer(Start) < integer(Stop) do
+  while Start < Stop do
   begin
     Start^ := GammaLUT[Start^];
     Inc(Start);
@@ -404,9 +409,6 @@ end;
 
 procedure BitBltUgly(Dest: TCanvas; destX, destY, Width, Height: Integer; Src: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
 var
-  img: TFPImageBitmap;
-  x,y: Integer;
-  color: TFPColor;
 begin
   LCLIntf.BitBlt(Dest.Handle, destX, destY, Width, Height, Src.Handle, XSrc, YSrc, Rop);
   //BitBlt_onlyCopy(Dest.Handle, destX, destY, Width, Height, Src.Handle, XSrc, YSrc, Rop);
@@ -414,10 +416,7 @@ begin
 end;
 
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;
-type
-  TLine = array[0..9999, 0..2] of byte;
 var
-  FirstLine, LastLine: ^TLine;
   png: TPortableNetworkGraphic;
   jpg: TJPEGImage;
   bmp: TBitmap;
@@ -531,7 +530,7 @@ begin
     bmp.BeginUpdate();
     FirstLine := bmp.ScanLine[0];
     LastLine := bmp.ScanLine[bmp.Height - 1];
-    if integer(FirstLine) < integer(LastLine) then
+    if FirstLine < LastLine then
       ApplyGamma(pointer(FirstLine), @LastLine[bmp.Width])
     else
       ApplyGamma(pointer(LastLine), @FirstLine[bmp.Width]);

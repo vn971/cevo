@@ -56,8 +56,6 @@ end;
 
 procedure TDirectDlg.DlgNotify(ID: integer);
 var
-  hMem: Cardinal;
-  p: pointer;
   s: string;
 begin
   case ID of

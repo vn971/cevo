@@ -484,7 +484,7 @@ var
   end;
 
 var
-  x, y, xGr, i, i1, j, iix, d, dx, dy, PrCost, Cnt, Loc1, FreeSupp, Paintiix, HappyGain,
+  x, y, xGr, i, j, iix, d, dx, dy, PrCost, Cnt, Loc1, FreeSupp, Paintiix, HappyGain,
   OptiType, rx, ry, TrueFood, TrueProd, TruePoll: integer;
   PrName, s: string;
   UnitInfo: TUnitInfo;

@@ -1185,7 +1185,7 @@ procedure TIsoMap.PaintGrid(x, y, nx, ny: integer);
 var
   i: integer;
 begin
-  FOutput.Canvas.pen.color := $000000; //$FF shl (8*random(3));
+  FOutput.Canvas.pen.color := $000000; // $FF shl (8*random(3));
   for i := 0 to nx div 2 do
     ClippedLine(i * 2, 0, False);
   for i := 1 to (nx + 1) div 2 do
