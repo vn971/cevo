@@ -1300,7 +1300,8 @@ else
 end;
 
 begin
-assert(sizeof(TPlayerContext)=2048);
+// lazarus todo: find out why was this code needed, or delete it
+// assert(sizeof(TPlayerContext)=2048);
 assert(sizeof(TModel)-2*sizeof(LongInt)-4*sizeof(word)=sIntSetDevModel and $F *4);
 end.
 
