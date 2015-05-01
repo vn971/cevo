@@ -4,9 +4,9 @@ interface
 
 uses
   Messg, Protocol, ScreenTools,
-  LCLIntf, LCLType, LMessages,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, ButtonA,
-  ButtonB, ButtonBase, StdCtrls;
+  LCLIntf, LCLType,
+  Messages, SysUtils, Graphics, Controls, Forms, ButtonA,
+  ButtonB, StdCtrls;
 
 type
   TMessgExDlg = class(TBaseMessgDlg)
@@ -74,8 +74,8 @@ procedure ContextMessage(SimpleText, SoundItem: string;
 implementation
 
 uses
-  ClientTools, BaseWin, Term, Help, Select, Diplomacy, Inp, UnitStat, Tribes,
-  IsoEngine, Diagram;
+  ClientTools, BaseWin, Term, Help, UnitStat, Tribes,
+  Diagram;
 
 {$R *.lfm}
 

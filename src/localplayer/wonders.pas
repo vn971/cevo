@@ -4,9 +4,8 @@ interface
 
 uses
   ScreenTools, BaseWin, Protocol,
-  LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonB;
+  SysUtils, Classes, Graphics, Controls,
+  ButtonB;
 
 type
   TWondersDlg = class(TBufferedDrawDlg)

@@ -3,9 +3,9 @@ unit start;
 interface
 
 uses
-  GameServer, Messg, ButtonBase, ButtonA, ButtonC, ButtonB, Area,
+  GameServer, Messg, ButtonA, ButtonC, ButtonB, Area,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   Menus, Registry;
 
 const

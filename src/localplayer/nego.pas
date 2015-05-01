@@ -5,8 +5,8 @@ interface
 uses
   ScreenTools,BaseWin,Protocol,Term,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, ButtonA,
-  ButtonBase, ButtonB, ButtonC, ButtonN;
+  SysUtils, Classes, Graphics, Controls, ButtonA,
+  ButtonB, ButtonN;
 
 
 const
@@ -94,7 +94,7 @@ var
 implementation
 
 uses
-Messg,ClientTools,Diplomacy, Inp, Select, NatStat, Help,Tribes, MessgEx;
+Messg,ClientTools,Diplomacy, Inp, Select, NatStat,Tribes, MessgEx;
 
 {$R *.lfm}
 

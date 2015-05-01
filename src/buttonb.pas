@@ -4,7 +4,7 @@ interface
 
 uses
   ButtonBase,
-  LCLIntf, LCLType,
+  LCLIntf,
   Classes, Graphics;
 
 type

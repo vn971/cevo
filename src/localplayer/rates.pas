@@ -4,9 +4,9 @@ interface
 
 uses
   Protocol, ScreenTools, BaseWin,
-  LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonB, ButtonC;
+  LCLIntf,
+  SysUtils, Classes, Graphics, Forms,
+  ButtonB, ButtonC;
 
 type
   TRatesDlg = class(TBufferedDrawDlg)

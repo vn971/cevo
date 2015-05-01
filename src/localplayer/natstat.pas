@@ -5,8 +5,8 @@ interface
 uses
   Protocol, ClientTools, Term, ScreenTools, BaseWin,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonB, ButtonC, Menus, EOTButton;
+  SysUtils, Classes, Graphics,
+  ButtonB, ButtonC, Menus, EOTButton;
 
 type
   PEnemyReport = ^TEnemyReport;
@@ -57,7 +57,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Diagram, Select, Messg, MessgEx, Help, Tribes, Directories;
+  Messg, Tribes, Directories;
 
 const
   xIcon = 326;

@@ -6,8 +6,7 @@ unit back;
 interface
 
 uses
-  LCLIntf, LCLType, LMessages,
-  Messages, SysUtils, Classes, Graphics, Forms;
+  SysUtils, Graphics, Forms;
 
 type
   TBackground = class(TForm)
@@ -24,7 +23,6 @@ var
 implementation
 
 uses
-  FileUtil,
   Directories, ScreenTools, Start;
 
 {$R *.lfm}

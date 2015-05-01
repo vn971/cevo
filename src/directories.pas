@@ -15,7 +15,6 @@ implementation
 
 uses
   FileUtil,
-  LCLIntf, LCLType,
   SysUtils;
 
 function LocalizedFilePath(path: string): string;

@@ -5,8 +5,8 @@ interface
 uses
   ScreenTools, Messg,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonB;
+  Classes, Graphics, Controls, Forms,
+  ButtonB;
 
 type
   TTechTreeDlg = class(TDrawDlg)

@@ -101,7 +101,7 @@ implementation
 uses
   FileUtil,
   Directories, CityProcessing, UnitProcessing, CmdList,
-  LCLIntf, LCLType, Classes, SysUtils;
+  Classes, SysUtils;
 
 var
   MaxTurn, LoadTurn, {turn where to stop loading}

@@ -4,8 +4,8 @@ interface
 
 uses
   ScreenTools, Protocol, Messg, ButtonBase, ButtonA,
-  LCLIntf, LCLType, LMessages,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms;
+  LCLIntf, LCLType,
+  SysUtils, Classes, Graphics, Controls, Forms;
 
 type
   TBattleDlg = class(TDrawDlg)

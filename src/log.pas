@@ -4,7 +4,7 @@ interface
 
 uses
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Messages, Classes, Controls, Forms,
   StdCtrls, Menus;
 
 type

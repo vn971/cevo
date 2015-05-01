@@ -6,7 +6,7 @@ uses
   Messg,
   Clipbrd,
   LCLIntf, LCLType, LMessages,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms;
+  Messages, SysUtils, Graphics, Controls, Forms;
 
 const
   WM_GO = WM_USER;

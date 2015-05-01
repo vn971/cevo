@@ -5,8 +5,8 @@ interface
 uses
   BaseWin,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonB, ButtonBase, Menus;
+  SysUtils, Classes, Graphics, Forms,
+  ButtonB, Menus;
 
 type
   TDiaDlg = class(TFramedDlg)
@@ -40,7 +40,7 @@ procedure PaintColonyShip(canvas: TCanvas; Player, Left, w, Top: integer);
 implementation
 
 uses
-  Protocol, ScreenTools, ClientTools, Term, Tribes;
+  Protocol, ScreenTools, ClientTools, Tribes;
 
 {$R *.lfm}
 

@@ -5,8 +5,8 @@ interface
 uses
   Protocol, ClientTools, Term, ScreenTools, BaseWin,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, ButtonA, ButtonB,
-  ButtonBase, ButtonC;
+  SysUtils, Classes, Graphics, Forms, ButtonB,
+  ButtonC;
 
 type
   TUnitStatDlg = class(TBufferedDrawDlg)
@@ -48,7 +48,7 @@ var
 
 implementation
 
-uses Inp, Select, Tribes, IsoEngine, Help, Directories;
+uses Tribes, IsoEngine, Help, Directories;
 
 {$R *.lfm}
 

@@ -6,7 +6,7 @@ uses
   Protocol, ClientTools, Term, ScreenTools, IsoEngine, BaseWin,
   LCLIntf, LCLType, LMessages,
   Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls, ButtonA,
-  ButtonB, ButtonBase, ButtonC, Area;
+  ButtonC, Area;
 
 const
   WM_PLAYSOUND = WM_USER;
@@ -86,7 +86,7 @@ var
 implementation
 
 uses
-  Select, Messg, MessgEx, Help, Inp, Tribes, Directories,
+  Select, Messg, MessgEx, Help, Tribes, Directories,
   Math;
 
 {$R *.lfm}

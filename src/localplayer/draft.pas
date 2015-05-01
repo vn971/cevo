@@ -3,10 +3,10 @@ unit draft;
 interface
 
 uses
-  Protocol, ClientTools, Term, ScreenTools, PVSB, BaseWin,
+  Protocol, ClientTools, Term, ScreenTools, BaseWin,
   LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls, ButtonA,
-  ButtonB, ButtonBase, Area;
+  SysUtils, Classes, Graphics, Controls, Forms, ButtonA,
+  ButtonB, Area;
 
 type
   TDraftDlg = class(TBufferedDrawDlg)

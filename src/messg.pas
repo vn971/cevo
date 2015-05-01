@@ -5,8 +5,8 @@ interface
 uses
   ScreenTools,
   LCLIntf, LCLType, LMessages,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, ButtonBase, ButtonA,
-  ButtonB, Area;
+  Messages, Classes, Graphics, Controls, Forms, ButtonBase, ButtonA,
+  Area;
 
 const
   WM_PLAYSOUND = WM_USER;

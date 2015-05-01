@@ -4,8 +4,8 @@ interface
 
 uses
   {$ifdef WINDOWS} Windows, {$endif}
-  LCLIntf, LCLType, LMessages,
-  Messages, SysUtils;
+  LCLIntf, LCLType,
+  Messages;
 
 type
   TPVScrollbar = record

@@ -4,9 +4,9 @@ interface
 
 uses
   ScreenTools, BaseWin, Protocol, ClientTools, Term,
-  LCLIntf, LCLType,
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ButtonBase, ButtonB, ButtonC, Menus;
+  LCLType,
+  SysUtils, Classes, Controls,
+  ButtonB, ButtonC, Menus;
 
 type
   TEnhanceDlg = class(TFramedDlg)
