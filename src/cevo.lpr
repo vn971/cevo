@@ -57,7 +57,7 @@ for i:= 1 to Paramcount do begin
     WriteLn('C-evo, a free empire building game');
     WriteLn('Options:');
     WriteLn('  --help, -h      show this text');
-    WriteLn('  -man, \man      show in-game manual');
+    WriteLn('  --man, -m       show in-game manual');
     halt;
   end;
 end;
