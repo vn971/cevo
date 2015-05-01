@@ -1,4 +1,3 @@
-{$INCLUDE switches.pas}
 unit battle;
 
 interface

@@ -1,4 +1,3 @@
-{$INCLUDE switches.pas}
 unit cityprocessing;
 
 interface

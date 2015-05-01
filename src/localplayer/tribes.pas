@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 unit tribes;
 
 interface

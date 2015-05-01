@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 unit direct;
 
 interface

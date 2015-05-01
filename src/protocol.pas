@@ -1,6 +1,3 @@
-{$INCLUDE switches.pas}
-{$HINTS OFF}
-
 unit protocol;
 
 interface

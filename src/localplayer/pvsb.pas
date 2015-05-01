@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 unit pvsb;
 
 interface

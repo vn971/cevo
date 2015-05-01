@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 // lazarus todo:
 // delete this file totally.
 // It was needed for "fullscreen" mode. It seems platform-specific to me (vn971).

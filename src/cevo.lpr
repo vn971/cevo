@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 program cevo;
 
 uses

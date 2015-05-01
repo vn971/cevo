@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 unit diplomacy;
 
 interface

@@ -1,5 +1,3 @@
-{$INCLUDE switches.pas}
-
 unit start;
 
 interface
