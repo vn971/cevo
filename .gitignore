@@ -1,9 +1,9 @@
-#### compilation output (Lazarus)
+#### compilation output
 /target/
 /bin/cevo
 /bin/cevo.exe
 
-#### backup files (lazarus and delphi)
+#### backup files
 *.~*
 
 #### Lazarus local files

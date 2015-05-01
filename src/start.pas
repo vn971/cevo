@@ -181,7 +181,7 @@ DefaultWorldTiles=4200;}
 
 procedure TStartDlg.FormCreate(Sender: TObject);
 var
-  x, y, i, ResolutionX, ResolutionY, ResolutionBPP, ResolutionFreq, ScreenMode: integer;
+  x, y, i, ResolutionX, ResolutionY: integer;
   DefaultAI, s: string;
   r0, r1: HRgn;
   Reg: TRegistry;
@@ -253,12 +253,8 @@ begin
   begin
     Reg.OpenKey('SOFTWARE\cevo\RegVer9', False);
     try
-      ScreenMode := Reg.ReadInteger('ScreenMode');
-      FullScreen := ScreenMode > 0;
       ResolutionX := Reg.ReadInteger('ResolutionX');
       ResolutionY := Reg.ReadInteger('ResolutionY');
-      ResolutionBPP := Reg.ReadInteger('ResolutionBPP');
-      ResolutionFreq := Reg.ReadInteger('ResolutionFreq');
     except
     end;
     Reg.closekey;

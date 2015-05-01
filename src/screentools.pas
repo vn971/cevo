@@ -420,8 +420,6 @@ var
   png: TPortableNetworkGraphic;
   jpg: TJPEGImage;
   bmp: TBitmap;
-  //x,y: Integer;
-  //c: TColor;
 begin
   Result:=nil;
 
