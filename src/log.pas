@@ -44,7 +44,7 @@ var
 implementation
 
 uses
-  ClientTools, Tribes;
+  ClientTools, Tribes, LazLogger, SysUtils;
 
 {$R *.lfm}
 
@@ -64,6 +64,9 @@ end;
 
 procedure TLogDlg.Add(Level, Turn: integer; Text: PChar);
 begin
+  DebugLn('c-evo log, level: ', IntToStr(Level),
+    ', turn: ', IntToStr(Turn),
+    ', text: ', Text);
   if (MaxLevel > 0) and (Level <= MaxLevel) or (Level = 1 shl 16 + 1) and
     mInvalid.Checked or (Level = 1 shl 16 + 2) and mTime.Checked or
     (Level = 1 shl 16 + 3) and mNegotiation.Checked then
@@ -138,5 +141,4 @@ begin
 end;
 
 end.
-
 
