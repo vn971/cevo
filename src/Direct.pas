@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Direct;
 
@@ -42,7 +42,7 @@ implementation
 uses
   ScreenTools, Protocol, GameServer, Start, LocalPlayer, NoTerm, Back, ShellAPI;
 
-{$R *.DFM}
+{$R *.dfm}
 
 procedure Notify(ID: integer);
 begin

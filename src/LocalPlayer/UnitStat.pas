@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit UnitStat;
 
@@ -51,7 +51,7 @@ implementation
 
 uses Inp, Select, Tribes, IsoEngine, Help, Directories;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   xView = 71;

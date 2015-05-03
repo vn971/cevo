@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit NatStat;
 
@@ -55,7 +55,7 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.dfm}
 
 uses
   Diagram, Select, Messg, MessgEx, Help, Tribes, Directories;

@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Wonders;
 
@@ -35,7 +35,7 @@ implementation
 uses
   Term, ClientTools, Help, Tribes;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   RingPosition: array[0..20, 0..1] of integer =

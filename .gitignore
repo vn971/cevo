@@ -2,6 +2,7 @@
 /target/
 *.exe
 *.dll
+/bin/cevo
 
 #### other
 /bin/AI/

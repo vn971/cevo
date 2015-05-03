@@ -1,6 +1,6 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
-unit log;
+unit Log;
 
 interface
 
@@ -47,7 +47,7 @@ implementation
 uses
   ClientTools, Tribes;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   MaxLines = 1000;

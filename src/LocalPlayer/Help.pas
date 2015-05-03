@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Help;
 
@@ -99,7 +99,7 @@ implementation
 uses
   Directories, ClientTools, Term, Tribes, ShellAPI, Inp, Messg;
 
-{$R *.DFM}
+{$R *.dfm}
 
 type
   THelpLineInfo = packed record

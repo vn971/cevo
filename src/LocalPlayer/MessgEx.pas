@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit MessgEx;
 
@@ -78,7 +78,7 @@ uses
   ClientTools, BaseWin, Term, Help, Select, Diplomacy, Inp, UnitStat, Tribes,
   IsoEngine, Diagram;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   LostUnitsPerLine = 6;

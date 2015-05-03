@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Select;
 
@@ -87,7 +87,7 @@ implementation
 uses
   CityScreen, Help, UnitStat, Tribes, Inp;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   CityNameSpace = 127;

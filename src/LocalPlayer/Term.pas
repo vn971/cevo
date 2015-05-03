@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Term;
 
@@ -427,7 +427,7 @@ uses
   Registry, ShellAPI;
 
 
-{$R *.DFM}
+{$R *.dfm}
 
 {$R Res1.res}
 

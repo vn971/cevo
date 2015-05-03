@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Start;
 
@@ -107,7 +107,7 @@ uses
   Directories, Protocol, Direct, ScreenTools, Inp, Back,
   ShellAPI;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   // predefined world size

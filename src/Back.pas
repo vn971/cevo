@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Back;
 
@@ -25,7 +25,7 @@ implementation
 uses
   Directories, ScreenTools, Start;
 
-{$R *.DFM}
+{$R *.dfm}
 
 procedure TBackground.FormCreate(Sender: TObject);
 begin

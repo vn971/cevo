@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Diagram;
 
@@ -43,7 +43,7 @@ implementation
 uses
   Protocol, ScreenTools, ClientTools, Term, Tribes;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   Border = 24;

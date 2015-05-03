@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit CityScreen;
 
@@ -90,7 +90,7 @@ uses
   Select, Messg, MessgEx, Help, Inp, Tribes, Directories,
   Math;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   {modes}

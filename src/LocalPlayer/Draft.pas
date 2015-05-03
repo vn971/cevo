@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 
 unit Draft;
 
@@ -45,7 +45,7 @@ implementation
 
 uses Help, Tribes, Directories;
 
-{$R *.DFM}
+{$R *.dfm}
 
 const
   MaxLines0 = 11;
