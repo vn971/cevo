@@ -152,13 +152,12 @@ information, visit the project homepage:\
 ::E2 c-evo.org\\
 
 !License\
-C-evo is a compilation of work by a number of authors. You are allowed
-to play the game and to distribute it without explicit permission. The compilation
-itself and all of its components (except for the graphics and the sounds) are in the Public
-Domain. Means you can do with it whatever you want. This also includes the binary
-code and the sources, which are available from the project homepage. As for
-the graphics, you should ask the author of an item before using it for another
-purpose than to play.\
+This project (C-evo adaptation for LazarusIDE) is licensed under GPL v3 license.
+Audio and graphics are free to play and to redistribute, but may have a different license.
+You should ask the author of an item before using it for other purposes.
+The current source repository can be found here:\
+https://gitlab.com/vn971/cevo\
+
 ::C Credits\\
 
 !Modular AI\

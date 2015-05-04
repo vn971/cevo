@@ -1,4 +1,5 @@
-    C-evo, a free empire building game with nice&small rules and strong emphasis on AI creation.
+    C-evo adaptation for LazarusIDE, a free empire building game
+    with nice&small rules and strong emphasis on AI creation.
 
     Copyright (C) 2015  Vasya Novikov. (See my personal note below.)
 
