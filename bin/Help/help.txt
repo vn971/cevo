@@ -173,7 +173,7 @@ you installed the game.\
 -Font smoothing recommended\\
 
 !Command Line Options\
---man ... Show manual only\\
+Start the program with "--help" to see all available command line options\\
 
 !Uninstall\
 Use the Application Wizard from the Control Panel.\\

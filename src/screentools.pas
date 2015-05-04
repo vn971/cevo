@@ -196,6 +196,7 @@ uses
 var
   Gamma: integer; // global gamma correction (cent)
   GammaLUT: array[0..255] of byte;
+  canvasExtractNumber: Integer = 1000;
 
 function Play(Item: string; Index: integer = -1): boolean;
 {$IFNDEF DEBUG}
@@ -387,12 +388,12 @@ begin
   BitBlt(DestCanvas.Handle, destX, destY, Width, Height, source.Canvas.Handle, XSrc, YSrc, SRCCOPY);
 end;
 
-procedure BitBlt_onlyCopy(DestDC: HDC; destX, destY, Width, Height: Integer; SrcDC: HDC; XSrc, YSrc: Integer; Rop: DWORD);
+procedure BitBlt_onlyCopy(Dest: TCanvas; destX, destY, Width, Height: Integer; Src: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
 begin
   if (Rop = SRCCOPY) then begin
-    BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
-  end else if (Rop = SRCAND)or (Rop=SRCPAINT) then begin
-    BitBlt(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+    BitBlt(Dest.Handle, destX, destY, Width, Height, Src.Handle, XSrc, YSrc, Rop);
+  end else if (Rop<>SRCAND) then begin
+    BitBlt(Dest.Handle, destX, destY, Width, Height, Src.Handle, XSrc, YSrc, Rop);
   end;
 end;
 
@@ -406,11 +407,25 @@ begin
 end;
 
 procedure BitBltUgly(Dest: TCanvas; destX, destY, Width, Height: Integer; Src: TCanvas; XSrc, YSrc: Integer; Rop: DWORD);
-var
 begin
   LCLIntf.BitBlt(Dest.Handle, destX, destY, Width, Height, Src.Handle, XSrc, YSrc, Rop);
-  //BitBlt_onlyCopy(Dest.Handle, destX, destY, Width, Height, Src.Handle, XSrc, YSrc, Rop);
+  //BitBlt_onlyCopy(Dest, destX, destY, Width, Height, Src, XSrc, YSrc, Rop);
   //BitBltWindowsSpecific(DestDC, destX, destY, Width, Height, SrcDC, XSrc, YSrc, Rop);
+end;
+
+procedure saveCanvasContents(Src: TCanvas);
+var
+  img: TPortableNetworkGraphic;
+begin
+  img:=TPortableNetworkGraphic.Create;
+  img.Width:=Src.Width;
+  img.Height:=Src.Height;
+  img.Canvas.Pen.Color:=clWhite;
+  img.Canvas.FillRect(0,0, Src.Width, Src.Height);
+  LCLIntf.BitBlt(img.Canvas.Handle, 0, 0, Src.Width, Src.Height, Src.Handle, 0, 0, SRCCOPY);
+  //img.LoadFromDevice(Src.Handle);
+  img.SaveToFile(GraphicsDirectory + IntToStr(canvasExtractNumber) + '.png');
+  canvasExtractNumber += 1;
 end;
 
 function LoadAnyGraphics(Path: string; Options: integer = 0): TFPImageBitmap;

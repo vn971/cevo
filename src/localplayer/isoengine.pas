@@ -214,8 +214,11 @@ begin
       BitBltTransparent(LandMore.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt, xSrc, ySrc, terrainCurrent);
 
     BitBltTransparent(LandMore.Canvas, xxt * 2, (y + 2) * yyt, xxt, yyt, xSrc + xxt, ySrc + yyt, terrainCurrent);
+
+    // lazarus todo: possible reason of graphics intersection:
     for x := 0 to 7 do
       BitBltTransparent(LandMore.Canvas, (x + 2) * (xxt * 2) - xxt, (y + 2) * yyt, xxt * 2, yyt, xSrc, ySrc + yyt, terrainCurrent);
+
     for x := -2 to 6 do
       BitBltUgly(LandMore.Canvas, (x + 2) * (xxt * 2), (y + 2) * yyt, xxt * 2, yyt, DitherMask.Canvas, 0, 0, SRCAND);
   end;
