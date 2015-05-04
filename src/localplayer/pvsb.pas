@@ -4,7 +4,7 @@ interface
 
 uses
   {$ifdef WINDOWS} Windows, {$endif}
-  LCLIntf, LCLType,
+  LCLIntf, LCLType, sysutils,
   Messages;
 
 type
