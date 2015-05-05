@@ -1,4 +1,4 @@
-{$INCLUDE switches}
+{$INCLUDE Switches.pas}
 //{$DEFINE TEXTLOG}
 //{$DEFINE LOADPERF}
 unit Database;
