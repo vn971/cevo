@@ -110,11 +110,13 @@ begin
   begin
     if fsModal in FormState then
       ModalResult := mrCancel;
+    Close;
   end
   else if Key = VK_RETURN then
   begin
     if fsModal in FormState then
       ModalResult := mrOk;
+    Close;
   end
   else if Key = VK_F1 then
     HelpDlg.ShowNewContent(FWindowMode or wmPersistent, hkText,
