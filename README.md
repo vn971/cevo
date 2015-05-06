@@ -4,7 +4,7 @@ This "README" is targeted to developers
 This is a short developer README.
 
 If you're not a developer,
-you would probably want to check the [master](../../tree/master) branch
+you would probably want to check the [experimental](../../tree/experimental) branch
 of this repository.
 
 This branch's goal is to port C-Evo
