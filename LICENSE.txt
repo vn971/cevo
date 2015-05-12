@@ -18,7 +18,7 @@
 
 
     Audio and graphics are free to play and to redistribute, but may have a different license.
-    Please check out the in-game manual and http://c-evo.org for details. (The manual can also be seen in target/Help/help.txt)
+    Please check out the in-game manual for details on graphics. (The manual can also be seen in target/Help/help.txt)
 
 
     Personal note on Copyright.

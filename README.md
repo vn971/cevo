@@ -9,36 +9,31 @@ of this repository.
 
 This branch's goal is to port C-Evo
 to the free development environment called "Lazarus".
-Apart from switching to a free IDE,
-this will also make the project cross-compilable.
-That is, you would be able to launch the game on Linux/MacOS.
+
+Why Lazarus?
+----
+
+Why do it, and why Lazarus?
+
+* because we want a free IDE to encourage developers for joining in
+* because this is a powerful IDE (lazarus it definitely more powerful in 2015 than the old Delphi 7 distribution).
+* We will be able to launch the game on Linux and MacOS natively.
+* We will even be able lauch the game in a browser! This is possible because lazarus can compile to gtk, and gtk has the "broadway" engine. (It eats a lot of traffic, but works in most cases.)
 
 
 Current status:
 ----
 
-* After about 70 commits made, the project compiles successfully.
-
-It is able to start itself in both Linux and Windows.
-
-* There are a pair things I could not manage to cross-compile, yet.
-
-It's easy to find them, search for either a comment:
-
-```
-    // lazarus todo
-```
-
-or for a conditional compilation block:
-
-```
-    {$ifdef WINDOWS}
-```
-
-* Apart from things that are not cross-compiled yet,
-the game also has run-time incompatibilities.
-As far as I see, the main thing is graphics.
-If you'll launch the game, you'll see the differences.
+* It's possible to start the game in both Windows and Linux (the environments that I could test).
+* All AIs seem to work correctly. (They expand, attack etc.)
+* terrain generation differs in Windows and Linux, making games unreadable across each other. Both terrain versions seem correct visually, but the picture's different. This can probably be fixed, but still needs to be done.
+* the main screen graphics are broken. This has been gradually fixed already, but still needs some work.
+* the game throws exceptions in Linux at every logical step made (like end of turn, investigate a city,..)
+* the game is incredibly slow under Windows but fast under Linux. This is because of `BitBlt` usages, it should be easy to fix but needs to be done.
+* the in-game manual cannot be browsed in Linux because it lacks proper "PVSB" custom component support (see the code).
+* the more obvious errors got fixed, the more hard ones left.. The porting progress becomes harder.
+* the game proved to be hard to port. A _lot_ of winapi was used originally. Even assebly! Even now the project has a lot of platform-specific code.
+* compilation TODO-s are left, they look like "`lazarus todo`" or "`{$ifdef WINDOWS}`".
 
 
 What can I do?
@@ -48,34 +43,17 @@ What can I do?
 
 This might require using google/duckduckgo/searx a lot.
 Since I already did that for most of the project parts,
-only the most hard ones are left.
-I don't really advise to go that way...
-Better start with graphics (see below).
+the most hard ones are left.
 
-* Fix the "black color" issue.
+* Find bugs that annoy you, investigate and fix them.
 
-The current version of the code has issues with transparency
-and image drawing. As far as I understood,
-things get painted as black instead of transparent in some cases.
-It's not clear (to me) why it works in some cases and does not in others.
-The goal is to fix that, of course.
-The method `BitBlt` may or may not be relevant
-(I'm suspicious about it, but I don't know for sure).
-
-* Fix other graphics issues.
-
-The old code used a lot of 32bit-only and windows-only code.
-(It even used assembly, but I already migrated that to Pascal.)
-This should probably be worked on.
-The most suspicious thing I see is `ScanLine` method usage.
-After doing `ScalLine`, the code goes to raw byte manipulation using pointer arithmetics.
-By doing pointer arithmetics the code assumes some implementation details
-about the internal data structure. This might be broken.
-
+You might use a debugger.
+For example, there are `ScanLine` method usages,
+and `BitBlt` with the copy mode different than "SRCCOPY".
 You should understand what the code really meant to do,
-and write it in pure correct Pascal code. Using methods, properties, loops etc.
+and write it in correct Pascal code. Using methods, properties, loops etc.
 
-If you go this way, you'll also have easy time advertising your progress.:)
+// If you start with graphics, you'll also have easy time advertising your progress.:)
 It's easy to share a screenshot.:)
 
 
@@ -90,4 +68,4 @@ Feel free to ask questions on  [http://c-evo.org/bb/viewtopic.php?f=4&t=119](htt
 
 You will need Lazarus-1.0.12+ to work on the project. I use Lazarus-1.4-RC2.
 
-Please send pull requests if you'll do something. At least I'd be glad to know that someone did some progress over my work. :P :)
+Please send pull requests if you'll do something. At least I'd be glad to know that someone did some progress in this work. :P :)
