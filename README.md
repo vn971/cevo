@@ -46,11 +46,11 @@ Build instructions using command line, presuming you have Delphi3-Delphi7 instal
 * invoke  `dcc32 cevo.dpr`
 * run the game with  `bin/CevoWin32.exe`
 
-Building the game using a non-proprietary IDE...is not possible yet, unfortunately. We try to fix that in a separate git branch [here](../../tree/master), but it's not ready yet.
+Building the game using a non-proprietary IDE...is not possible yet, unfortunately. We try to fix that in a separate git branch [here](../../tree/lazarus), but it's not ready yet.
 
 Other
 ====
-For license information, see LICENSE.txt
+For license information, see LICENSE.txt (basically it's Public Domain)
 
 If you would like to do AI development, please read the "Module Concept" section
 and learn the client/server architecture of the game first:
