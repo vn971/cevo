@@ -60,6 +60,10 @@ It's easy to share a screenshot.:)
 Other notes
 ----
 
+Main git repo: [https://gitlab.com/vn971/cevo](https://gitlab.com/vn971/cevo)
+
+Github mirror: [https://github.com/vn971/cevo](https://gitlab.com/vn971/cevo)
+
 If you start making changes, do commit them in a timely manner.
 Don't wait for your changes to be 1000 lines of source code!
 In the contrary, make small self-contained changes.
