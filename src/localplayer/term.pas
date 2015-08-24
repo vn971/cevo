@@ -1365,7 +1365,7 @@ procedure TMainScreen.Client(Command, NewPlayer: integer; var Data);
     StartRunning := False;
     StayOnTop_Ensured := False;
 
-    CreatePVSB(sb, Handle, 100 - 200, 122, 100 + MidPanelHeight - 16 - 200);
+    //CreatePVSB(sb, Handle, 100 - 200, 122, 100 + MidPanelHeight - 16 - 200);
   end;{InitModule}
 
   // sound blocks for preload
@@ -2499,7 +2499,7 @@ begin {>>>client}
       for i := 0 to ControlCount - 1 do
         if Controls[i] is TButtonC then
           Controls[i].Visible := False;
-      InitPVSB(sb, 0, 1);
+      //InitPVSB(sb, 0, 1);
       for p1 := 0 to nPl - 1 do
         if Tribe[p1] <> nil then
           Tribe[p1].Free;
@@ -3393,8 +3393,8 @@ begin
   MovieSpeed4Btn.Left := ClientWidth div 2 - 62 + 3 * 29 + 12;
   EOT.Top := ClientHeight - 64;
   EOT.Left := ClientWidth - 62;
-  SetWindowPos(sb.h, 0, xRightPanel + 10 - 14 - GetSystemMetrics(SM_CXVSCROLL),
-    ClientHeight - MidPanelHeight + 8, 0, 0, SWP_NOSIZE or SWP_NOZORDER);
+  //SetWindowPos(sb.h, 0, xRightPanel + 10 - 14 - GetSystemMetrics(SM_CXVSCROLL),
+  //  ClientHeight - MidPanelHeight + 8, 0, 0, SWP_NOSIZE or SWP_NOZORDER);
   MapBtn0.Left := xMini + G.lx - 44;
   MapBtn0.Top := ClientHeight - 15;
   MapBtn1.Left := xMini + G.lx - 28;
@@ -3431,11 +3431,13 @@ end;
 
 procedure TMainScreen.OnScroll(var m: TMessage);
 begin
+  {*
   if ProcessPVSB(sb, m) then
   begin
     PanelPaint;
     Update;
   end;
+  *}
 end;
 
 procedure TMainScreen.OnEOT(var Msg: TMessage);
@@ -4189,6 +4191,7 @@ begin
       Count := 0;
       for i := 0 to nBrushTypes - 1 do
       begin // display terrain types
+        {*
         if (Count >= TrRow * sb.si.npos) and (Count < TrRow * (sb.si.npos + 1)) then
         begin
           trix[Count - TrRow * sb.si.npos] := BrushTypes[i];
@@ -4276,6 +4279,7 @@ begin
               yTroop + 2 * yyt + 10, MainTexture.clMark, MainTexture.clMark);
           end;
         end;
+        *}
         Inc(Count);
       end;
       case BrushType of
@@ -4393,6 +4397,7 @@ begin
                   unx := MyUn[uix];
                   if unx.Loc = TroopLoc then
                   begin
+                    {*
                     if (Count >= TrRow * sb.si.npos) and (Count < TrRow * (sb.si.npos + 1)) then
                     begin
                       trix[Count - TrRow * sb.si.npos] := uix;
@@ -4430,9 +4435,10 @@ begin
                       end;
                     end;
                     Inc(Count);
+                    *}
                   end;
                 end; // for uix:=0 to MyRO.nUn-1
-            assert(Count = TrCnt);
+            //assert(Count = TrCnt);
           end;
         end
         else
@@ -4440,6 +4446,7 @@ begin
           LoweredTextOut(Panel.Canvas, -1, MainTexture, xTroop + 8, PanelHeight - 24,
             Phrases.Lookup('PRESENT'));
           Server(sGetUnits, me, TroopLoc, Count);
+          {*
           for i := 0 to Count - 1 do
             if (i >= TrRow * sb.si.npos) and (i < TrRow * (sb.si.npos + 1)) then
             begin // display enemy units
@@ -4448,6 +4455,7 @@ begin
               NoMap.SetOutput(Panel);
               NoMap.PaintUnit(xTroop + 2 + x, yTroop + 1, MyRO.EnemyUn[MyRO.nEnemyUn + i], 0);
             end;
+          *}
         end;
       end;
       if not SmallScreen or supervising then
@@ -6007,9 +6015,10 @@ begin
     else // count enemy units here
       Server(sGetUnits, me, Loc, TrCnt);
   if TrCnt = 0 then
-    InitPVSB(sb, 0, 1)
+    //InitPVSB(sb, 0, 1)
   else
   begin
+    {*
     InitPVSB(sb, (TrCnt + TrRow - 1) div TrRow - 1, 1);
     with sb.si do
       if (nMax >= integer(nPage)) and (trixFocus >= 0) then
@@ -6018,6 +6027,7 @@ begin
         sb.si.FMask := SIF_POS;
         SetScrollInfo(sb.h, SB_CTL, sb.si, True);
       end;
+    *}
   end;
 end;
 

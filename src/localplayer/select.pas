@@ -1561,7 +1561,7 @@ begin
   Layer := 0;
   Sel := -2;
   ScienceNation := -1;
-  InitPVSB(sb, Lines[Layer] - 1, DispLines);
+  //InitPVSB(sb, Lines[Layer] - 1, DispLines);
 
   OffscreenPaint;
 end;
@@ -1662,7 +1662,7 @@ begin
   end;
   InitLines;
   Sel := -2;
-  InitPVSB(sb, Lines[Layer] - 1, DispLines);
+  //InitPVSB(sb, Lines[Layer] - 1, DispLines);
   OffscreenPaint;
   Invalidate;
 end;
@@ -1675,7 +1675,7 @@ begin
   Layer := TComponent(Sender).Tag;
 
   Sel := -2;
-  InitPVSB(sb, Lines[Layer] - 1, DispLines);
+  //InitPVSB(sb, Lines[Layer] - 1, DispLines);
   SmartUpdateContent;
 end;
 
