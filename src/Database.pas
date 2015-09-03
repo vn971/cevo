@@ -2911,7 +2911,7 @@ begin
       Status := 0;
       SavedStatus := 0;
       Inc(Model[mix].Built);
-      Home := -1;
+      Home := 0; //Lagi: -1 is homeless, support free settler
       Health := 100;
       Flags := 0;
       Movement := 0;
