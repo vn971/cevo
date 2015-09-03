@@ -1,5 +1,5 @@
 C-evo
-====nhjnhjnh
+====
 
 C-evo is a free empire building game for Windows and Linux(wine).
 
