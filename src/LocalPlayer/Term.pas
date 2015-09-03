@@ -6277,6 +6277,7 @@ begin
       char(VK_F9): MenuClick_Check(StatPopup, mNations);
       char(VK_F10): MenuClick_Check(StatPopup, mEmpire);
       char(VK_ADD): EndTurn;
+      'Q': EndTurn;
       '1': MapBtnClick(MapBtn0);
       '2': MapBtnClick(MapBtn1);
       '3': MapBtnClick(MapBtn4);
