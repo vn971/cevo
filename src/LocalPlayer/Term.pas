@@ -5333,7 +5333,7 @@ begin
     Update; // remove message box from screen
   end;
 
-  OldUnrest := False;
+  {OldUnrest := False;
   NewUnrest := False;
   if (Result >= rExecuted) and (Result and rUnitRemoved = 0) and
     (MyMap[ToLoc] and (fUnit or fOwned) <> fUnit) then
@@ -5368,7 +5368,7 @@ begin
       end;
       Update; // remove message box from screen
     end;
-  end;
+  end;}
 
   if (Result >= rExecuted) and (MyModel[MyUn[UnFocus].mix].Domain = dAir) and
     (MyUn[UnFocus].Status and usToldNoReturn = 0) then
@@ -6277,6 +6277,8 @@ begin
       char(VK_F9): MenuClick_Check(StatPopup, mNations);
       char(VK_F10): MenuClick_Check(StatPopup, mEmpire);
       char(VK_ADD): EndTurn;
+      'Q': EndTurn;
+      'D': UnitStatDlg.ShowNewContent_OwnModel(wmPersistent, MyUn[UnFocus].mix);
       '1': MapBtnClick(MapBtn0);
       '2': MapBtnClick(MapBtn1);
       '3': MapBtnClick(MapBtn4);
