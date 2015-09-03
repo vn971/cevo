@@ -744,7 +744,7 @@ on it while holding the shift key.\
 ::F Unit Features\\
 
 In the end, attack strength, defense strength and transport capacity of the
-unit design are calculated with base value × modifier. If you play on the lower
+unit design are calculated with base value Ã— modifier. If you play on the lower
 resp. higher difficulty level, the costs of a unit decrease resp.
 increase by 25%.
 
@@ -1186,7 +1186,7 @@ start at a certain one of the positions, define it as preferred.\\
 
 Maps are not shown to the player on the start screen. Instead, you can make a
 theme picture for a map. This must be a BMP file with the same name as the
-map. Just put it to the maps folder. The maximum size of the picture is 192×96
+map. Just put it to the maps folder. The maximum size of the picture is 192Ã—96
 pixels.
 
 
@@ -1223,9 +1223,42 @@ Mouse functions in main map:\
 
 Keyboard functions in main map:\
 -Cursor keys - Move selected unit\
--"+" key on numeric pad - End turn\
--1 thru 7 - shortcuts for the small buttons beside the overview map\
--Many menu shortcut keys, see menus
+-"q" and "+" key on numeric pad - End turn\
+-1 thru 7 -  shortcuts for administrative panels\
+-F1 Help\
+-F2 thru F5 - shortcuts for the small buttons beside the overview map\
+-"t" tech-tree (only during game)\\
+
+Unit commands:\
+- "d" unit info
+- space no order (this turn)\
+- "w" wait (give orders for other units first)\
+- "s" stay here (dont ask for attention)\
+- "v" recover (ask for attention when 100 HP)\
+- "c" center view on unit\
+- "h" go back to nearest city\\
+- "b" add to city or found new city\
+- "z" utilize/integrate (recycle unit)\
+- ctr + "d" disband unit\
+- ctr + "p" pillage (destroy terrain improvment)\\
+- "l" load selected unit\
+- "u" unload selected unit\
+- ctr + "t" load on this transport (mark)\\
+Workers commands:\
+- "e" enhance terrain  \
+- "r" build road / railroad\
+- "i" build irrigation/farm or clear forrest or drain swamp\
+- "m" build mine or afforest\
+- "o" terraform terrain\
+- "p" clear pollution\
+- "f" build fortification\
+- "a" build base\
+- "n" build canal\
+- ctr + "c" cancel current job\\
+Rename unit:\
+- [at Military panel] Shift + Right Mouse button\\
+Rename city:\
+- [at city panel] Right Mouse button
 
 #TRADINGGOODS
 $Trade Goods\
@@ -1440,7 +1473,7 @@ When the unit is destroyed in combat, it deals twice the normal damage.\\Fanatic
 When the unit destroys another one with an attack, it takes only half the normal damage.
 Unit attacks at full strength even if it has less than 1 MP left.
 2 tiles observation range. Unit fortifies if it has at least half of its initial MP left.
-The unit’s production cost is halved when the same type of unit was produced immediately before, but doubled otherwise.
+The unitÂ’s production cost is halved when the same type of unit was produced immediately before, but doubled otherwise.
 
 #GOVHELP
 -All cities are in disorder.\-No maintenance costs for city improvements.\-No unit support required.\-Lasts three turns.
