@@ -1991,6 +1991,8 @@ begin
     begin {bad government influence}
       if Food > 3 then
         Food := 3;
+          if (Tile and fCity <> 0) and (RW[p].City[cix].Built[imPalace]=1) then
+        Inc(Food);      //Lagi
       if Prod > 2 then
         Prod := 2;
       if Trade > 2 then
