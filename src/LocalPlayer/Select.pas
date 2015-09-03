@@ -1736,9 +1736,9 @@ end;
 
 procedure TListDlg.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 begin
-  if (Key = VK_F2) and (Kind in [kModels, kEModels]) then // my key
-  // !!! toggle
-  else if (Key = VK_F3) and (Kind in [kCities, kCityEvents]) then // my key
+  if (Key = VK_$32) and (Kind in [kModels, kEModels]) then // my key
+  // !!! toggle Lagi it doesnt work, either with F2 nor 2
+  else if (Key = VK_$33) and (Kind in [kCities, kCityEvents]) then // my key
     ToggleBtnClick(nil)
   else if ((Key = VK_ESCAPE) or (Key = VK_RETURN)) and not CloseBtn.Visible then
   // prevent closing
