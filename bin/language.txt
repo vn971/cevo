@@ -82,7 +82,7 @@
 #TECHGAIN +%d%%r
 #TECHWAIT %s (%d Turns)
 #COSTDIFF1 Difficulty Level: -25%
-#COSTDIFF2 Difficulty Level: ±0
+#COSTDIFF2 Difficulty Level: Â±0
 #COSTDIFF3 Difficulty Level: +25%
 #NATEXISTS (%s)
 #CONSCRIPTS Conscript %s
@@ -817,7 +817,7 @@ Monarchy
 Republic
 Fundamentalism
 Communism
-Democracy
+Capitalism
 Future Society
 
 #TREATY
