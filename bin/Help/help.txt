@@ -746,8 +746,14 @@ on it while holding the shift key.\
 In the end, attack strength, defense strength and transport capacity of the
 unit design are calculated with base value × modifier. If you play on the lower
 resp. higher difficulty level, the costs of a unit decrease resp.
-increase by 25%.
+increase by 25%.\\
 
+The multipliers for unit strenght and cost, with all advanced before Science are:\
+Ground x16/x8 - Navy x16/x12 (x2 Transport)\\
+..before Mass Production:\
+Ground x44/x12 - Navy x92/x28 (x4 Transport) - Air x24/x20\\
+..before Transstelar Colonisation (without Future Technologies):\
+Ground x68/x15  - Navy x124/x38 (x4 Trans.) - Air x51/x32 (x1 Trans.)\
 
 #CITIES
 $City Management\
