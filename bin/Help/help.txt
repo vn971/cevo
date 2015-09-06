@@ -1424,7 +1424,7 @@ Unit doesn't have to return to a city, carrier or military base for one more tur
 Troop transport base value +1.\Transport planes can not be transported by carriers.
 Unit can move over the open sea.
 2 tiles observation range. Locates submarines in adjacent tiles.
-Invisible to enemy units.
+Invisible to enemy units. Cannot have defense base value more than 2.
 Ground units ignore effect of city walls and can attack ships on adjacent coast tiles, excluding submarines.\Ships can attack cities and targets on adjacent ground tiles.
 Move in each terrain as fast as on a road.
 The health of transported units doubles in each turn.
