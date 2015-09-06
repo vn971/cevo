@@ -3864,6 +3864,11 @@ begin {>>>server}
                   if Cap[mcDefense] > 2 then
                     Cap[mcDefense] := 2;
                 end;
+                mcDefense:
+                begin
+                 if Cap[mcDefense] > 2 then
+                  Cap[mcSub] := 0;
+                end;  
                 mcSeaTrans:
                 begin
                   if ServerVersion[Player] >= $010103 then
