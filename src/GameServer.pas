@@ -3869,8 +3869,8 @@ begin {>>>server}
                 end;
                 mcDefense:
                 begin
-                 if Cap[mcDefense] > 2 then
-                  Cap[mcSub] := 0;
+                  if Cap[mcDefense] > 2 then
+                    Cap[mcSub] := 0;
                 end;  
                 mcSeaTrans:
                 begin
