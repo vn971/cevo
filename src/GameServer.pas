@@ -768,7 +768,7 @@ begin
       begin
         Government := gDespotism;
         Money := StartMoney;
-        TaxRate := 30;
+        TaxRate := 0;
         LuxRate := 0;
         Research := 0;
         ResearchTech := -2;

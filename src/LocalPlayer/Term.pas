@@ -5333,7 +5333,7 @@ begin
     Update; // remove message box from screen
   end;
 
-  OldUnrest := False;
+  {OldUnrest := False;
   NewUnrest := False;
   if (Result >= rExecuted) and (Result and rUnitRemoved = 0) and
     (MyMap[ToLoc] and (fUnit or fOwned) <> fUnit) then
@@ -5368,7 +5368,7 @@ begin
       end;
       Update; // remove message box from screen
     end;
-  end;
+  end;}
 
   if (Result >= rExecuted) and (MyModel[MyUn[UnFocus].mix].Domain = dAir) and
     (MyUn[UnFocus].Status and usToldNoReturn = 0) then
@@ -6267,23 +6267,24 @@ begin
   else if Shift = [] then
     case char(Key) of
       char(VK_F1): MenuClick(mHelp);
-      char(VK_F2): MenuClick_Check(StatPopup, mUnitStat);
-      char(VK_F3): MenuClick_Check(StatPopup, mCityStat);
-      char(VK_F4): MenuClick_Check(StatPopup, mScienceStat);
-      char(VK_F5): MenuClick_Check(StatPopup, mEUnitStat);
-      char(VK_F6): MenuClick_Check(StatPopup, mDiagram);
-      char(VK_F7): MenuClick_Check(StatPopup, mWonders);
-      char(VK_F8): MenuClick_Check(StatPopup, mShips);
-      char(VK_F9): MenuClick_Check(StatPopup, mNations);
-      char(VK_F10): MenuClick_Check(StatPopup, mEmpire);
+      '2': MenuClick_Check(StatPopup, mUnitStat);
+      '3': MenuClick_Check(StatPopup, mCityStat);
+      '4': MenuClick_Check(StatPopup, mScienceStat);
+      '5': MenuClick_Check(StatPopup, mEUnitStat);
+      '6': MenuClick_Check(StatPopup, mDiagram);
+      '7': MenuClick_Check(StatPopup, mWonders);
+      '8': MenuClick_Check(StatPopup, mShips);
+      '9': MenuClick_Check(StatPopup, mNations);
+      '1': MenuClick_Check(StatPopup, mEmpire);
       char(VK_ADD): EndTurn;
-      '1': MapBtnClick(MapBtn0);
-      '2': MapBtnClick(MapBtn1);
-      '3': MapBtnClick(MapBtn4);
-      '4': MapBtnClick(MapBtn5);
-      '5': MapBtnClick(MapBtn6);
-      'T': MenuClick(mTechTree);
+      'Q': EndTurn;
+      char(VK_F2): MapBtnClick(MapBtn0);
+      char(VK_F3): MapBtnClick(MapBtn1);
+      char(VK_F5): MapBtnClick(MapBtn4);
+      char(VK_F4): MapBtnClick(MapBtn5);
+      char(VK_F6): MapBtnClick(MapBtn6);
       'W': MenuClick(mWait);
+      'D': UnitStatDlg.ShowNewContent_OwnModel(wmPersistent, MyUn[UnFocus].mix);
     end;
 
   if UnFocus >= 0 then

@@ -366,9 +366,9 @@ end;
 
 procedure TDiaDlg.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 begin
-  if (Key = VK_F6) and (Kind = dkChart) then // my key
+  if (Key = VK_$36) and (Kind = dkChart) then // my key
     ToggleBtnClick(nil)
-  else if (Key = VK_F8) and (Kind = dkShip) then // my other key
+  else if (Key = VK_$38) and (Kind = dkShip) then // my other key
   else
     inherited;
 end;
