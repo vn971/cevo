@@ -1289,7 +1289,7 @@ Maximum weight of ground units rises to 7%w.
 *
 *
 *
-+1%t on all tiles with river.\Allows development of naval units.
++1%t on all tiles with river.\Allows development of naval units. Naval units may only be built in coastal cities or cities connected to sea via canal.
 *
 Modern resources become available.\Key Technology: Other nations notice when a nation discovers mass production.
 *
@@ -1397,7 +1397,7 @@ Research +75%.
 +100% defense for city defenders against air units and protection from bombardment by such units.
 +100% defense for city defenders against sea units and protection from bombardment by such units.\\This improvement can only be built in coastal cities.
 All air units to build in this city begin hardened. The health of air units located in this city doubles in each turn.
-All naval units to build in this city begin hardened. The health of sea units located in this city doubles in each turn.
+All naval units to build in this city begin hardened. The health of sea units located in this city doubles in each turn.\\This improvement can only be built in cities that are able to produce naval units. (Coastal or connected to seas via canal).
 Enables collecting trade with no limit and prevents corruption in this city completely. Makes this city the capital, which affects corruption of all other cities, see under:\:RESOURCES Resource Types
 Counts as a city wall in each city on the continent where it's built. (The poles do not count as continent connection.)
 Generates a number of morale points equal to the size of the city
