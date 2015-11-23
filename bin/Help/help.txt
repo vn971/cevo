@@ -1398,7 +1398,7 @@ Research +75%.
 +100% defense for city defenders against sea units and protection from bombardment by such units.\\This improvement can only be built in coastal cities.
 All air units to build in this city begin hardened. The health of air units located in this city doubles in each turn.
 All naval units to build in this city begin hardened. The health of sea units located in this city doubles in each turn.\\This improvement can only be built in cities that are able to produce naval units. (Coastal or connected to seas via canal).
-Enables collecting trade with no limit and prevents corruption in this city completely. Makes this city the capital, which affects corruption of all other cities, see under:\:RESOURCES Resource Types
+Enables collecting trade with no limit and prevents corruption in this city completely. Makes this city the capital, which affects corruption of all other cities, see under:\::G Goverment Forms
 Counts as a city wall in each city on the continent where it's built. (The poles do not count as continent connection.)
 Generates a number of morale points equal to the size of the city
 The total research output of this city is doubled.
