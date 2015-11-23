@@ -1357,7 +1357,7 @@ Cathedrals get +2%m.
 *
 Cities find their own individual balance between research and wealth. The wealth production is adjusted to the optimal amount.\\For cities under full control, this wonder usually prevents disorder, but not in a city producing so little trade or having so much unrest that even 100% wealth are not enough.
 Prevents the wonders of this nation from expiring. Wonders that have already expired get reactivated.
-Counts as a hydroelectric dam in each city.\\This wonder can only be built in cities adjacent to rivers or mountains.
+Counts as if each city has \::B46 Hydroelectric Dam\\This wonder can only be built in cities adjacent to rivers or mountains.
 Moving along railroads no longer requires movement points.
 Starts the Cold War. During this period no diplomatic activities are possible. The Cold War lasts 40 turns.
 The whole world becomes visible for one turn. A dossier and military information about all nations is obtained.\\In order to produce this wonder, a nation must have a\::B66 Space Port
