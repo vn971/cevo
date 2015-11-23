@@ -1425,11 +1425,11 @@ Unit doesn't have to return to a city, carrier or military base for one more tur
 Troop transport base value +1.\Transport planes can not be transported by carriers.
 Unit can move over the open sea.
 2 tiles observation range. Locates submarines in adjacent tiles.
-Invisible to enemy units. Cannot have defense base value more than 2.
+Invisible to enemy units. Cannot have defense base value more than 2.\Incompatible with Artillery, Sea Transport and Carrier features.
 Ground units ignore effect of city walls and can attack ships on adjacent coast tiles, excluding submarines.\Ships can attack cities and targets on adjacent ground tiles.
-Move in each terrain as fast as on a road.
+Move in each terrain as fast as on a road.\Incompatible with Overweight feature.
 The health of transported units doubles in each turn.
-Attack and Defense base value each +1. Double support required. Unit can only move along road, river or canal with double movement cost or along railroad and can not be transported.
+Attack and Defense base value each +1. Double support required. Unit can only move along road, river or canal with double movement cost or along railroad and can not be transported.\Incompatible with Alpine feature.
 +100% defense against air units.
 Investigates adjacent cities and unit stacks (including stealth aircraft).
 Speed +1.\This feature is no longer applied after Nuclear Power is available.
