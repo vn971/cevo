@@ -1104,7 +1104,7 @@ You can define improvement queues for four types of cities. Use drag&drop to
 arrange the building order. In order to switch a city to the building queue,
 choose the desired city type as its project. Changes in the city type building
 order will automatically apply to all cities. However, the current building
-project of a cities is never being abandoned. The city type will keep chosen
+project of a city is never abandoned. The city will keep chosen type
 even after all improvements are complete.
 
 
@@ -1181,7 +1181,7 @@ impossible for the players to complete the transstellar colony ship.\\
 It's important to define nation starting positions. A map cannot be played by
 more nations than there are starting positions on the map. If no starting positions
 are defined, this map is not playable. If you'd like to have the human player
-start at a certain one of the positions, define it as preferred.\\
+to start at a certain position, define it as preferred.\\
 
 Maps are not shown to the player on the start screen. Instead, you can make a
 theme picture for a map. This must be a BMP file with the same name as the
@@ -1199,7 +1199,7 @@ other in a tournament. Switch to "Free Player Setup" on the start screen and
 choose "AI Tournament" in the middle box, then
 press "Start". This will make the game reduce itself to a small dialog.
 After pressing the play button, C-evo will start to play an endless series of
-complete games (rounds). The result are simple statistics, which are updated
+complete games (rounds). The results are simple statistics, which are updated
 after each round:\\
 
 @AITShot\
@@ -1446,7 +1446,7 @@ The unit’s production cost is halved when the same type of unit was produced imm
 -Maximum 3%f, 2%p and 2%t per tile.\-High corruption. (Factor 3)\-Number of support free units per city: city size.\-No pollution.\-Each settler unit consumes 1%f.
 -Low corruption. (Factor 1)\-Number of support free units per city: half the city size.\-Each settler unit consumes 1%f.
 -All trade resources >0 are increased by 1.\-Moderate corruption. (Factor 2)\-Each combat unit (attack >0) in enemy territory in the end of the turn causes unrest in its home city, reducing the happiness by 2.\-Each settler unit consumes 2%f.
--Low corruption. (Factor 1)\-No unit support required.\-Faith.\-Research output is reduced to half.\-Each settler unit consumes 1%f.
+-Low corruption. (Factor 1)\-No unit support required.\-Faith (no unrest).\-Research output is reduced to half.\-Each settler unit consumes 1%f.
 -All resources more than 1%p are increased by 1.\-No corruption.\-Number of support free units per city: half the city size.\-Each settler unit consumes 2%f.
 -All trade resources >0 are increased by 1.\-No corruption.\-Each combat unit (attack >0) located outside own or allied territory in the end of the turn causes unrest in its home city, reducing the happiness by 2.\-Each settler unit consumes 2%f.
 -All trade resources >0 are increased by 1.\-Future technologies only require double research instead of fourfold.\-No corruption.\-Each combat unit (attack >0) located in enemy territory in the end of the turn causes unrest in its home city, reducing the happiness by 2.\-Food surplus is converted to money.\-No population growth.\-Each settler unit consumes 2%f.
