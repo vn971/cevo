@@ -364,10 +364,11 @@ discovered. The exact formula for your difficulty level is:\
 The number n starts with 4 and increases\
 -not when doing military research\
 -not when developing Computing Technology\
--by 1 when discovering an advance received from another nation\
--by 2 in all other cases when discovering an advance, including future technologies\
+-not when acquiring an advance via negotiation ("trade")\
+-not when acquiring an advance via Temple of Zeus\
 -by 1 when acquiring an advance from the Great Library
-
+-by 1 when discovering an already acquired advance\
+-by 2 in all other cases when discovering an advance, including future technologies\
 
 #DIPLOMACY
 $Diplomacy\

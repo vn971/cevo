@@ -1552,8 +1552,8 @@ begin
             Inc(nAppliers);
         if nAppliers * 2 > nAlive then
         begin
+          Inc(nTech[pTurn], TechCostFromUnknownToSeenWithGL);
           SeeTech(pTurn, ad);
-          Inc(nTech[pTurn]);
           if Mode >= moMovie then
             CallPlayer(cShowGreatLibTech, pTurn, ad);
           // do not call CallPlayer(pTurn) while map is invalid
@@ -3683,6 +3683,7 @@ begin {>>>server}
         Result := eInvalid
       else if Command >= sExecute then
       begin
+        Inc(nTech[Player], TechCostFromUnknownToSeen);
         SeeTech(Player, Subject);
         Dec(RW[Player].Happened, phStealTech);
       end;
