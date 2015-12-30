@@ -1,5 +1,3 @@
-#!/bin/sh
-
-# note the "--windowed" command line argument
+#!/bin/sh -eu
 
 wine "`dirname "$0"`"/cevo.exe --windowed
