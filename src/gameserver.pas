@@ -1553,8 +1553,8 @@ begin
             Inc(nAppliers);
         if nAppliers * 2 > nAlive then
         begin
+          Inc(nTech[pTurn], TechCostFromUnknownToSeenWithGL);
           SeeTech(pTurn, ad);
-          Inc(nTech[pTurn]);
           advanceCopy:=ad;
           if Mode >= moMovie then
             CallPlayer(cShowGreatLibTech, pTurn, advanceCopy);
@@ -3680,6 +3680,7 @@ begin {>>>server}
         Result := eInvalid
       else if Command >= sExecute then
       begin
+        Inc(nTech[Player], TechCostFromUnknownToSeen);
         SeeTech(Player, Subject);
         Dec(RW[Player].Happened, phStealTech);
       end;

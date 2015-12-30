@@ -379,7 +379,6 @@ begin
   CmdInfo := CmdInfo + Format(' P%d:A%d', [p, ad]);
 {$ENDIF}
   RW[p].Tech[ad] := tsSeen;
-  //inc(nTech[p]);
   Inc(Researched[p]);
 end;
 
@@ -417,19 +416,19 @@ begin
     else
       Inc(RW[p].Tech[ad]);
     if ad <> futResearchTechnology then
-      Inc(nTech[p], 2);
+      Inc(nTech[p], TechCostDiscoverFuture);
     Inc(Researched[p], 8);
     exit;
   end;
 
   if RW[p].Tech[ad] = tsSeen then
   begin
-    Inc(nTech[p]);
+    Inc(nTech[p], TechCostFromSeenToDiscovered);
     Inc(Researched[p]);
   end
   else
   begin
-    Inc(nTech[p], 2);
+    Inc(nTech[p], TechCostFromUnknownToDiscovered);
     Inc(Researched[p], 2);
   end;
   RW[p].Tech[ad] := tsResearched;
