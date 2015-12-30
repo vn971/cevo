@@ -1417,8 +1417,8 @@ Special resources +100%.\\Enables the production of a transstellar colony ship a
 Attack base value +1.
 Defense base value +1.\Note: This feature can only be used twice for ground units resp. three times for sea and air units.
 Speed +0.5.
-Troop transport base value +1.
-Aircraft transport base value +1.\Transport planes can not be transported by carriers.\Includes Radar / Sonar feature.
+Troop transport base value +1.\Incompatible with Submarine feature.
+Aircraft transport base value +1.\Transport planes can not be transported by carriers.\Includes Radar / Sonar feature.\Incompatible with Submarine feature.
 Speed +2.
 Attack base value +2 for first attack to a ground or sea target after start from city, carrier or military base.
 Unit doesn't have to return to a city, carrier or military base for one more turn with each fuel point.
