@@ -1354,7 +1354,7 @@ Speed +2 for all ships of the nation.\\This wonder can only be built in coastal 
 The cost of immediate completion of buildings and wonders is reduced to 2%c per material resource outstanding.
 *
 Research is doubled if government form is Monarchy.
-Cathedrals get +2%m.
+Cathedrals get +2%m. \::B38 Cathedral
 *
 Cities find their own individual balance between research and wealth. The wealth production is adjusted to the optimal amount.\\For cities under full control, this wonder usually prevents disorder, but not in a city producing so little trade or having so much unrest that even 100% wealth are not enough.
 Prevents the wonders of this nation from expiring. Wonders that have already expired get reactivated.
