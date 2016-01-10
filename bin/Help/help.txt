@@ -1464,7 +1464,7 @@ Future Technologies
 *
 -+100% defense when defending a city.\-Always requires support.\-Under despotism, this unit suppresses unhappy population, when located in a city: +2%o!
 :SPYMISSIONS Able to do covert operations.\-Investigates adjacent cities and unit stacks (including stealth aircraft).\-2 tiles observation range.\-No zone of control.\-Does never cause unrest in home city.
--In cities, a freight can redeem 2/3 of its production cost into the current project excepting colony ship parts.
+-In cities, a freight can redeem 2/3 of its production cost into the current project excepting colony ship parts.\-Other units can not be integrated into freight.
 -Two units transport capacity.
 -Able to improve terrain.
 -Counts as an air unit during its turn, but counts as a ground unit during other nations' turns.\-Investigates adjacent cities and unit stacks.\-If this unit is not located on a land tile at the end of a turn, it will be lost.\-The glider can't be transported by ships.
