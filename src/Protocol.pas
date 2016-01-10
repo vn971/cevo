@@ -22,6 +22,7 @@ TechCostFromSeenToDiscovered=1;
 TechCostFromUnknownToSeen=0;
 TechCostFromUnknownToSeenWithGL=1; // great library
 TechCostDiscoverFuture=2; // always unknown until discovered
+SpecialResourceTransLoss=0; // transformation loss. 0 = lose all special resources, 1 = do not lose "specialness"
 CountryRadius=9;
 MaxCitySize=30;
 BasicHappy=2; {basically happy citizens}

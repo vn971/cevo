@@ -3234,7 +3234,7 @@ begin
     begin
       ChangedTerrain := Terrain[RealMap[Loc] and fTerrain].ClearTerrain;
       RealMap[Loc] := RealMap[Loc] and not fTerrain or cardinal(ChangedTerrain);
-      RealMap[Loc] := RealMap[Loc] and not (3 shl 5) or ActualSpecialTile(Loc) shl 5;
+      RealMap[Loc] := RealMap[Loc] and not (3 shl 5) or (ActualSpecialTile(Loc) * SpecialResourceTransLoss) shl 5;
     end;
     jIrr:
       RealMap[Loc] := RealMap[Loc] and not fTerImp or tiIrrigation;
@@ -3244,7 +3244,7 @@ begin
     begin
       ChangedTerrain := Terrain[RealMap[Loc] and fTerrain].AfforestTerrain;
       RealMap[Loc] := RealMap[Loc] and not fTerrain or cardinal(ChangedTerrain);
-      RealMap[Loc] := RealMap[Loc] and not (3 shl 5) or ActualSpecialTile(Loc) shl 5;
+      RealMap[Loc] := RealMap[Loc] and not (3 shl 5) or (ActualSpecialTile(Loc) * SpecialResourceTransLoss) shl 5;
     end;
     jMine:
       RealMap[Loc] := RealMap[Loc] and not fTerImp or tiMine;
@@ -3256,7 +3256,7 @@ begin
     begin
       ChangedTerrain := Terrain[RealMap[Loc] and fTerrain].TransTerrain;
       RealMap[Loc] := RealMap[Loc] and not fTerrain or cardinal(ChangedTerrain);
-      RealMap[Loc] := RealMap[Loc] and not (3 shl 5) or ActualSpecialTile(Loc) shl 5;
+      RealMap[Loc] := RealMap[Loc] and not (3 shl 5) or (ActualSpecialTile(Loc) * SpecialResourceTransLoss) shl 5;
       if not (RealMap[Loc] and fTerrain in TerrType_Canalable) then
       begin
         RemoveDomainUnits(dSea, p, Loc);
