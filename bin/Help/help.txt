@@ -220,7 +220,7 @@ and Brian Reynolds.\
 Changes base on suggestions by Civ fans.\\
 
 !Programming\
-Programming by Steffen Gerlach.\
+Programming by Steffen Gerlach, with some afterwork by Vasya Novikov (vn971) and "Lagi" (proeliator7).\
 
 !Testing\
 Numerous testers. Thanks to all of them!\\
