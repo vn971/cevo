@@ -947,9 +947,37 @@ begin
   end;
 end;
 
+// C-evo original density is 9/160 (9 coal/wine for 160 hills tiles)
+function SpecialTileRand(Loc: integer): cardinal;
+var
+  TerrType: integer;
+  a: integer;
+begin
+  TerrType := RealMap[Loc] and fTerrain;
+  a := Loc;
+  a := ((a shr 4) xor a) * 37; // integer hashing
+  a := (a mod 60) + 1;
+  if TerrType=fOcean then result:=0
+  else if (TerrType=fGrass) and (a <= 30) then result := 1
+  else if (TerrType=fGrass) then result := 0
+  else if (TerrType=fArctic) and (a <= 4) then result := 1
+  else if (TerrType=fArctic) then result := 0
+  else if (TerrType=fSwamp) and (a <= 4) then result := 1
+  else if (TerrType=fSwamp) then result := 0
+  else if (TerrType=fShore) and (a <= 2) then result := 1
+  else if (TerrType=fShore) and (a = 3) then result := 2
+  else if (TerrType=fShore) then result := 0
+  else if (a <= 2) then result := 1
+  else if (a <= 4) then result := 2
+  else result := 0
+end;
+
 function ActualSpecialTile(Loc: integer): cardinal;
 begin
-  Result := SpecialTile(Loc, RealMap[Loc] and fTerrain, lx);
+  if SpecialResourcePredictable then
+    Result := SpecialTile(Loc, RealMap[Loc] and fTerrain, lx)
+  else
+    Result := SpecialTileRand(Loc)
 end;
 
 procedure CreateMap(preview: boolean);
