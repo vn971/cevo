@@ -956,6 +956,8 @@ begin
   TerrType := RealMap[Loc] and fTerrain;
   a := Loc;
   a := ((a shr 4) xor a) * 37; // integer hashing
+  a := a + RND; // make Special Tiles unique to each game
+  // TODO: make RND unguessable by AI. A cryptographical one-way function should be used.
   a := (a mod 60) + 1;
   if TerrType=fOcean then result:=0
   else if (TerrType=fGrass) and (a <= 30) then result := 1
