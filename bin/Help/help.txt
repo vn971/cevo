@@ -1448,7 +1448,7 @@ The unit’s production cost is halved when the same type of unit was produced imm
 -Low corruption. (Factor 1)\-Number of support free units per city: half the city size.\-Each settler unit consumes 1%f.
 -All trade resources >0 are increased by 1.\-Moderate corruption. (Factor 2)\-Each combat unit (attack >0) in enemy territory in the end of the turn causes unrest in its home city, reducing the happiness by 2.\-Each settler unit consumes 2%f.
 -Low corruption. (Factor 1)\-No unit support required.\-Faith (no unrest).\-Research output is reduced to half.\-Each settler unit consumes 1%f.
--All resources more than 1%p are increased by 1.\-No corruption.\-Number of support free units per city: half the city size.\-Each settler unit consumes 2%f.
+-All tiles producing at least 2%p are increased by 1%p.\-No corruption.\-Number of support free units per city: half the city size.\-Each settler unit consumes 2%f.
 -All trade resources >0 are increased by 1.\-No corruption.\-Each combat unit (attack >0) located outside own or allied territory in the end of the turn causes unrest in its home city, reducing the happiness by 2.\-Each settler unit consumes 2%f.
 -All trade resources >0 are increased by 1.\-Future technologies only require double research instead of fourfold.\-No corruption.\-Each combat unit (attack >0) located in enemy territory in the end of the turn causes unrest in its home city, reducing the happiness by 2.\-Food surplus is converted to money.\-No population growth.\-Each settler unit consumes 2%f.
 
