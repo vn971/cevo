@@ -215,27 +215,18 @@ begin
     exit;
   end;
   Quick := False;
-  if ParamCount > 0 then
+  for i := 1 to Paramcount do
   begin
     s := ParamStr(1);
-    if (s[1] = '-') or (s[1] = '/') then
-    begin // special mode
-      Delete(s, 1, 1);
-      for i := 1 to Length(s) do
-        if s[i] in ['a'..'z'] then
-          Dec(s[i], 32);
-      if s = 'MAN' then
-      begin
-        Quick := True;
-        DirectHelp(cHelpOnly);
-        Close;
-      end;
+    if (s = '--man') or (s = '-m') or (s = '-man') or (s = '/man') then begin
+      Quick := True;
+      DirectHelp(cHelpOnly);
+      Close;
     end
-    else if (FileExists(ParamStr(1))) then
+    else if FileExists(s) then
     begin
       Quick := True;
-      if not LoadGame(ExtractFilePath(ParamStr(1)), ExtractFileName(
-        ParamStr(1)), -1, False) then
+      if not LoadGame(ExtractFilePath(s), ExtractFileName(s), -1, False) then
       begin
         SimpleMessage(Phrases.Lookup('LOADERR'));
         Close;
