@@ -1264,7 +1264,7 @@ Makes building roads over rivers possible.
 *
 *
 *
-Allows use of conscripts.
+Allows use of conscripts.\:PRODUCTION See the effect on production and maintenance.
 Makes fortress building possible.\::J See list of terrain improvements.
 *
 *
