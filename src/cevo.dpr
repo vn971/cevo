@@ -1,6 +1,6 @@
 {$INCLUDE Switches.pas}
 
-program cevo;
+library cevo;
 
 uses
   Forms,
@@ -47,6 +47,7 @@ uses
 
 {$R cevo.RES}
 
+procedure Run(clientPtr: pointer); stdcall;
 var
   i: Integer;
 begin
@@ -73,5 +74,9 @@ begin
   Application.CreateForm(TBackground, Background);
   Application.CreateForm(TLogDlg, LogDlg);
   Application.Run;
-end.
+end;
 
+exports
+Run name 'Run';
+
+end.
