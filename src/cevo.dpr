@@ -64,7 +64,7 @@ begin
     end;
   end;
 
-  DotNetClient := nil;
+  DotNetClient:=TClientCall(clientPtr);
   Application.Initialize;
   Application.Title := 'C-evo';
   Application.CreateForm(TDirectDlg, DirectDlg);
