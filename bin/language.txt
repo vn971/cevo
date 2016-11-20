@@ -261,7 +261,7 @@ that special metals will be the key to this gigantic project.
 #NOFILENAME The name of the book must be a valid filename. The '%s' character is not allowed.
 #DLLERROR Could not load %s.
 #AIERROR AI module %s was not found.
-#MISSDEACT Player %d terminated without valid deactivation.
+#MISSDEACT Player %s terminated without valid deactivation.
 #CLIENTERROR Could not find client of %s.
 #LOADERROR This book contains an internal problem, and it may be impossible to continue playing with it.\\You can contribute to the quality of this game by sending the file to the developer.\Go to the bug reporting website now?
 #NOSTARTPOS This map has no starting positions defined. You can not play it.

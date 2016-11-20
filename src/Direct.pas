@@ -6,6 +6,7 @@ interface
 
 uses
   Messg,
+  Settings,
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 const
@@ -54,6 +55,7 @@ var
   hMem: cardinal;
   p: pointer;
   s: string;
+  brainName: String;
 begin
   case ID of
     ntInitLocalHuman:
@@ -80,7 +82,15 @@ begin
       if Visible then
         SetInfo(Phrases.Lookup('BUSY_INIT'));
     ntDeactivationMissing..ntDeactivationMissing + nPl - 1:
-      SimpleMessage(Format(Phrases.Lookup('MISSDEACT'), [ID - ntDeactivationMissing]));
+    begin
+      brainName := Brain[bixView[ID - ntDeactivationMissing]].Name;
+      brainName := IntToStr(ID - ntDeactivationMissing) + ' (' + brainName + ')';
+      if Settings.popupEnabled then begin
+        SimpleMessage(Format(Phrases.Lookup('MISSDEACT'), [brainName]));
+      end else begin
+        WriteLn(Format(Phrases.Lookup('MISSDEACT'), [brainName]));
+      end
+    end;
     ntSetAIName..ntSetAIName + nPl - 1:
       LocalPlayer.SetAIName(ID - ntSetAIName, NotifyMessage);
     ntException..ntException + maxBrain - 1:

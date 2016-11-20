@@ -4,6 +4,7 @@ library cevo;
 
 uses
   Forms,
+  Settings,
   StringTables in 'StringTables.pas',
   Directories in 'Directories.pas',
   Protocol in 'Protocol.pas',
@@ -48,20 +49,15 @@ uses
 {$R cevo.RES}
 
 procedure Run(clientPtr: pointer); stdcall;
-var
-  i: Integer;
 begin
-  for i:= 1 to Paramcount do
+  if Settings.printHelp then
   begin
-    if (ParamStr(i) = '--help') or (ParamStr(i) = '-h') then
-    begin
-      WriteLn('C-evo, a free empire building game');
-      WriteLn('Options:');
-      WriteLn('  --help, -h        show this text');
-      WriteLn('  -man, \man        show in-game manual');
-      WriteLn('  --windowed, -w    start the game in windowed mode');
-      halt;
-    end;
+    WriteLn('C-evo, a free empire building game');
+    WriteLn('Options:');
+    WriteLn('  --help, -h        show this text');
+    WriteLn('  -man, \man        show in-game manual');
+    WriteLn('  --windowed, -w    start the game in windowed mode');
+    halt(0);
   end;
 
   DotNetClient:=TClientCall(clientPtr);
