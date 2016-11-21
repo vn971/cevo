@@ -261,9 +261,15 @@ begin
 end;
 
 procedure TDirectDlg.OnAIException(var Msg: TMessage);
+var
+  txt: String;
 begin
-  Application.MessageBox(PChar(Format(Phrases.Lookup('AIEXCEPTION'),
-    [Brain[Msg.WParam].Name])), 'C-evo', 0);
+  txt := Format(Phrases.Lookup('AIEXCEPTION'), [Brain[Msg.WParam].Name]);
+  if Settings.popupEnabled then begin
+    Application.MessageBox(PChar(txt), 'C-evo', 0);
+  end else begin
+    WriteLn(txt);
+  end
 end;
 
 procedure TDirectDlg.FormPaint(Sender: TObject);
