@@ -248,16 +248,16 @@ begin
           if bixView[p] >= 0 then
             if 1 shl p and G.RO[me].Alive = 0 then
               Inc(ExtStat[p]) // extinct
-            else if G.RO[me].Alive = 1 shl p then
-              Inc(AloneStat[p]) // only player alive
             else
-            begin // alive but not alone -- check colony ship
+            begin // alive
               ShipComplete := True;
               for i := 0 to nShipPart - 1 do
                 if G.RO[me].Ship[p].Parts[i] < ShipNeed[i] then
                   ShipComplete := False;
               if ShipComplete then
-                Inc(WinStat[p]);
+                Inc(WinStat[p])
+              else if (G.RO[me].Alive shr p = 1) and (G.RO[me].Turn <> G.MaxTurn) then
+                Inc(AloneStat[p]) // sinple player (or single brain type) alive
             end;
         if Mode = Running then
           Server(sNextRound, me, 0, nil^);

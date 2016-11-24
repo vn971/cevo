@@ -6,7 +6,7 @@ unit GameServer;
 interface
 
 uses
-  Protocol, Database;
+  Protocol, Database, Settings;
 
 const
   Version = $010200;
@@ -1527,7 +1527,7 @@ var
   UpdateLoc: array[0..numax - 1] of integer;
   Radius: TVicinity21Loc;
   ShowShipChange: TShowShipChange;
-  TribeExtinct, JobDone, MirBuilt: boolean;
+  TribeExtinct, JobDone, MirBuilt, SingleBrainSituation: boolean;
 begin
 {$IFOPT O-}
   assert(1 shl pTurn and InvalidTreatyMap = 0);
@@ -1848,6 +1848,21 @@ begin
       end;
       if WinOnAlone and (GAlive and not (1 shl pTurn or 1) = 0) then
         GWinner := 1 shl pTurn; // break if only one nation left
+
+      if Settings.singleBrainWinCondition
+        and (1 shl pTurn and GAlive <> 0) and (GWinner = 0)
+        and (bix[pTurn] >= bixFirstAI) then begin
+
+        SingleBrainSituation := True;
+        for p1 := 0 to nPl - 1 do begin
+          if (1 shl p1 and GAlive <> 0) and (Brain[bix[pTurn]].Name <> Brain[bix[p1]].Name) then
+            SingleBrainSituation := False;
+        end;
+        if SingleBrainSituation then begin
+          WriteLn('Single Brain situation achieved, winner: ' + Brain[bix[pTurn]].Name);
+          GWinner := 1 shl pTurn;
+        end;
+      end;
 
       if GTurn = AnarchyStart + AnarchyTurns then
       begin

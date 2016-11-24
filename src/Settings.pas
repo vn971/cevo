@@ -8,6 +8,7 @@ var
   windowed: boolean = False;
   printHelp: boolean = False;
   popupEnabled: boolean = True;
+  singleBrainWinCondition: boolean = False;
 
 implementation
 
@@ -31,6 +32,11 @@ initialization
     begin
       popupEnabled := False;
       WriteLn('debug: --no-popup argument found');
+    end
+    else if (ParamStr(i) = '--brain-win') or (ParamStr(i) = '-b') then
+    begin
+      singleBrainWinCondition := True;
+      WriteLn('debug: --brain-win argument found');
     end;
   end;
 end.
