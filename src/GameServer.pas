@@ -1527,7 +1527,7 @@ var
   UpdateLoc: array[0..numax - 1] of integer;
   Radius: TVicinity21Loc;
   ShowShipChange: TShowShipChange;
-  TribeExtinct, JobDone, MirBuilt, SingleBrainSituation: boolean;
+  TribeExtinct, JobDone, MirBuilt, SingleBrainDominance: boolean;
 begin
 {$IFOPT O-}
   assert(1 shl pTurn and InvalidTreatyMap = 0);
@@ -1853,13 +1853,13 @@ begin
         and (1 shl pTurn and GAlive <> 0) and (GWinner = 0)
         and (bix[pTurn] >= bixFirstAI) then begin
 
-        SingleBrainSituation := True;
+        SingleBrainDominance := True;
         for p1 := 0 to nPl - 1 do begin
           if (1 shl p1 and GAlive <> 0) and (Brain[bix[pTurn]].Name <> Brain[bix[p1]].Name) then
-            SingleBrainSituation := False;
+            SingleBrainDominance := False;
         end;
-        if SingleBrainSituation then begin
-          WriteLn('Single Brain situation achieved, winner: ' + Brain[bix[pTurn]].Name);
+        if SingleBrainDominance then begin
+          WriteLn('Single Brain dominance achieved, winner: ' + Brain[bix[pTurn]].Name);
           GWinner := 1 shl pTurn;
         end;
       end;

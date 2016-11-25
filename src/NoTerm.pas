@@ -254,10 +254,14 @@ begin
               for i := 0 to nShipPart - 1 do
                 if G.RO[me].Ship[p].Parts[i] < ShipNeed[i] then
                   ShipComplete := False;
-              if ShipComplete then
+              if ShipComplete then begin
+                WriteLn('Winner brain: ' + Brain[bixView[p]].Name + ' (ship launch)');
                 Inc(WinStat[p])
-              else if (G.RO[me].Alive shr p = 1) and (G.RO[me].Turn <> G.MaxTurn) then
+              end
+              else if (G.RO[me].Alive shr p = 1) and (G.RO[me].Turn <> G.MaxTurn) then begin
+                WriteLn('Winner brain: ' + Brain[bixView[p]].Name + ' (alive)');
                 Inc(AloneStat[p]) // sinple player (or single brain type) alive
+              end;
             end;
         if Mode = Running then
           Server(sNextRound, me, 0, nil^);
