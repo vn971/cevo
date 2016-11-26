@@ -133,7 +133,7 @@ procedure TNoTermDlg.Client(Command, Player: integer; var Data);
 var
   i, x, y, p: integer;
   ActiveDuration: extended;
-  ShipComplete: boolean;
+  ShipComplete, ShipCompleteBySomeNation: boolean;
   r: TRect;
   now: int64;
 begin
@@ -244,6 +244,16 @@ begin
         EndPlaying
       else if G.RO[me].Happened and phGameEnd <> 0 then
       begin // game ended, update statistics
+        ShipCompleteBySomeNation := False;
+        for p := 1 to nPlOffered - 1 do begin
+          if bixView[p] >= 0 then begin
+            ShipComplete := True;
+            for i := 0 to nShipPart - 1 do
+              if G.RO[me].Ship[p].Parts[i] < ShipNeed[i] then
+                ShipComplete := False;
+            if ShipComplete then ShipCompleteBySomeNation := True;
+          end;
+        end;
         for p := 1 to nPlOffered - 1 do
           if bixView[p] >= 0 then
             if 1 shl p and G.RO[me].Alive = 0 then
@@ -258,7 +268,8 @@ begin
                 WriteLn('Winner brain: ' + Brain[bixView[p]].Name + ' (ship launch)');
                 Inc(WinStat[p])
               end
-              else if (G.RO[me].Alive shr p = 1) and (G.RO[me].Turn <> G.MaxTurn) then begin
+              else if (G.RO[me].Alive shr p = 1) and (G.RO[me].Turn <> G.MaxTurn)
+              and (not ShipCompleteBySomeNation) then begin
                 WriteLn('Winner brain: ' + Brain[bixView[p]].Name + ' (alive)');
                 Inc(AloneStat[p]) // sinple player (or single brain type) alive
               end;
