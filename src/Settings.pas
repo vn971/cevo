@@ -9,6 +9,7 @@ var
   printHelp: boolean = False;
   popupEnabled: boolean = True;
   singleBrainWinCondition: boolean = False;
+  logarithmicScaleCharts: boolean = False;
 
 implementation
 
@@ -32,6 +33,11 @@ initialization
     begin
       popupEnabled := False;
       WriteLn('debug: --no-popup argument found');
+    end
+    else if (ParamStr(i) = '--log-scale') then
+    begin
+      logarithmicScaleCharts := True;
+      WriteLn('debug: --log-scale argument found');
     end
     else if (ParamStr(i) = '--brain-win') or (ParamStr(i) = '-b') then
     begin

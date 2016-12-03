@@ -1,4 +1,7 @@
 {$INCLUDE Switches.pas}
+//
+// Unit model draft (when planning a Military Unit)
+//
 
 unit Draft;
 

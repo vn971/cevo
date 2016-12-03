@@ -1,10 +1,13 @@
 {$INCLUDE Switches.pas}
-
+//
+// Statistics Charts and Space Ship
+//
 unit Diagram;
 
 interface
 
 uses
+  Settings,
   BaseWin,
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonB, ButtonBase, Menus;
@@ -164,6 +167,13 @@ var
     for i := T - n to T do
       Inc(Result, List[i]);
     Result := Result div (n + 1);
+    if Settings.logarithmicScaleCharts then begin
+      if (Mode = stMil) or (Mode = stPop) then begin
+        Result := Trunc(1000 * (Ln(Result + 20) - Ln(20)))
+      end else if Mode = stWork then begin
+        Result := Trunc(1000 * (Ln(Result + 5000) - Ln(5000)))
+      end;
+    end;
   end;
 
   procedure ShareBar(x, y: integer; Cap: string; val0, val1: integer);

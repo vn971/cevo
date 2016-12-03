@@ -1,5 +1,7 @@
 {$INCLUDE Switches.pas}
-
+//
+// Terrain enchancement
+//
 unit Enhance;
 
 interface

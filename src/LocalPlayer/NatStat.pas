@@ -1,5 +1,7 @@
 {$INCLUDE Switches.pas}
-
+//
+// Nation list (F9)
+//
 unit NatStat;
 
 interface
