@@ -88,7 +88,7 @@ begin
       if Settings.popupEnabled then begin
         SimpleMessage(Format(Phrases.Lookup('MISSDEACT'), [brainName]));
       end else begin
-        WriteLn(Format(Phrases.Lookup('MISSDEACT'), [brainName]));
+        WriteLn(ErrOutput, Format(Phrases.Lookup('MISSDEACT'), [brainName]));
       end
     end;
     ntSetAIName..ntSetAIName + nPl - 1:
@@ -268,7 +268,7 @@ begin
   if Settings.popupEnabled then begin
     Application.MessageBox(PChar(txt), 'C-evo', 0);
   end else begin
-    WriteLn(txt);
+    WriteLn(ErrOutput, txt);
   end
 end;
 

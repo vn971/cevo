@@ -22,27 +22,27 @@ initialization
     if (ParamStr(i) = '--help') or (ParamStr(i) = '-h') then
     begin
       printHelp := True;
-      WriteLn('debug: --help argument found');
+      WriteLn(ErrOutput, 'debug: --help argument found');
     end
     else if (ParamStr(i) = '--windowed') or (ParamStr(i) = '-w') then
     begin
       windowed := True;
-      WriteLn('debug: --windowed argument found');
+      WriteLn(ErrOutput, 'debug: --windowed argument found');
     end
     else if (ParamStr(i) = '--no-popup') or (ParamStr(i) = '-p') then
     begin
       popupEnabled := False;
-      WriteLn('debug: --no-popup argument found');
+      WriteLn(ErrOutput, 'debug: --no-popup argument found');
     end
     else if (ParamStr(i) = '--log-scale') then
     begin
       logarithmicScaleCharts := True;
-      WriteLn('debug: --log-scale argument found');
+      WriteLn(ErrOutput, 'debug: --log-scale argument found');
     end
     else if (ParamStr(i) = '--brain-win') or (ParamStr(i) = '-b') then
     begin
       singleBrainWinCondition := True;
-      WriteLn('debug: --brain-win argument found');
+      WriteLn(ErrOutput, 'debug: --brain-win argument found');
     end;
   end;
 end.
