@@ -1839,7 +1839,7 @@ var
   i: integer;
 begin
   for i := 0 to nPlOffered - 1 do
-    if (Sender = DiffUpBtn[i]) and (Difficulty[i] < 3) or
+    if (Sender = DiffUpBtn[i]) and (Difficulty[i] < 4) or
       (Sender = DiffDownBtn[i]) and (Difficulty[i] > 1) then
     begin
       if Sender = DiffUpBtn[i] then
