@@ -84,6 +84,7 @@ procedure ClearTestFlags(ClearFlags: integer);
 procedure SetTestFlags(p, SetFlags: integer);
 
 // Tech Related Functions
+function DeepestTechForPlayer(p: integer): integer;
 function TechBaseCost(nTech, diff: integer): integer;
 function TechCost(p: integer): integer;
 procedure CalculateModel(var m: TModel);
@@ -259,19 +260,54 @@ begin
     Result := trunc(c0);
 end;
 
+function DeepestTechForPlayer(p: integer): integer;
+var
+  i: integer;
+begin
+  with RW[p] do begin
+    Result := adAlphabet;
+    for i := 0 to nAdv - 1 do begin
+      if ((Tech[i] = tsResearched) or (Tech[i] > tsGrLibrary)) and (techDepth[i] > techDepth[Result]) then begin
+        Result := i;
+      end;
+    end;
+  end;
+end;
+
 function TechCost(p: integer): integer;
 begin
   with RW[p] do
   begin
-    Result := TechBaseCost(nTech[p], Difficulty[p]);
-    if ResearchTech >= 0 then
-      if (ResearchTech = adMilitary) or (Tech[ResearchTech] = tsSeen) then
-        Result := Result shr 1
-      else if ResearchTech in FutureTech then
-        if Government = gFuture then
-          Result := Result * 2
-        else
-          Result := Result * 4;
+    if GTestFlags and tfDepthBasedScience > 0 then begin
+      if ResearchTech = adMilitary then begin
+        Result := TechBaseCost(techDepth[DeepestTechForPlayer(p)], Difficulty[p]) div 2;
+      end else begin
+        if ResearchTech in [futNanoTechnology, futMaterialTechnology, futArtificialIntelligence]
+        then begin
+          Result := TechBaseCost(Tech[ResearchTech] * 2 + techDepth[ResearchTech], Difficulty[p]);
+        end else begin
+          Result := TechBaseCost(techDepth[ResearchTech], Difficulty[p]);
+        end;
+        if Tech[ResearchTech] = tsSeen then begin
+          Result := Result div 2;
+        end else if ResearchTech in FutureTech then begin
+          if Government = gFuture then begin
+            Result := Result * 2;
+          end else begin
+            Result := Result * 4;
+          end;
+        end;
+      end;
+    end else begin
+      Result := TechBaseCost(nTech[p], Difficulty[p]);
+      if ResearchTech >= 0 then
+        if (ResearchTech = adMilitary) or (Tech[ResearchTech] = tsSeen) then
+          Result := Result shr 1
+        else if ResearchTech in FutureTech then
+          if Government = gFuture then
+            Result := Result * 2
+          else
+    end;
   end;
 end;
 

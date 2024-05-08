@@ -1052,10 +1052,17 @@ begin
             woLighthouse: CheckSpecialModels(p, preLighthouse);
             woLeo:
             begin
-              Inc(Research,
-                TechBaseCost(nTech[p], Difficulty[p]) +
-                TechBaseCost(nTech[p] + 2, Difficulty[p]));
-              CheckSpecialModels(p, preLeo);
+              if GTestFlags and tfDepthBasedScience > 0 then begin
+                Inc(Research,
+                  TechBaseCost(techDepth[DeepestTechForPlayer(p)], Difficulty[p]) +
+                  TechBaseCost(techDepth[DeepestTechForPlayer(p)] + 2, Difficulty[p]));
+                CheckSpecialModels(p, preLeo);
+              end else begin
+                Inc(Research,
+                  TechBaseCost(nTech[p], Difficulty[p]) +
+                  TechBaseCost(nTech[p] + 2, Difficulty[p]));
+                CheckSpecialModels(p, preLeo);
+              end;
             end;
             woPyramids: CheckSpecialModels(p, preBuilder);
             woMir:

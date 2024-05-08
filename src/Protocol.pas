@@ -60,7 +60,7 @@ TechFormula_D: array[1..MaxDiff] of single =(102.0,80.0,64.0,64.0);
 BuildCostMod: array[1..MaxDiff] of integer =(9,12,15,18);  // in 1/12
 
 // test flags
-nTestFlags=7; // max. 11
+nTestFlags=8; // max. 11
 tfAllTechs=$001; {all nations get all techs}
 tfImmImprove=$002; {city projects complete each turn}
 tfImmAdvance=$004; {research complete each turn}
@@ -68,6 +68,7 @@ tfImmGrow=$008; {all cities grow in each turn}
 tfUncover=$010; // all players see like supervisor
 tfAllContact=$020; // all nations can contact each other
 tfNoRareNeed=$040; // producing colony ship requires no modern resources
+tfDepthBasedScience=$080; // Technology cost is based on the technology only
 tfTested=$800; // at least one test flag was set
 
 {server commands
@@ -461,7 +462,10 @@ FutureTech=[futComputingTechnology,futNanoTechnology,futMaterialTechnology,
 
 adMilitary=$800; // Military Research
 
+var
+  techDepth: array[0..nAdv-1] of integer;
 
+const
 {wonders}
 woPyramids=00;woZeus=01;woGardens=02;woColossus=03;woLighthouse=04;woGrLibrary=05;woOracle=06;
 woSun=07;woLeo=08;woMagellan=09;woMich=10;{11;}woNewton=12;woBach=13;
@@ -1294,7 +1298,102 @@ else
 end;
 
 begin
-assert(sizeof(TPlayerContext)=2048);
-assert(sizeof(TModel)-2*sizeof(LongInt)-4*sizeof(word)=sIntSetDevModel and $F *4);
-end.
+  assert(sizeof(TPlayerContext)=2048);
+  assert(sizeof(TModel)-2*sizeof(LongInt)-4*sizeof(word)=sIntSetDevModel and $F *4);
 
+  techDepth[adHorsebackRiding] := 8; // 0 below + 8 half
+  techDepth[adCeremonialBurial] := 8;
+  techDepth[adWarriorCode] := 8;
+  techDepth[adPottery] := 8;
+  techDepth[adAlphabet] := 8;
+  techDepth[adMasonry] := 8;
+  techDepth[adBronzeWorking] := 8;
+  techDepth[adWheel] := 8;
+  techDepth[adPolytheism] := 20; // 16 below + 4 half
+  techDepth[adMysticism] := 20;
+  techDepth[adWriting] := 20;
+  techDepth[adConstruction] := 20;
+  techDepth[adMonarchy] := 31; // 24 below + 7 half
+  techDepth[adAstronomy] := 31;
+  techDepth[adMedicine] := 31;
+  techDepth[adMapMaking] := 31;
+  techDepth[adCodeOfLaws] := 31;
+  techDepth[adCurrency] := 31;
+  techDepth[adInvention] := 31;
+  techDepth[adChivalry] := 46; // 38 below + 8 half
+  techDepth[adMonotheism] := 46;
+  techDepth[adPoetry] := 46;
+  techDepth[adSeafaring] := 46;
+  techDepth[adTrade] := 46;
+  techDepth[adMathematics] := 46;
+  techDepth[adEngineering] := 46;
+  techDepth[adIronWorking] := 46;
+  techDepth[adTheology] := 58; // 54 below + 4 half
+  techDepth[adNavigation] := 58;
+  techDepth[adBridgeBuilding] := 58;
+  techDepth[adGunpowder] := 58;
+  techDepth[adLiterature] := 65; // 62 below + 3 half
+  techDepth[adBanking] := 65;
+  techDepth[adMetallurgy] := 65;
+  techDepth[adTheRepublic] := 71; // 68 below + 3 half
+  techDepth[adPhilosophy] := 71;
+  techDepth[adBallistics] := 71;
+  techDepth[adScience] := 75; // 74 below + 1 half
+  techDepth[adPhysics] := 80; // 76 below + 4 half
+  techDepth[adUniversity] := 80;
+  techDepth[adSteamEngine] := 80;
+  techDepth[adChemistry] := 80;
+  techDepth[adTheoryOfGravity] := 91; // 84 below + 7 half
+  techDepth[adMagnetism] := 91;
+  techDepth[adTactics] := 91;
+  techDepth[adEconomics] := 91;
+  techDepth[adRailroad] := 91;
+  techDepth[adExplosives] := 91;
+  techDepth[adRefining] := 91;
+  techDepth[adElectricity] := 105; // 98 below + 7 half
+  techDepth[adAmphibiousWarfare] := 105;
+  techDepth[adConscription] := 105;
+  techDepth[adIndustrialization] := 105;
+  techDepth[adSteel] := 105;
+  techDepth[adRocketry] := 105;
+  techDepth[adCombustionEngine] := 105;
+  techDepth[adAtomicTheory] := 120; // 112 below + 8 half
+  techDepth[adRadio] := 120;
+  techDepth[adRefrigeration] := 120;
+  techDepth[adDemocracy] := 120;
+  techDepth[adEnvironmentalism] := 120;
+  techDepth[adCommunism] := 120;
+  techDepth[adFlight] := 120;
+  techDepth[adAutomobile] := 120;
+  techDepth[adElectronics] := 134; // 128 below + 6 half
+  techDepth[adSyntheticFood] := 134;
+  techDepth[adTheCorporation] := 134;
+  techDepth[adSanitation] := 134;
+  techDepth[adIntelligence] := 134;
+  techDepth[adMobileWarfare] := 134;
+  techDepth[adMassProduction] := 141; // 140 below + 1 half
+  techDepth[adNuclearFission] := 145; // 142 below + 3 half
+  techDepth[adPlastics] := 145;
+  techDepth[adRobotics] := 145;
+  techDepth[adNuclearPower] := 151; // 148 below + 3 half
+  techDepth[adMin] := 151;
+  techDepth[adAdvancedFlight] := 151;
+  techDepth[adRecycling] := 158; // 154 below + 4 half
+  techDepth[adComputers] := 158;
+  techDepth[adCombinedArms] := 158;
+  techDepth[adComposites] := 158;
+  techDepth[adSelfContainedEnvironment] := 166; // 162 below + 4 half
+  techDepth[adTheLaser] := 166;
+  techDepth[adAdvancedRocketry] := 166;
+  techDepth[adStealth] := 166;
+  techDepth[adInternet] := 173; // 170 below + 3 half
+  techDepth[adSmartWeapons] := 173;
+  techDepth[adSpaceFlight] := 173;
+  techDepth[adImpulseDrive] := 177; // 176 below + 1 half
+  techDepth[adTransstellarColonization] := 179; // 178 below + 1 half
+
+  techDepth[futComputingTechnology] := 180;
+  techDepth[futNanoTechnology] := 180;
+  techDepth[futMaterialTechnology] := 180;
+  techDepth[futArtificialIntelligence] := 180;
+end.

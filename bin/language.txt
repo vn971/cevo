@@ -513,6 +513,7 @@ City Report List
 City Report Screens
 Names
 No Modern Resources Needed
+Science Cost Depends on Depth, Not History
 Recover
 Unload
 Random Map
