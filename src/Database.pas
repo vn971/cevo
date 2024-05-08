@@ -2086,7 +2086,11 @@ begin
         end
         else
           TestBonus := 4;
-        Inc(TestBonus, PUn.Exp div ExpCost);
+        if GTestFlags and tfReducedBarracksEffect > 0 then begin
+          Inc(TestBonus, PUn.Exp div (ExpCost div 2));
+        end else begin
+          Inc(TestBonus, PUn.Exp div ExpCost);
+        end;
         TestStrength := PModel.Defense * TestBonus * PUn.Health;
         if (Domain = dAir) and ((RealMap[Loc] and fCity <> 0) or
           (RealMap[Loc] and fTerImp = tiBase)) then

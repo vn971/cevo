@@ -14,7 +14,7 @@ nUmax=4096; {max units/player, don't set above 4096}
 nCmax=1024; {max cities/player, don't set above 4096}
 nMmax=256; {max models/player, don't set above 1024}
 nExp=5; // number of experience levels
-ExpCost=50; {received damage required for next experience level}
+ExpCost=50; {experience required for next experience level}
 MaxFutureTech=25; // maximum number of future techs of one kind except computing technology
 MaxFutureTech_Computing=100; // maximum number of computing technology future techs
 TechCostFromUnknownToDiscovered=2;
@@ -60,7 +60,7 @@ TechFormula_D: array[1..MaxDiff] of single =(102.0,80.0,64.0,64.0);
 BuildCostMod: array[1..MaxDiff] of integer =(9,12,15,18);  // in 1/12
 
 // test flags
-nTestFlags=8; // max. 11
+nTestFlags=9; // max. 11
 tfAllTechs=$001; {all nations get all techs}
 tfImmImprove=$002; {city projects complete each turn}
 tfImmAdvance=$004; {research complete each turn}
@@ -69,6 +69,7 @@ tfUncover=$010; // all players see like supervisor
 tfAllContact=$020; // all nations can contact each other
 tfNoRareNeed=$040; // producing colony ship requires no modern resources
 tfDepthBasedScience=$080; // Technology cost is based on the technology only
+tfReducedBarracksEffect=$100; // Barracks Effect is Halved, Experience effect is doubled
 tfTested=$800; // at least one test flag was set
 
 {server commands

@@ -514,6 +514,7 @@ City Report Screens
 Names
 No Modern Resources Needed
 Science Cost Depends on Depth, Not History
+Barracks Effect is Halved, Experience effect is doubled
 Recover
 Unload
 Random Map

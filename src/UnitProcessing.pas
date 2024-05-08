@@ -473,7 +473,11 @@ with BattleForecast do
   // calculate attacker strength
   if PModel.Cap[mcWill]>0 then Time:=100
   else begin Time:=Movement; if Time>100 then Time:=100; end;
-  ABon:=4+ExpAtt div ExpCost;
+  if GTestFlags and tfReducedBarracksEffect > 0 then begin
+    ABon:=4+ExpAtt div (ExpCost div 2);
+  end else begin
+    ABon:=4+ExpAtt div ExpCost;
+  end;
   AStr:=PModel.Attack;
   if (FlagsAtt and unBombsLoaded<>0) and (DModel.Domain<dAir) then // use bombs
     AStr:=AStr+PModel.Cap[mcBombs]*PModel.MStrength*2;

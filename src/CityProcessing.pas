@@ -985,12 +985,21 @@ begin
           with Un[nUn - 1] do
           begin
             Home := cix;
-            if (Model[mix].Domain < dSea) and (Built[imElite] = 1) then
-              Exp := ExpCost * (nExp - 1){elite}
-            else if (Model[mix].Domain < dSea) and (Built[imBarracks] = 1) or
+            if (Model[mix].Domain < dSea) and (Built[imElite] = 1) then begin
+              if GTestFlags and tfReducedBarracksEffect > 0 then begin
+                Exp := ExpCost * 2 // hardened
+              end else begin
+                Exp := ExpCost * (nExp - 1) // elite
+              end;
+            end else if (Model[mix].Domain < dSea) and (Built[imBarracks] = 1) or
               (Model[mix].Domain = dSea) and (Built[imDockyard] = 1) or
-              (Model[mix].Domain = dAir) and (Built[imAirport] = 1) then
-              Exp := ExpCost * 2;{vet}
+              (Model[mix].Domain = dAir) and (Built[imAirport] = 1) then begin
+              if GTestFlags and tfReducedBarracksEffect > 0 then begin
+                Exp := ExpCost * 1; // disciplined
+              end else begin
+                Exp := ExpCost * 2; // hardened
+              end;
+            end;
             if Project and cpConscripts <> 0 then
               Flags := Flags or unConscripts;
           end;
