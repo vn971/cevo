@@ -545,6 +545,10 @@ object MainScreen: TMainScreen
         Tag = 2118
         OnClick = mManipClick
       end
+      object mManip9: TMenuItem
+        Tag = 2375
+        OnClick = mManipClick
+      end
     end
     object mMacro: TMenuItem
       Tag = 42

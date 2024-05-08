@@ -2417,7 +2417,14 @@ begin
         RemoveUnit(p, uix, MoveInfo.Defender) // destroy attacker
       else
       begin // update attacker
-        ExpGain := (Health - MoveInfo.EndHealth + 1) shr 1;
+        if GTestFlags and tfUnitXPBasedOnCost > 0 then begin
+          ExpGain:= Round(ExpCost
+            * RW[MoveInfo.Defender].Model[RW[MoveInfo.Defender].Un[MoveInfo.Duix].mix].Cost
+            * 2 / 3
+            / PModel.Cost);
+        end else begin
+          ExpGain := (Health - MoveInfo.EndHealth + 1) shr 1;
+        end;
         if Exp + ExpGain > (nExp - 1) * ExpCost then
           Exp := (nExp - 1) * ExpCost
         else
@@ -2463,7 +2470,14 @@ begin
     else if (MoveInfo.MoveType = mtAttack) and (MoveInfo.EndHealthDef > 0) then
       with RW[MoveInfo.Defender].Un[MoveInfo.Duix] do
       begin // update defender
-        ExpGain := (Health - MoveInfo.EndHealthDef + 1) shr 1;
+        if GTestFlags and tfUnitXPBasedOnCost > 0 then begin
+          ExpGain:= Round(ExpCost
+            * PModel.Cost
+            * 2 / 3
+            / RW[MoveInfo.Defender].Model[RW[MoveInfo.Defender].Un[MoveInfo.Duix].mix].Cost);
+        end else begin
+          ExpGain := (Health - MoveInfo.EndHealthDef + 1) shr 1;
+        end;
         if Exp + ExpGain > (nExp - 1) * ExpCost then
           Exp := (nExp - 1) * ExpCost
         else

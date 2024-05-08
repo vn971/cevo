@@ -96,6 +96,7 @@ type
     mManip6: TMenuItem;
     mManip7: TMenuItem;
     mManip8: TMenuItem;
+    mManip9: TMenuItem;
     mRep12: TMenuItem;
     mRandomMap: TMenuItem;
     mUnload: TMenuItem;
