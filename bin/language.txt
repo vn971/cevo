@@ -84,6 +84,7 @@
 #COSTDIFF1 Difficulty Level: -25%
 #COSTDIFF2 Difficulty Level: ±0
 #COSTDIFF3 Difficulty Level: +25%
+#COSTDIFF4 Difficulty Level: +50%
 #NATEXISTS (%s)
 #CONSCRIPTS Conscript %s
 #WONDEROF %s of %s
