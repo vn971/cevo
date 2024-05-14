@@ -7,6 +7,7 @@ unit Enhance;
 interface
 
 uses
+  Database,
   ScreenTools, BaseWin, Protocol, ClientTools, Term,
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ButtonBase, ButtonB, ButtonC, Menus;

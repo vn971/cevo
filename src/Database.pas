@@ -77,6 +77,10 @@ type
   TVicinity8Loc = array[0..7] of integer;
   TVicinity21Loc = array[0..27] of integer;
 
+function RoadWork(): integer;
+function RoadBridgeWork(): integer;
+function RRWork(): integer;
+
 procedure MaskD(var x; Count, Mask: cardinal);
 procedure IntServer(Command, Player, Subject: integer; var Data);
 procedure CompactLists(p: integer);
@@ -178,6 +182,33 @@ asm
          AND     [EAX+EDX*4],ECX
          DEC     EDX
          JNZ     @r
+end;
+
+function RoadWork(): integer;
+begin
+  if GTestFlags and tfVasyaExtendedRuleset = 0 then begin
+    Result := RoadWorkOriginal;
+  end else begin
+    Result := 10;
+  end;
+end;
+
+function RoadBridgeWork(): integer;
+begin
+  if GTestFlags and tfVasyaExtendedRuleset = 0 then begin
+    Result := RoadBridgeWorkOriginal;
+  end else begin
+    Result := 10;
+  end;
+end;
+
+function RRWork(): integer;
+begin
+  if GTestFlags and tfVasyaExtendedRuleset = 0 then begin
+    Result := RRWorkOriginal;
+  end else begin
+    Result := 10;
+  end;
 end;
 
 procedure CompactLists(p: integer);
@@ -3843,12 +3874,6 @@ begin
   for p1 := 0 to nPl - 1 do
     if 1 shl p1 and (GAlive or GWatching) <> 0 then
       RW[p1].TestFlags := GTestFlags;
-
-  if (GTestFlags and tfVasyaExtendedRuleset) = 0 then begin
-    Protocol.RoadWork := 300; // *MoveCost
-    Protocol.RoadBridgeWork := 900;
-    Protocol.RRWork := 600; // *MoveCost
-  end;
 end;
 
 procedure SetTestFlags(p, SetFlags: integer);
@@ -3872,9 +3897,6 @@ begin
           end;
 
   if MoreFlags and tfVasyaExtendedRuleset <> 0 then begin
-    Protocol.RoadWork := 10; // *MoveCost
-    Protocol.RoadBridgeWork := 10;
-    Protocol.RRWork := 10; // *MoveCost
     for p1 := 0 to nPl - 1 do begin
       ResourceMask[p1] := ResourceMask[p1] or fSpecial2;
     end;

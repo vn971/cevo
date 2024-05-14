@@ -728,13 +728,9 @@ Terrain:array[0..11] of record
 PillageWork=100;
 CityWork=900;
 FarmWork=3; // *IrrClearWork
-
-var
-RoadWork: integer = 300; // *MoveCost
-RoadBridgeWork: integer =900;
-RRWork: integer = 600; // *MoveCost
-
-const
+RoadWorkOriginal=300; // *MoveCost
+RoadBridgeWorkOriginal=900;
+RRWorkOriginal=600; // *MoveCost
 RRBridgeWork=900;
 CanalWork=1800;
 FortWork=600; // *MoveCost
@@ -1204,7 +1200,6 @@ procedure MakeUnitInfo(p: integer; const u: TUn; var ui: TUnitInfo);
 procedure MakeModelInfo(p, mix: integer; const m: TModel; var mi: TModelInfo);
 function IsSameModel(const mi1,mi2: TModelInfo): boolean;
 function SpecialTile(Loc,TerrType,lx: integer): integer;
-
 
 implementation
 

@@ -1282,15 +1282,6 @@ begin
 
   Mode := moPlaying;
   LastEndClientCommand := -1;
-  if GTestFlags and tfVasyaExtendedRuleset <> 0 then begin
-    Protocol.RoadWork := 10; // *MoveCost
-    Protocol.RoadBridgeWork := 10;
-    Protocol.RRWork := 10; // *MoveCost
-  end else begin
-    Protocol.RoadWork := 300; // *MoveCost
-    Protocol.RoadBridgeWork := 900;
-    Protocol.RRWork := 600; // *MoveCost
-  end;
   if (GTestFlags and tfUncover <> 0) or (Difficulty[pTurn] = 0) then
     DiscoverAll(pTurn, lObserveSuper) {supervisor - all tiles visible}
   else
