@@ -1282,6 +1282,15 @@ begin
 
   Mode := moPlaying;
   LastEndClientCommand := -1;
+  if GTestFlags and tfVasyaExtendedRuleset <> 0 then begin
+    Protocol.RoadWork := 10; // *MoveCost
+    Protocol.RoadBridgeWork := 10;
+    Protocol.RRWork := 10; // *MoveCost
+  end else begin
+    Protocol.RoadWork := 300; // *MoveCost
+    Protocol.RoadBridgeWork := 900;
+    Protocol.RRWork := 600; // *MoveCost
+  end;
   if (GTestFlags and tfUncover <> 0) or (Difficulty[pTurn] = 0) then
     DiscoverAll(pTurn, lObserveSuper) {supervisor - all tiles visible}
   else
@@ -4235,9 +4244,9 @@ begin {>>>server}
                 (NewProject = cpImp + imResLab) and (Built[imUniversity] = 0) or
                 (NewProject = cpImp + imMfgPlant) and (Built[imFactory] = 0) then
                 Result := eNoPreq;
-              case NewProject - cpImp of
-                woLighthouse, woMagellan, imCoastalFort, imHarbor, imPlatform:
-                begin {city at ocean?}
+              if ((NewProject - cpImp) in [woLighthouse, woMagellan]) or
+                ((GTestFlags and tfVasyaExtendedRuleset = 0) and
+                ((NewProject - cpImp) in [imCoastalFort, imHarbor, imPlatform])) then begin
                   Preq := 0;
                   V8_to_Loc(Loc, Adjacent);
                   for V8 := 0 to 7 do
@@ -4249,7 +4258,8 @@ begin {>>>server}
                   end;
                   if Preq = 0 then
                     Result := eNoPreq;
-                end;
+              end;
+              case NewProject - cpImp of
                 woHoover, imHydro:
                 begin {city at river or mountains?}
                   Preq := 0;

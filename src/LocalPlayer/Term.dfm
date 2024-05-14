@@ -538,15 +538,23 @@ object MainScreen: TMainScreen
         OnClick = mManipClick
       end
       object mManip7: TMenuItem
+        Tag = 1861
         Caption = 'Science Cost Depends on Depth, Not History'
         OnClick = mManipClick
       end
       object mManip8: TMenuItem
+        Tag = 2118
         Caption = 'Barracks Effect is Halved, Experience effect is doubled'
         OnClick = mManipClick
       end
       object mManip9: TMenuItem
+        Tag = 2375
         Caption = 'Unit XP Gain Is Based on Enemy Unit Cost'
+        OnClick = mManipClick
+      end
+      object mManip10: TMenuItem
+        Tag = 2632
+        Caption = 'Vasya house rules: cheap roads, special resources visible early, a harbor can be built in any city'
         OnClick = mManipClick
       end
     end

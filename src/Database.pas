@@ -3843,6 +3843,12 @@ begin
   for p1 := 0 to nPl - 1 do
     if 1 shl p1 and (GAlive or GWatching) <> 0 then
       RW[p1].TestFlags := GTestFlags;
+
+  if (GTestFlags and tfVasyaExtendedRuleset) = 0 then begin
+    Protocol.RoadWork := 300; // *MoveCost
+    Protocol.RoadBridgeWork := 900;
+    Protocol.RRWork := 600; // *MoveCost
+  end;
 end;
 
 procedure SetTestFlags(p, SetFlags: integer);
@@ -3864,6 +3870,15 @@ begin
             if RW[p1].Treaty[p2] = trNoContact then
               IntroduceEnemy(p1, p2);
           end;
+
+  if MoreFlags and tfVasyaExtendedRuleset <> 0 then begin
+    Protocol.RoadWork := 10; // *MoveCost
+    Protocol.RoadBridgeWork := 10;
+    Protocol.RRWork := 10; // *MoveCost
+    for p1 := 0 to nPl - 1 do begin
+      ResourceMask[p1] := ResourceMask[p1] or fSpecial2;
+    end;
+  end;
 
   if MoreFlags and tfAllTechs <> 0 then
     for p1 := 0 to nPl - 1 do

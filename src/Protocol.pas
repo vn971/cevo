@@ -60,7 +60,7 @@ TechFormula_D: array[1..MaxDiff] of single =(102.0,80.0,64.0,64.0);
 BuildCostMod: array[1..MaxDiff] of integer =(9,12,15,18);  // in 1/12
 
 // test flags
-nTestFlags=10; // max. 11
+nTestFlags=11; // max. 11
 tfAllTechs=$001; {all nations get all techs}
 tfImmImprove=$002; {city projects complete each turn}
 tfImmAdvance=$004; {research complete each turn}
@@ -71,6 +71,7 @@ tfNoRareNeed=$040; // producing colony ship requires no modern resources
 tfDepthBasedScience=$080; // Technology cost is based on the technology only
 tfReducedBarracksEffect=$100; // Barracks Effect is Halved, Experience effect is doubled
 tfUnitXPBasedOnCost=$200; // Unit XP gain is based on unit costs, not damage taken
+tfVasyaExtendedRuleset=$400; // Vasya's house rules
 tfTested=$800; // at least one test flag was set
 
 {server commands
@@ -727,9 +728,13 @@ Terrain:array[0..11] of record
 PillageWork=100;
 CityWork=900;
 FarmWork=3; // *IrrClearWork
-RoadWork=300; // *MoveCost
-RoadBridgeWork=900;
-RRWork=600; // *MoveCost
+
+var
+RoadWork: integer = 300; // *MoveCost
+RoadBridgeWork: integer =900;
+RRWork: integer = 600; // *MoveCost
+
+const
 RRBridgeWork=900;
 CanalWork=1800;
 FortWork=600; // *MoveCost

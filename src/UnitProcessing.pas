@@ -1139,7 +1139,7 @@ var
 uix1,j0: integer;
 begin
 result:=false;
-with RW[p].Un[uix] do if Movement>=100 then
+with RW[p].Un[uix] do if (Movement>=100) or (GTestFlags and tfVasyaExtendedRuleset <> 0) then
   begin
   assert(ToWork[Loc,Job]<$FFFF); // should have been set by StartJob
   if Job>=jRoad then

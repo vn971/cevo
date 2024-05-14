@@ -97,6 +97,7 @@ type
     mManip7: TMenuItem;
     mManip8: TMenuItem;
     mManip9: TMenuItem;
+    mManip10: TMenuItem;
     mRep12: TMenuItem;
     mRandomMap: TMenuItem;
     mUnload: TMenuItem;
@@ -3348,8 +3349,10 @@ begin
     if Components[i].Tag and $FF <> 0 then
       if Components[i] is TMenuItem then
       begin
-        TMenuItem(Components[i]).Caption :=
-          Phrases.Lookup('CONTROLS', -1 + Components[i].Tag and $FF);
+        if TMenuItem(Components[i]).Caption = '' then begin
+          TMenuItem(Components[i]).Caption :=
+            Phrases.Lookup('CONTROLS', -1 + Components[i].Tag and $FF);
+        end;
         for j := 0 to nSaveOption - 1 do
           if Components[i].Tag and $FF = SaveOption[j] then
             TMenuItem(Components[i]).Checked := 1 shl j and OptionChecked <> 0;
