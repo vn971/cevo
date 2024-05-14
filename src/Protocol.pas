@@ -732,9 +732,9 @@ RoadWorkOriginal=300; // *MoveCost
 RoadBridgeWorkOriginal=900;
 RRWorkOriginal=600; // *MoveCost
 RRBridgeWork=900;
-CanalWork=1800;
-FortWork=600; // *MoveCost
-BaseWork=600; // *MoveCost
+CanalWorkOriginal=1800;
+FortWorkOriginal=600; // *MoveCost
+BaseWorkOriginal=600; // *MoveCost
 PollWork=1800;
 
 // upgrades for new unit models

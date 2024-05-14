@@ -80,6 +80,9 @@ type
 function RoadWork(): integer;
 function RoadBridgeWork(): integer;
 function RRWork(): integer;
+function CanalWork(): integer;
+function FortWork(): integer;
+function BaseWork(): integer;
 
 procedure MaskD(var x; Count, Mask: cardinal);
 procedure IntServer(Command, Player, Subject: integer; var Data);
@@ -186,28 +189,55 @@ end;
 
 function RoadWork(): integer;
 begin
-  if GTestFlags and tfVasyaExtendedRuleset = 0 then begin
-    Result := RoadWorkOriginal;
+  if GTestFlags and tfVasyaExtendedRuleset > 0 then begin
+    Result := 1;
   end else begin
-    Result := 10;
+    Result := RoadWorkOriginal;
   end;
 end;
 
 function RoadBridgeWork(): integer;
 begin
-  if GTestFlags and tfVasyaExtendedRuleset = 0 then begin
-    Result := RoadBridgeWorkOriginal;
+  if GTestFlags and tfVasyaExtendedRuleset > 0 then begin
+    Result := 1;
   end else begin
-    Result := 10;
+    Result := RoadBridgeWorkOriginal;
   end;
 end;
 
 function RRWork(): integer;
 begin
-  if GTestFlags and tfVasyaExtendedRuleset = 0 then begin
-    Result := RRWorkOriginal;
+  if GTestFlags and tfVasyaExtendedRuleset > 0 then begin
+    Result := 1;
   end else begin
-    Result := 10;
+    Result := RRWorkOriginal;
+  end;
+end;
+
+function CanalWork(): integer;
+begin
+  if GTestFlags and tfVasyaExtendedRuleset > 0 then begin
+    Result := 1;
+  end else begin
+    Result := CanalWorkOriginal;
+  end;
+end;
+
+function FortWork(): integer;
+begin
+  if GTestFlags and tfVasyaExtendedRuleset > 0 then begin
+    Result := 1;
+  end else begin
+    Result := FortWorkOriginal;
+  end;
+end;
+
+function BaseWork(): integer;
+begin
+  if GTestFlags and tfVasyaExtendedRuleset > 0 then begin
+    Result := 1;
+  end else begin
+    Result := BaseWorkOriginal;
   end;
 end;
 

@@ -554,7 +554,7 @@ object MainScreen: TMainScreen
       end
       object mManip10: TMenuItem
         Tag = 2632
-        Caption = 'Vasya house rules: cheap roads, special resources visible early, a harbor can be built in any city'
+        Caption = 'Vasya house rules: cheap roads, forts and canals; special resources visible early; a harbor can be built in any city'
         OnClick = mManipClick
       end
     end

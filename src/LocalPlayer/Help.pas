@@ -5,6 +5,7 @@ unit Help;
 interface
 
 uses
+  Database,
   Protocol, ScreenTools, BaseWin, StringTables,
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, ButtonB, PVSB, ButtonBase;
