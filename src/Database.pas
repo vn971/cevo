@@ -368,6 +368,7 @@ begin
           if Government = gFuture then
             Result := Result * 2
           else
+            Result := Result * 4;
     end;
   end;
 end;
